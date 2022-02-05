@@ -7,8 +7,7 @@ export default function Home() {
         <Header></Header>
         <video sx={{
             margin: 4,
-            padding: 4,
-            maxWidth: { xs: '100%', md: '90%' }
+            padding: 4
         }} id="background-video" autoPlay loop muted>
             <source src="https://s3.ap-south-1.amazonaws.com/www.einsite.io/img/einsitewebsiteloop.mp4" type="video/mp4" />
             <source src="https://s3.ap-south-1.amazonaws.com/www.einsite.io/img/einsitewebsiteloop.mp4" type="video/ogg" />
