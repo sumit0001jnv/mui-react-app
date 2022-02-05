@@ -18,6 +18,7 @@ import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useHistory, useLocation } from "react-router-dom";
+import { deepOrange, deepPurple } from '@mui/material/colors';
 function HideOnScroll(props) {
   const { children, window } = props;
   // Note that you normally won't need to set the window ref as useScrollTrigger
@@ -92,21 +93,21 @@ export default function Header(props) {
   const handleClose = (type) => (eventType) => {
     console.log(type);
     setAnchorEl(null);
-    switch(type){
-      case 'login':{
+    switch (type) {
+      case 'login': {
         history.push("/sign-in");
         break;
       }
-      case 'logout':{
+      case 'logout': {
         // history.push("/sign-in");
         setlogin(false);
         break;
       }
-      case 'profile':{
+      case 'profile': {
         history.push("/profile");
         break;
       }
-      case 'register':{
+      case 'register': {
         history.push("/sign-up");
         break;
       }
@@ -118,9 +119,9 @@ export default function Header(props) {
     <>
       <CssBaseline />
       <HideOnScroll {...props}>
-        <AppBar sx={{ bgcolor: '#2E3B55' }}>
+        <AppBar sx={{ background: 'linear-gradient(to left,#1a214d 50%, #479295)' }}>
           <Toolbar>
-            <IconButton
+            {/* <IconButton
               size="large"
               edge="start"
               color="inherit"
@@ -128,24 +129,47 @@ export default function Header(props) {
               sx={{ mr: 2 }}
             >
               <MenuIcon />
-            </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+            </IconButton> */}
+            {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Company Name
+            </Typography> */}
+            {/* <Avatar sx={{ bgcolor: '#fff' }} variant="rounded">
+            </Avatar> */}
+            <img src='images/company-logo.jpeg' width="60"></img>
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             </Typography>
+            <Button color="inherit" sx={{
+              mr: 2,
+              ':hover': {
+                bgcolor: '#fff',
+                color: '#000'
+              }
+            }} href="/create-template">Create Template</Button>
+            <Button color="inherit" sx={{
+              mr: 2,
+              ':hover': {
+                bgcolor: '#fff',
+                color: '#000'
+              }
+            }} href="/parse-pdf">Parse PDF</Button>
             {
               login ? (<>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <Typography variant="div" component="div" sx={{ flexGrow: 1, pr: 1 }}>
-                    Hi {userName}
-                  </Typography><StyledBadge
+                  <StyledBadge
                     overlap="circular"
                     anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                     variant="dot"
                     onClick={handleClick}
                   >
-                    <Avatar alt="Remy Sharp" src="images/2.jpg" />
+                    <Avatar sx={{ bgcolor: deepOrange[500] }}>AP</Avatar>
                   </StyledBadge></Box></>) :
-                <><Button color="inherit" onClick={handleClick}>Login/Register</Button></>}
+                <><Button color="inherit" sx={{
+                  mr: 2,
+                  ':hover': {
+                    bgcolor: '#fff',
+                    color: '#000'
+                  }
+                }} onClick={handleClick}>Login/Register</Button></>}
             <Menu
               id="basic-menu"
               anchorEl={anchorEl}

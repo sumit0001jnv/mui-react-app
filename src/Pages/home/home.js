@@ -1,6 +1,5 @@
 import * as React from 'react';
 import Header from '../../components/header/Header';
-import Box from '@mui/material/Box';
 
 
 export default function Home() {
