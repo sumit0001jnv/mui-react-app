@@ -135,7 +135,8 @@ export default function Header(props) {
             </Typography> */}
             {/* <Avatar sx={{ bgcolor: '#fff' }} variant="rounded">
             </Avatar> */}
-            <img src='images/company-logo.jpeg' width="60"></img>
+            {/* <img src='images/company-logo.jpeg' width="60"></img> */}
+            <Avatar sx={{ width: 56, height: 56 }} alt="App logo" src="images/company-logo.jpeg" />
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             </Typography>
             <Button color="inherit" sx={{
