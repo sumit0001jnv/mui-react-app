@@ -19,3 +19,10 @@ code {
 .MuiOutlinedInput-root.Mui-error {
   color: red;
 }
+
+.MuiDataGrid-row:nth-child(even){
+  background-color: #f3f0f0;
+}
+.MuiDataGrid-columnHeaders{
+  background-color: #ccc;
+}

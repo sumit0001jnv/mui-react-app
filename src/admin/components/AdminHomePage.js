@@ -41,7 +41,6 @@ import MailIcon from '@mui/icons-material/Mail';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
 // import TableContainer from '@mui/material/TableContainer';
 // import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Container from '@mui/material/Container';
 import axios from 'axios';
 
@@ -365,7 +364,7 @@ export default function AdminHomePage() {
                         </Typography>
                     </Grid>
                     <Grid item sx={{}}>
-                        <Button variant="outlined" onClick={addUserClick}>
+                        <Button variant="text" onClick={addUserClick}>
                             + Add User
                         </Button>
                     </Grid>
@@ -485,6 +484,7 @@ export default function AdminHomePage() {
                     footer: 'test',
                 }}
                 disableSelectionOnClick
+                getRowClassName={(params) => `super-app-theme--grey`}
             />
 
 
