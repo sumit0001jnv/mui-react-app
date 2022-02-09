@@ -24,5 +24,10 @@ code {
   background-color: #f3f0f0;
 }
 .MuiDataGrid-columnHeaders{
-  background-color: #ccc;
+  background-color: #212121;
+  color: #fff;
 }
+
+.MuiDataGrid-columnHeaderTitleContainer > span{
+  color: #fff;
+} 

@@ -5,6 +5,7 @@ import Home from './Pages/home/home'
 import {BrowserRouter as Router,Route,Switch} from 'react-router-dom';
 import AdminHomePage from './admin/components/AdminHomePage';
 import './App.css'
+import CustomTable from './commons/components/custom-table/CustomTable';
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
        <Route path="/sign-in" component={SignIn} exact></Route>
        <Route path="/profile" component={UserProfileComponent} exact></Route>
        <Route path="/admin" component={AdminHomePage} exact></Route>
+       <Route path="/test" component={CustomTable} exact></Route>
        <Route path="***">
          <h1>No page found</h1>
        </Route>
