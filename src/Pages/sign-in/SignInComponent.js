@@ -14,6 +14,7 @@ import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useHistory } from "react-router-dom";
+import Autocomplete from '@mui/material/Autocomplete';
 
 function Copyright(props) {
   return (
@@ -33,19 +34,45 @@ const theme = createTheme();
 export default function SignIn() {
 
   const history = useHistory();
-  const [formData, setformData] = useState({ email: 'avinash@compdomname.com', password: '123456' })
+  const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
+  const [formData, setformData] = useState({ email: 'avinash@compdomname.com', password: '123456', userCategory: 'Admin' })
   const handleSubmit = (event) => {
     event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    // eslint-disable-next-line no-console
-    console.log({
-      email: data.get('email'),
-      password: data.get('password'),
-    });
+    let obj = { login: true, userName: 'Avinash', pathname: '/', userCategory: 'Admin' }
+    switch (formData.userCategory) {
+      case 'Admin': {
+        obj.pathname = '/admin';
+        obj.userCategory = 'Admin';
+        break;
+      }
+      case 'Group 1':
+      case 'Group 2':
+      case 'Group 2B':
+      case 'Group 3': {
+        obj.pathname = '/create-template';
+        obj.userCategory = formData.userCategory;
+        break;
+      }
+      // case 'Group 2': {
+      //   obj.pathname = '/create-template';
+      //   obj.userCategory = 'Group 2';
+      //   break;
+      // }
+      // case 'Group 2B': {
+      //   obj.pathname = '/create-template';
+      //   obj.userCategory = 'Group 2B';
+      //   break;
+      // }
+      // case 'Group 3': {
+      //   obj.pathname = '/create-template';
+      //   obj.userCategory = 'Group 3';
+      //   break;
+      // }
 
+    }
     history.push({
-      pathname: '/',
-      state: { login: true, userName: 'Avinash' }
+      pathname: obj.pathname,
+      state: obj
     })
 
   };
@@ -98,6 +125,20 @@ export default function SignIn() {
               autoComplete="current-password"
               value={formData.password}
               onChange={handleChange('password')}
+            />
+            <Autocomplete
+              sx={{ mt: 2 }}
+              disablePortal
+              id="combo-box-demo"
+              options={userCategories}
+              // sx={{ width: 300 }}
+              // value={formData.group}
+              defaultValue={formData.userCategory || userCategories[0]}
+              // onChange={handleChange('group')}
+              onInputChange={(event, newInputValue) => {
+                setformData({ ...formData, userCategory: newInputValue })
+              }}
+              renderInput={(params) => <TextField disabled {...params} label="User Category" />}
             />
             <FormControlLabel
               control={<Checkbox value="remember" color="primary" />}

@@ -1,4 +1,3 @@
-// import * as React from 'react';
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
@@ -10,8 +9,6 @@ import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import { styled } from '@mui/material/styles';
 import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
@@ -80,18 +77,20 @@ export default function Header(props) {
   const [userName, setUserName] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
-
+  const [userCategory, setUserCategory] = useState('');
+  const userCategories = ['Group 1', 'Group 2', 'Group 2B', 'Group 3']
 
   useEffect(() => {
     setlogin(location?.state?.login);
     setUserName(location?.state?.userName);
+    setUserCategory(location?.state?.userCategory);
   }, [location]);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = (type) => (eventType) => {
-    console.log(type);
+    // console.log(type);
     setAnchorEl(null);
     switch (type) {
       case 'login': {
@@ -99,7 +98,7 @@ export default function Header(props) {
         break;
       }
       case 'logout': {
-        // history.push("/sign-in");
+        history.push("/");
         setlogin(false);
         break;
       }
@@ -137,22 +136,25 @@ export default function Header(props) {
             </Avatar> */}
             {/* <img src='images/company-logo.jpeg' width="60"></img> */}
             <Avatar sx={{ width: 56, height: 56 }} alt="App logo" src="images/company-logo.jpeg" />
+            <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl: 2 }}>
+              PDF Parser
+            </Typography>
             <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             </Typography>
-            <Button color="inherit" sx={{
+            {userCategories.includes(userCategory) ? <Button color="inherit" sx={{
               mr: 2,
               ':hover': {
                 bgcolor: '#fff',
                 color: '#000'
               }
-            }} href="/create-template">Create Template</Button>
-            <Button color="inherit" sx={{
+            }} href="/create-template">Create Template</Button> : ''}
+            {userCategories.includes(userCategory) ? <Button color="inherit" sx={{
               mr: 2,
               ':hover': {
                 bgcolor: '#fff',
                 color: '#000'
               }
-            }} href="/parse-pdf">Parse PDF</Button>
+            }} href="/parse-pdf">Parse PDF</Button> : ''}
             {
               login ? (<>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
