@@ -16,6 +16,9 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import { useHistory, useLocation } from "react-router-dom";
 import { deepOrange, deepPurple } from '@mui/material/colors';
+import theme from '../../../theme/customTheme';
+import { ThemeProvider } from '@mui/material/styles';
+
 function HideOnScroll(props) {
   const { children, window } = props;
   // Note that you normally won't need to set the window ref as useScrollTrigger
@@ -116,11 +119,11 @@ export default function Header(props) {
 
   return (
     <>
-      <CssBaseline />
-      <HideOnScroll {...props}>
-        <AppBar sx={{ background: 'linear-gradient(to left,#1a214d 50%, #479295)' }}>
-          <Toolbar>
-            {/* <IconButton
+      <ThemeProvider theme={theme}>
+        <HideOnScroll {...props}>
+          <AppBar sx={{ background: '#fff' }}>
+            <Toolbar>
+              {/* <IconButton
               size="large"
               edge="start"
               color="inherit"
@@ -129,73 +132,79 @@ export default function Header(props) {
             >
               <MenuIcon />
             </IconButton> */}
-            {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              {/* <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               Company Name
             </Typography> */}
-            {/* <Avatar sx={{ bgcolor: '#fff' }} variant="rounded">
+              {/* <Avatar sx={{ bgcolor: '#fff' }} variant="rounded">
             </Avatar> */}
-            {/* <img src='images/company-logo.jpeg' width="60"></img> */}
-            <Avatar sx={{ width: 56, height: 56 }} alt="App logo" src="images/company-logo.jpeg" />
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl: 2 }}>
-              PDF Parser
-            </Typography>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-            </Typography>
-            {userCategories.includes(userCategory) ? <Button color="inherit" sx={{
-              mr: 2,
-              ':hover': {
-                bgcolor: '#fff',
-                color: '#000'
-              }
-            }} href="/create-template">Create Template</Button> : ''}
-            {userCategories.includes(userCategory) ? <Button color="inherit" sx={{
-              mr: 2,
-              ':hover': {
-                bgcolor: '#fff',
-                color: '#000'
-              }
-            }} href="/parse-pdf">Parse PDF</Button> : ''}
-            {
-              login ? (<>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <StyledBadge
-                    overlap="circular"
-                    anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-                    variant="dot"
-                    onClick={handleClick}
-                  >
-                    <Avatar sx={{ bgcolor: deepOrange[500] }}>AP</Avatar>
-                  </StyledBadge></Box></>) :
-                <><Button color="inherit" sx={{
-                  mr: 2,
-                  ':hover': {
-                    bgcolor: '#fff',
-                    color: '#000'
-                  }
-                }} onClick={handleClick}>Login/Register</Button></>}
-            <Menu
-              id="basic-menu"
-              anchorEl={anchorEl}
-              open={open}
-              onClose={handleClose()}
-              MenuListProps={{
-                'aria-labelledby': 'basic-button',
-              }}
-            >
-              {login ? <><MenuItem onClick={handleClose('profile')}>Profile</MenuItem>
-                <MenuItem onClick={handleClose('logout')}>Logout</MenuItem></>
-                : <><MenuItem onClick={handleClose('login')}>Login</MenuItem>
-                  <MenuItem onClick={handleClose('register')}>Register</MenuItem></>
-              }
-            </Menu>
-          </Toolbar>
-        </AppBar>
-      </HideOnScroll>
-      <Toolbar />
-      <Container>
-        <Box sx={{ my: 2 }}>
-        </Box>
-      </Container>
+              <img src='images/company-logo.jpeg' width="60"></img>
+              {/* <Avatar sx={{ width: 56, height: 56 }} alt="App logo" src="images/company-logo.jpeg" /> */}
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl: 2, color: 'rgb(26 33 77)', textTransform: 'capitalize' }}>
+                PDF Parser
+              </Typography>
+              <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
+              </Typography>
+              {userCategories.includes(userCategory) ? <Button color="inherit" sx={{
+                mr: 2,
+                ':hover': {
+                  bgcolor: '#fff',
+                  color: '#000'
+                },
+                color: 'rgb(26 33 77)',
+                textTransform: 'capitalize'
+              }} href="/create-template">Create Template</Button> : ''}
+              {userCategories.includes(userCategory) ? <Button color="inherit" sx={{
+                mr: 2,
+                ':hover': {
+                  bgcolor: '#fff',
+                  color: '#000'
+                },
+                color: 'rgb(26 33 77)',
+                textTransform: 'capitalize'
+              }} href="/parse-pdf">Parse PDF</Button> : ''}
+              {
+                login ? (<>
+                  <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                    <StyledBadge
+                      overlap="circular"
+                      anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+                      variant="dot"
+                      onClick={handleClick}
+                    >
+                      <Avatar sx={{ bgcolor: deepOrange[500] }}>AP</Avatar>
+                    </StyledBadge></Box></>) :
+                  <><Button variant="contained" color="orange" sx={{
+                    mr: 2,
+                    ':hover': {
+                      color: '#000',
+                      backgroundColor:"#ffb74d",
+                    },
+                    textTransform: 'capitalize'
+                  }} onClick={handleClick}>Login/Register</Button></>}
+              <Menu
+                id="basic-menu"
+                anchorEl={anchorEl}
+                open={open}
+                onClose={handleClose()}
+                MenuListProps={{
+                  'aria-labelledby': 'basic-button',
+                }}
+              >
+                {login ? <><MenuItem onClick={handleClose('profile')}>Profile</MenuItem>
+                  <MenuItem onClick={handleClose('logout')}>Logout</MenuItem></>
+                  : <><MenuItem onClick={handleClose('login')}>Login</MenuItem>
+                    <MenuItem onClick={handleClose('register')}>Register</MenuItem></>
+                }
+              </Menu>
+            </Toolbar>
+          </AppBar>
+        </HideOnScroll>
+        <Toolbar />
+        <Container>
+          <Box sx={{ my: 2 }}>
+          </Box>
+        </Container>
+      </ThemeProvider>
     </>
   );
 }

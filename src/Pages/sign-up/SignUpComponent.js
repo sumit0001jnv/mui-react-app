@@ -74,7 +74,7 @@ export default function SignUpComponent() {
 
   return (
     <ThemeProvider theme={theme}>
-        <Container  sx={{bgcolor:"aliceblue",}} maxWidth="xs">
+        <Container  maxWidth="xs">
           {/* <CssBaseline /> */}
           <Box
             sx={{

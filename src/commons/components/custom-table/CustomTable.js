@@ -27,6 +27,13 @@ export default function CustomTable(props) {
     });
 
     const [columns, setColumns] = useState(props.columns);
+    useEffect(() => {
+       let {formData,type,drawerState}= props.actionData;
+       if(formData){
+           handleClick(formData)(type);
+       }
+    }, [props.actionData]);
+    
     // const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(true);
 
@@ -49,6 +56,7 @@ export default function CustomTable(props) {
         setDrawerState({ right: open });
         // setState({ ...state, [anchor]: open });
     };
+    
 
 
     const addUserClick = () => {
