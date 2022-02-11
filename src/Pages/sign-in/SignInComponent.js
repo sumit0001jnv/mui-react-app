@@ -16,7 +16,7 @@ import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useHistory } from "react-router-dom";
 import Autocomplete from '@mui/material/Autocomplete';
-
+import axios from 'axios';
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -36,45 +36,50 @@ export default function SignIn() {
 
   const history = useHistory();
   const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
-  const [formData, setformData] = useState({ email: 'avinash@compdomname.com', password: '123456', userCategory: 'Admin' })
+  const [formData, setformData] = useState({ email: 'mike@gmail.com', password: '12345', userCategory: 'Admin' })
   const handleSubmit = (event) => {
     event.preventDefault();
     let obj = { login: true, userName: 'Avinash', pathname: '/', userCategory: 'Admin' }
-    switch (formData.userCategory) {
-      case 'Admin': {
-        obj.pathname = '/admin';
-        obj.userCategory = 'Admin';
-        break;
+    let bodyFormData = new FormData();
+    bodyFormData.append('username', formData.email);
+    bodyFormData.append('password', formData.password);
+    axios({
+      method: 'post',
+      url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/user-login',
+      data: bodyFormData,
+      headers: {
+        "Content-Type": "multipart/form-data",
+        "Accept": "*/*"
+      },
+      // data: {
+      //   username: formData.email,
+      //   password: formData.password
+      // }
+    }).then(res => {
+      console.log(res);
+      switch (formData.userCategory) {
+        case 'Admin': {
+          obj.pathname = '/admin';
+          obj.userCategory = 'Admin';
+          break;
+        }
+        case 'Group 1':
+        case 'Group 2':
+        case 'Group 2B':
+        case 'Group 3': {
+          obj.pathname = '/create-template';
+          obj.userCategory = formData.userCategory;
+          break;
+        }
       }
-      case 'Group 1':
-      case 'Group 2':
-      case 'Group 2B':
-      case 'Group 3': {
-        obj.pathname = '/create-template';
-        obj.userCategory = formData.userCategory;
-        break;
-      }
-      // case 'Group 2': {
-      //   obj.pathname = '/create-template';
-      //   obj.userCategory = 'Group 2';
-      //   break;
-      // }
-      // case 'Group 2B': {
-      //   obj.pathname = '/create-template';
-      //   obj.userCategory = 'Group 2B';
-      //   break;
-      // }
-      // case 'Group 3': {
-      //   obj.pathname = '/create-template';
-      //   obj.userCategory = 'Group 3';
-      //   break;
-      // }
+      history.push({
+        pathname: obj.pathname,
+        state: obj
+      })
+    }).catch(err => {
+      console.log(err);
+    });
 
-    }
-    history.push({
-      pathname: obj.pathname,
-      state: obj
-    })
 
   };
 
@@ -83,6 +88,27 @@ export default function SignIn() {
   };
   return (
     <ThemeProvider theme={theme}>
+      <Grid
+        item
+        xs={false}
+        sm={4}
+        md={4}
+        sx={{
+          display: { xs: 'none',sm:'block' },
+          m: 0,
+          p: 0,
+          height: "calc(100vh)",
+          position: 'absolute'
+        }}
+      >
+        <video style={{
+          height: "100%",
+        }} id="background-video" autoPlay loop muted>
+          <source src="videos/home-video-3.mp4" type="video/mp4" />
+          <source src="videos/home-video-3.mp4" type="video/ogg" />
+          Your browser does not support the video tag.
+        </video>
+      </Grid>
       <Grid container component="main" sx={{ height: '100vh' }}>
         <CssBaseline />
         <Grid
@@ -90,25 +116,17 @@ export default function SignIn() {
           xs={false}
           sm={4}
           md={7}
-          //https://source.unsplash.com/random
           sx={{
-            backgroundImage: 'url(/images/login.jpg)',
-            backgroundRepeat: 'no-repeat',
-            backgroundColor: (t) =>
-              t.palette.mode === 'light' ? t.palette.grey[50] : t.palette.grey[900],
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
+            height: "100%",
           }}
-        />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        >
+        </Grid>
+        <Grid item xs={12} sm={8} md={5} component={Paper} sx={{ zIndex: 2 }} elevation={6} square>
           <Box
             sx={{
-              // marginTop: 8,
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              // bgcolor: "#fff",
-              // borderRadius: '4px',
               px: 8,
               py: 2,
               // boxShadow: 'rgb(0 0 0 / 20%) 0px 2px 1px -1px, rgb(0 0 0 / 14%) 0px 1px 1px 0px, rgb(0 0 0 / 12%) 0px 1px 3px 0px;'

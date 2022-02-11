@@ -25,18 +25,15 @@ code {
 }
 .MuiDataGrid-cell{
   color: #757576;
-
 }
 
 .MuiDataGrid-row:nth-child(even){
   background-color: #e0f7fa;
 }
 .MuiDataGrid-columnHeaders{
-  background-color: #00acc1
-  ;
-  /* color: #fff; */
+  background-color: #00acc1;
 }
 
-.MuiDataGrid-columnHeaderTitleContainer > span{
-  /* color: #fff; */
-} 
+/* .MuiDataGrid-columnHeaderTitleContainer > span{
+  color: #fff;
+}  */

@@ -15,7 +15,7 @@ export default function AdminHomePage() {
             field: 'name',
             headerName: 'Name',
             minWidth: 300,
-            flex: 3,
+            flex: 2,
             // cellClassName: clsx('odd-column-cell-color'),
             // headerClassName:'odd-column-cell-color'
         },
@@ -25,13 +25,13 @@ export default function AdminHomePage() {
             // width: 250,
             // minWidth: 'auto',
             minWidth: 300,
-            flex: 3
+            flex: 2,
         },
         {
             field: 'password',
             headerName: 'Password',
             minWidth: 150,
-            flex: 1,
+            flex: 2,
             // cellClassName: clsx('odd-column-cell-color'),
             // headerClassName:'odd-column-cell-color'
         },
@@ -39,16 +39,16 @@ export default function AdminHomePage() {
             field: 'group',
             headerName: 'Group',
             // width: 120,
-            minWidth: 120,
-            flex: 1,
+            minWidth: 150,
+            flex: 2,
 
         },
         {
             field: 'mobile_no',
             headerName: 'Mobile No',
-            type: 'number',
-            minWidth: 120,
-            flex: 1,
+            // type: 'number',
+            minWidth: 200,
+            flex: 2,
             // cellClassName: clsx('odd-column-cell-color'),
             // headerClassName:'odd-column-cell-color'
         },
@@ -56,9 +56,9 @@ export default function AdminHomePage() {
             field: 'tableAction',
             headerName: 'Actions',
             type: 'tableAction',
-            minWidth: 130,
+            minWidth: 110,
             renderCell: (params) => <><IconButton size="small" onClick={() => handleClick(params.row)('edit')}><EditIcon color={'secondary'} /></IconButton><IconButton size="small" onClick={() => handleClick(params.row)('delete')}><DeleteIcon color={'red'} /></IconButton></>,
-            flex: 1
+            flex: 2,
         }
     ];
     let [actionData, setActionData] = useState({ formData: null, type: 'create', drawerState: { right: false } })
@@ -77,7 +77,7 @@ export default function AdminHomePage() {
 
     return (
         <ThemeProvider theme={theme}>
-            <CustomTable actionData={actionData} columns={columns} apiUrl={'https://jsonplaceholder.typicode.com/posts'}></CustomTable>
+            <CustomTable actionData={actionData} columns={columns} apiUrl={'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/get-user-list'}></CustomTable>
         </ThemeProvider>
     );
 }

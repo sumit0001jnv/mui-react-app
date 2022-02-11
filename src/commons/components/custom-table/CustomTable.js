@@ -38,13 +38,31 @@ export default function CustomTable(props) {
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        fetch("https://jsonplaceholder.typicode.com/posts")
-            .then((data) => data.json())
-            .then((data) => {
-                console.log('data',data)
-                // setTableData(data);
-                setLoading(false);
-            })
+        // fetch("https://jsonplaceholder.typicode.com/posts")
+        //     .then((data) => data.json())
+        //     .then((data) => {
+        //         console.log('data',data)
+        //         // setTableData(data);
+        //         setLoading(false);
+        //     })
+            axios({
+                method: 'post',
+                url: "http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/get-user-list",
+                // headers: {
+                //   "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                //   "Accept": "*/*",
+                //   "Origin":"http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/"
+                // },
+                // data: {
+                //   username: formData.email,
+                //   password: formData.password
+                // }
+              }).then(res=>{
+                  console.log("calling get user api==============")
+                  console.log(res);
+              }).catch(err=>{
+                  console.log(err);
+              })
     }, []);
     
     const [actionLabel, setActionLabel] = useState('create')
