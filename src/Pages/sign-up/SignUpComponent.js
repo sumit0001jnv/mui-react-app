@@ -49,7 +49,7 @@ export default function SignUpComponent() {
   const [formData, setformData] = React.useState({
     name: '',
     password: '',
-    confirm_password: '',
+    'confirm-password': '',
     email: '',
     mobile_no: '',
     showPassword: false,
@@ -168,13 +168,13 @@ export default function SignUpComponent() {
                   helperText={!formData.isValid && !formData.name ? "This field is required*" : ""}
                   required
                   fullWidth
-                  name="confirm_password"
+                  name="confirm-password"
                   label="Confirm Password"
                   type={formData.showPassword ? 'text' : 'password'}
-                  id="confirm_password"
+                  id="confirm-password"
                   autoComplete="current-password"
                   value={formData.password}
-                  onChange={handleChange('confirm_password')}
+                  onChange={handleChange('confirm-password')}
 
                   endAdornment={
                     <InputAdornment position="end">

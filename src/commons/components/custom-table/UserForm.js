@@ -131,13 +131,13 @@ export default function UserForm(props) {
                     <OutlinedInput
                         required
                         fullWidth
-                        name="confirm_password"
+                        name="confirm-password"
                         label="Confirm Password"
-                        type={formData.showPassword ? 'text' : 'password'}
-                        id="confirm_password"
+                        type={formData.showConfirmPassword ? 'text' : 'password'}
+                        id="confirm-password"
                         autoComplete="current-password"
-                        value={formData.password}
-                        onChange={handleChange('confirm_password')}
+                        value={formData["confirm-password"]}
+                        onChange={handleChange('confirm-password')}
 
                         endAdornment={
                             <InputAdornment position="end">

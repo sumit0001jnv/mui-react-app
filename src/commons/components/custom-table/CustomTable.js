@@ -13,13 +13,6 @@ import Header from '../header/Header';
 import Typography from '@mui/material/Typography';
 import Drawer from '@mui/material/Drawer';
 import axios from 'axios';
-const tableData = [
-    { id: 1, name: 'Sumit Kumar', email: 'abc@gmail.com', password: "aafa-ms", mobile_no: '42451614151', group: "A" },
-    { id: 2, name: 'Avinash Patel', email: 'apddddddddddddd@gmail.com', password: "aafa-ms", mobile_no: '12351614151', group: "B" },
-    { id: 3, name: 'Justin Biber', email: 'jb@gmail.com', password: "aafa-ms", mobile_no: '42451614151', group: "Group C" },
-    { id: 4, name: 'Ed Seeran', email: 'abc@gmail.com', password: "aafa-ms", mobile_no: '42451614151', group: "Group A" },
-    { id: 5, name: 'Salena Gomez', email: 'abc@gmail.com', password: "aafa-ms", mobile_no: '42451614151', group: "Group A" }
-];
 
 export default function CustomTable(props) {
     const [drawerState, setDrawerState] = useState({
@@ -28,43 +21,41 @@ export default function CustomTable(props) {
 
     const [columns, setColumns] = useState(props.columns);
     useEffect(() => {
-       let {formData,type,drawerState}= props.actionData;
-       if(formData){
-           handleClick(formData)(type);
-       }
+        let { formData, type, drawerState } = props.actionData;
+        if (formData) {
+            handleClick(formData)(type);
+        }
     }, [props.actionData]);
-    
-    // const [tableData, setTableData] = useState([]);
+
+    const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [refreshTable, setRefreshTable] = useState(true);
 
     useEffect(() => {
-        // fetch("https://jsonplaceholder.typicode.com/posts")
-        //     .then((data) => data.json())
-        //     .then((data) => {
-        //         console.log('data',data)
-        //         // setTableData(data);
-        //         setLoading(false);
-        //     })
-            axios({
-                method: 'post',
-                url: "http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/get-user-list",
-                // headers: {
-                //   "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-                //   "Accept": "*/*",
-                //   "Origin":"http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/"
-                // },
-                // data: {
-                //   username: formData.email,
-                //   password: formData.password
-                // }
-              }).then(res=>{
-                  console.log("calling get user api==============")
-                  console.log(res);
-              }).catch(err=>{
-                  console.log(err);
-              })
-    }, []);
-    
+        setLoading(true);
+        axios({
+            method: 'post',
+            url: props.apiUrl,
+        }).then(res => {
+            let tableData = (res.data.users_list || []).map(row => {
+                return {
+                    username: row[2],
+                    email: row[1],
+                    password: row[3],
+                    group: row[5],
+                    mobile_number: row[4],
+                    id: row[0]
+                }
+            })
+
+            setTableData(tableData);
+            setLoading(false);
+        }).catch(err => {
+            console.log(err);
+            setLoading(false);
+        })
+    }, [refreshTable]);
+
     const [actionLabel, setActionLabel] = useState('create')
     const toggleDrawer = (anchor, open) => (event) => {
         if (event && event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
@@ -74,18 +65,18 @@ export default function CustomTable(props) {
         setDrawerState({ right: open });
         // setState({ ...state, [anchor]: open });
     };
-    
+
 
 
     const addUserClick = () => {
         setDrawerState({ right: true });
         setformData({
-            name: '',
+            username: '',
             password: '',
-            confirm_password: '',
+            'confirm-password': '',
             email: '',
             group: 'Group A',
-            mobile_no: '',
+            mobile_number: '',
             showPassword: false,
             showConfirmPassword: false,
             isValid: true
@@ -96,16 +87,39 @@ export default function CustomTable(props) {
 
 
     const onDataChange = (data) => {
-        console.log(data)
+        // console.log(data);
+        setRefreshTable(!refreshTable);
+        const formData = data.formData;
+        // http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/user-login
+        let bodyFormData = new FormData();
+        bodyFormData.append('username', formData.username);
+        bodyFormData.append('password', formData.password);
+        bodyFormData.append('confirm-password', formData["confirm-password"]);
+        bodyFormData.append('email', formData.email);
+        bodyFormData.append('group', formData.group);
+        bodyFormData.append('mobile_number', formData.mobile_number);
+        axios({
+            method: 'post',
+            url: "http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/user-registration",
+            body: bodyFormData,
+            headers: {
+                "Content-Type": "multipart/form-data",
+            }
+        }).then(res => {
+
+        }).catch(err => {
+            console.log(err);
+            setLoading(true);
+        })
     }
     const [formData, setformData] = useState(
         {
-            name: '',
+            username: '',
             password: '',
-            confirm_password: '',
+            'confirm-password': '',
             email: '',
             group: 'Group A',
-            mobile_no: '',
+            mobile_number: '',
             showPassword: false,
             showConfirmPassword: false,
             isValid: true
@@ -115,15 +129,8 @@ export default function CustomTable(props) {
         console.log(data)
         setformData({ ...formData, ...data });
         setActionLabel(type);
-        console.log(type);
-
         setDrawerState({ right: true });
     }
-
-
-
-
-
     return (
         <>
             <Header></Header>

@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import CssBaseline from '@mui/material/CssBaseline';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
@@ -81,13 +80,20 @@ export default function Header(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [userCategory, setUserCategory] = useState('');
-  const userCategories = ['Group 1', 'Group 2', 'Group 2B', 'Group 3']
+  const userCategories = ['Group 1', 'Group 2', 'Group 2B', 'Group 3'];
+
+  const abbreviateWord = (word) => {
+    let abbrWord = ''
+    word.split(" ").forEach(w => abbrWord = abbrWord + w[0].toUpperCase());
+    return abbrWord;
+  }
 
   useEffect(() => {
-    setlogin(location?.state?.login);
-    setUserName(location?.state?.userName);
-    setUserCategory(location?.state?.userCategory);
-  }, [location]);
+    let userData = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
+    setlogin(userData.isLogin);
+    setUserName(userData.userName);
+    setUserCategory(userData.userCategory);
+  }, []);
 
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
@@ -102,7 +108,8 @@ export default function Header(props) {
       }
       case 'logout': {
         history.push("/");
-        setlogin(false);
+        // setlogin(false);
+        localStorage.removeItem('pdf_parser_app')
         break;
       }
       case 'profile': {
@@ -171,13 +178,13 @@ export default function Header(props) {
                       variant="dot"
                       onClick={handleClick}
                     >
-                      <Avatar sx={{ bgcolor: deepOrange[500] }}>AP</Avatar>
+                      <Avatar sx={{ bgcolor: deepOrange[500] }}>{abbreviateWord(userName)}</Avatar>
                     </StyledBadge></Box></>) :
                   <><Button variant="contained" color="orange" sx={{
                     mr: 2,
                     ':hover': {
                       color: '#000',
-                      backgroundColor:"#ffb74d",
+                      backgroundColor: "#ffb74d",
                     },
                     textTransform: 'capitalize'
                   }} onClick={handleClick}>Login/Register</Button></>}
@@ -190,10 +197,15 @@ export default function Header(props) {
                   'aria-labelledby': 'basic-button',
                 }}
               >
-                {login ? <><MenuItem onClick={handleClose('profile')}>Profile</MenuItem>
-                  <MenuItem onClick={handleClose('logout')}>Logout</MenuItem></>
-                  : <><MenuItem onClick={handleClose('login')}>Login</MenuItem>
-                    <MenuItem onClick={handleClose('register')}>Register</MenuItem></>
+                {login ?
+                  <>
+                    <MenuItem onClick={handleClose('profile')}>Profile</MenuItem>
+                    <MenuItem onClick={handleClose('logout')}>Logout</MenuItem>
+                  </>
+                  : <>
+                    <MenuItem onClick={handleClose('login')}>Login</MenuItem>
+                    <MenuItem onClick={handleClose('register')}>Register</MenuItem>
+                  </>
                 }
               </Menu>
             </Toolbar>

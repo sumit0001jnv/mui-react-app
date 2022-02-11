@@ -12,18 +12,14 @@ import { ThemeProvider } from '@mui/material/styles';
 export default function AdminHomePage() {
     const columns = [
         {
-            field: 'name',
+            field: 'username',
             headerName: 'Name',
             minWidth: 300,
             flex: 2,
-            // cellClassName: clsx('odd-column-cell-color'),
-            // headerClassName:'odd-column-cell-color'
         },
         {
             field: 'email',
             headerName: 'Email',
-            // width: 250,
-            // minWidth: 'auto',
             minWidth: 300,
             flex: 2,
         },
@@ -32,25 +28,19 @@ export default function AdminHomePage() {
             headerName: 'Password',
             minWidth: 150,
             flex: 2,
-            // cellClassName: clsx('odd-column-cell-color'),
-            // headerClassName:'odd-column-cell-color'
         },
         {
             field: 'group',
             headerName: 'Group',
-            // width: 120,
             minWidth: 150,
             flex: 2,
 
         },
         {
-            field: 'mobile_no',
+            field: 'mobile_number',
             headerName: 'Mobile No',
-            // type: 'number',
             minWidth: 200,
             flex: 2,
-            // cellClassName: clsx('odd-column-cell-color'),
-            // headerClassName:'odd-column-cell-color'
         },
         {
             field: 'tableAction',

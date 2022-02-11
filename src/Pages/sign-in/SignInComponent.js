@@ -49,14 +49,26 @@ export default function SignIn() {
       data: bodyFormData,
       headers: {
         "Content-Type": "multipart/form-data",
-        "Accept": "*/*"
       },
       // data: {
       //   username: formData.email,
       //   password: formData.password
       // }
     }).then(res => {
-      console.log(res);
+      const data = res.data.user_data;
+      obj.userName = data.name;
+      let store = localStorage.getItem('pdf_parser_app');
+      if (!store) {
+        localStorage.setItem('pdf_parser_app', '{}');
+        store = localStorage.getItem('pdf_parser_app');
+      }
+
+      let parsedStore = JSON.parse(store);
+      parsedStore.userName = data.name;
+      parsedStore.isLogin = true;
+      parsedStore.userCategory = formData.userCategory;
+      localStorage.setItem('pdf_parser_app', JSON.stringify(parsedStore));
+
       switch (formData.userCategory) {
         case 'Admin': {
           obj.pathname = '/admin';
@@ -94,7 +106,7 @@ export default function SignIn() {
         sm={4}
         md={4}
         sx={{
-          display: { xs: 'none',sm:'block' },
+          display: { xs: 'none', sm: 'block' },
           m: 0,
           p: 0,
           height: "calc(100vh)",
