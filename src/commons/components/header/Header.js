@@ -17,6 +17,9 @@ import { useHistory, useLocation } from "react-router-dom";
 import { deepOrange, deepPurple } from '@mui/material/colors';
 import theme from '../../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
+import { useDispatch } from 'react-redux';
+import loginAction from '../../../store/actions/loginAction';
+import uiAction from '../../../store/actions/uiAction';
 
 function HideOnScroll(props) {
   const { children, window } = props;
@@ -74,6 +77,7 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 
 export default function Header(props) {
   const location = useLocation();
+  const dispatch = useDispatch();
   const history = useHistory();
   const [login, setlogin] = useState(false);
   const [userName, setUserName] = useState('');
@@ -109,7 +113,9 @@ export default function Header(props) {
       case 'logout': {
         history.push("/");
         // setlogin(false);
-        localStorage.removeItem('pdf_parser_app')
+        localStorage.removeItem('pdf_parser_app');
+        dispatch(loginAction.logOut());
+        dispatch(uiAction.showSnackbar({message:'User logged out successfully',type:'info'}));
         break;
       }
       case 'profile': {

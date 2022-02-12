@@ -8,8 +8,16 @@ import './App.css'
 import CreateTemplate from './Pages/create-template/CreateTemplate';
 import ParsePdf from './Pages/parse-pdf/ParsePdf';
 import CustomCropper from './commons/components/cropper-component/CustomCropper';
-import PdfViewer from './commons/components/cropper-component/test'
+import PdfViewer from './commons/components/cropper-component/test';
+import {useSelector} from 'react-redux';
+import {useEffect} from 'react';
+import CustomSnackbar from './commons/components/snackbar/CustomSnackbar'
+
 function App() {
+  const isLogedIn = useSelector(state => state.login.isLogedIn);
+  useEffect(() => {
+    console.log(isLogedIn);
+  }, [isLogedIn]);
   return (
     <>
       <Router>
@@ -28,6 +36,7 @@ function App() {
           </Route>
         </Switch>
       </Router>
+      <CustomSnackbar/>
     </>
   );
 }

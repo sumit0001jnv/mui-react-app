@@ -12,11 +12,21 @@ import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
-import Container from '@mui/material/Container';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useHistory } from "react-router-dom";
 import Autocomplete from '@mui/material/Autocomplete';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputAdornment from '@mui/material/InputAdornment';
+import IconButton from '@mui/material/IconButton';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import Visibility from '@mui/icons-material/Visibility';
 import axios from 'axios';
+import { useDispatch } from 'react-redux';
+import loginAction from '../../store/actions/loginAction';
+import uiAction from '../../store/actions/uiAction';
+
 function Copyright(props) {
   return (
     <Typography variant="body2" color="text.secondary" align="center" {...props}>
@@ -33,10 +43,10 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
-
   const history = useHistory();
+  const dispatch = useDispatch();
   const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
-  const [formData, setformData] = useState({ email: 'mike@gmail.com', password: '12345', userCategory: 'Admin' })
+  const [formData, setformData] = useState({ email: 'mike@gmail.com', password: '12345', userCategory: 'Admin', showPassword: false })
   const handleSubmit = (event) => {
     event.preventDefault();
     let obj = { login: true, userName: 'Avinash', pathname: '/', userCategory: 'Admin' }
@@ -57,6 +67,8 @@ export default function SignIn() {
     }).then(res => {
       const data = res.data.user_data;
       obj.userName = data.user_name;
+      dispatch(loginAction.logIn());
+      dispatch(uiAction.showSnackbar({ type: 'success', message: 'User logged in successfully' }));
       let store = localStorage.getItem('pdf_parser_app');
       if (!store) {
         localStorage.setItem('pdf_parser_app', '{}');
@@ -67,6 +79,7 @@ export default function SignIn() {
       parsedStore.userName = data.user_name;
       parsedStore.isLogin = true;
       parsedStore.userCategory = data.user_group;
+      dispatch(loginAction.setUser(parsedStore));
       localStorage.setItem('pdf_parser_app', JSON.stringify(parsedStore));
 
       switch (formData.userCategory) {
@@ -98,6 +111,18 @@ export default function SignIn() {
   const handleChange = (prop) => (event) => {
     setformData({ ...formData, [prop]: event.target.value });
   };
+
+  const handleClickShowPassword = (prop) => () => {
+    setformData({
+        ...formData,
+        [prop]: !formData[prop],
+    });
+};
+
+const handleMouseDownPassword = (event) => {
+    event.preventDefault();
+};
+
   return (
     <ThemeProvider theme={theme}>
       <Grid
@@ -163,7 +188,7 @@ export default function SignIn() {
                 value={formData.email}
                 onChange={handleChange('email')}
               />
-              <TextField
+              {/* <TextField
                 margin="normal"
                 required
                 fullWidth
@@ -174,7 +199,34 @@ export default function SignIn() {
                 autoComplete="current-password"
                 value={formData.password}
                 onChange={handleChange('password')}
-              />
+              /> */}
+              <FormControl sx={{ mt: 2 }} variant="outlined" fullWidth>
+                <InputLabel htmlFor="outlined-adornment-password">Password</InputLabel>
+                <OutlinedInput
+                  required
+                  fullWidth
+                  name="password"
+                  label="Password"
+                  type={formData.showPassword ? 'text' : 'password'}
+                  id="password"
+                  autoComplete="current-password"
+                  value={formData.password}
+                  onChange={handleChange('password')}
+
+                  endAdornment={
+                    <InputAdornment position="end">
+                      <IconButton
+                        aria-label="toggle password visibility"
+                        onClick={handleClickShowPassword('showPassword')}
+                        onMouseDown={handleMouseDownPassword}
+                        edge="end"
+                      >
+                        {formData.showPassword ? <VisibilityOff /> : <Visibility />}
+                      </IconButton>
+                    </InputAdornment>
+                  }
+                />
+              </FormControl>
               <Autocomplete
                 sx={{ mt: 2 }}
                 disablePortal
