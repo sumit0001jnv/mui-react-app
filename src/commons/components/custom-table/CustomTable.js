@@ -37,7 +37,7 @@ export default function CustomTable(props) {
             method: 'post',
             url: props.apiUrl,
         }).then(res => {
-            let tableData = (res.data.users_list || []).map(row => {
+            let _tableData = (res.data.users_list || []).map(row => {
                 return {
                     username: row[2],
                     email: row[1],
@@ -48,7 +48,7 @@ export default function CustomTable(props) {
                 }
             })
 
-            setTableData(tableData);
+            setTableData([..._tableData]);
             setLoading(false);
         }).catch(err => {
             console.log(err);
@@ -88,25 +88,26 @@ export default function CustomTable(props) {
 
     const onDataChange = (data) => {
         // console.log(data);
-        setRefreshTable(!refreshTable);
+
         const formData = data.formData;
         // http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/user-login
         let bodyFormData = new FormData();
+
         bodyFormData.append('username', formData.username);
         bodyFormData.append('password', formData.password);
-        bodyFormData.append('confirm-password', formData["confirm-password"]);
+        // bodyFormData.append('confirm-password', formData["confirm-password"]);
         bodyFormData.append('email', formData.email);
-        bodyFormData.append('group', formData.group);
+        bodyFormData.append('user_group', formData.group);
         bodyFormData.append('mobile_number', formData.mobile_number);
         axios({
             method: 'post',
             url: "http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/user-registration",
-            body: bodyFormData,
+            data: bodyFormData,
             headers: {
                 "Content-Type": "multipart/form-data",
-            }
+            },
         }).then(res => {
-
+            // setRefreshTable(!refreshTable);
         }).catch(err => {
             console.log(err);
             setLoading(true);
@@ -131,6 +132,11 @@ export default function CustomTable(props) {
         setActionLabel(type);
         setDrawerState({ right: true });
     }
+
+    const onRefresh = () => {
+        setRefreshTable(!refreshTable);
+    }
+
     return (
         <>
             <Header></Header>
@@ -152,7 +158,7 @@ export default function CustomTable(props) {
                     }}
                     loading={loading}
                     componentsProps={{
-                        toolbar: { addUserClick }
+                        toolbar: { addUserClick, onRefresh }
                     }}
                     disableSelectionOnClick
                 />

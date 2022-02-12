@@ -82,9 +82,9 @@ export default function Header(props) {
   const [userCategory, setUserCategory] = useState('');
   const userCategories = ['Group 1', 'Group 2', 'Group 2B', 'Group 3'];
 
-  const abbreviateWord = (word) => {
+  const abbreviateWord = (word='') => {
     let abbrWord = ''
-    word.split(" ").forEach(w => abbrWord = abbrWord + w[0].toUpperCase());
+    word.split(" ").forEach(w => abbrWord = abbrWord + (w[0] ||'').toUpperCase());
     return abbrWord;
   }
 

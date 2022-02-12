@@ -56,7 +56,7 @@ export default function SignIn() {
       // }
     }).then(res => {
       const data = res.data.user_data;
-      obj.userName = data.name;
+      obj.userName = data.user_name;
       let store = localStorage.getItem('pdf_parser_app');
       if (!store) {
         localStorage.setItem('pdf_parser_app', '{}');
@@ -64,9 +64,9 @@ export default function SignIn() {
       }
 
       let parsedStore = JSON.parse(store);
-      parsedStore.userName = data.name;
+      parsedStore.userName = data.user_name;
       parsedStore.isLogin = true;
-      parsedStore.userCategory = formData.userCategory;
+      parsedStore.userCategory = data.user_group;
       localStorage.setItem('pdf_parser_app', JSON.stringify(parsedStore));
 
       switch (formData.userCategory) {

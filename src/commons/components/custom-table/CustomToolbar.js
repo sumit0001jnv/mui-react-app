@@ -4,9 +4,14 @@ import {
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import RefreshIcon from '@mui/icons-material/Refresh';
 export default function CustomToolbar(props) {
     const addUserClick = () => {
         props.addUserClick()
+    }
+    const refreshTable = () => {
+        props.onRefresh()
     }
     return (
         <GridToolbarContainer sx={{ padding: '16px', borderBottom: '1px solid #ccc', }}>
@@ -17,9 +22,13 @@ export default function CustomToolbar(props) {
                     </Typography>
                 </Grid>
                 <Grid item sx={{}}>
+                    <IconButton variant="text" onClick={refreshTable}>
+                        <RefreshIcon />
+                    </IconButton>
                     <Button variant="text" onClick={addUserClick}>
                         + Add User
                     </Button>
+
                 </Grid>
             </Grid>
 

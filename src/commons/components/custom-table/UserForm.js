@@ -65,14 +65,14 @@ export default function UserForm(props) {
                     margin="normal"
                     required
                     fullWidth
-                    id="name"
+                    id="username"
                     label="Name"
-                    name="name"
+                    name="username"
                     type="text"
                     autoFocus
                     sx={{ mr: 2 }}
-                    value={formData.name}
-                    onChange={handleChange('name')}
+                    value={formData.username}
+                    onChange={handleChange('username')}
                 />
                 <Autocomplete
                     disablePortal
@@ -161,14 +161,14 @@ export default function UserForm(props) {
                     margin="normal"
                     required
                     fullWidth
-                    id="mobile_no"
+                    id="mobile_number"
                     label="Mobile No"
-                    name="mobile_no"
-                    autoComplete="mobile_no"
+                    name="mobile_number"
+                    autoComplete="mobile_number"
                     autoFocus
                     type="number"
-                    value={formData.mobile_no}
-                    onChange={handleChange('mobile_no')}
+                    value={formData.mobile_number}
+                    onChange={handleChange('mobile_number')}
                 />
                 <Button
                     type="submit"
