@@ -103,6 +103,7 @@ export default function SignIn() {
       })
     }).catch(err => {
       console.log(err);
+      dispatch(uiAction.showSnackbar({ type: 'error', message: 'There is problem in login.Please try after some time' }));
     });
 
 
