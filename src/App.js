@@ -1,12 +1,12 @@
-import SignIn from './Pages/sign-in/SignInComponent';
-import SignUpComponent from './Pages/sign-up/SignUpComponent';
-import UserProfileComponent from './Pages/user-profile/UserProfileComponent';
-import Home from './Pages/home/home'
+import SignIn from './pages/sign-in/SignInComponent';
+import SignUpComponent from './pages/sign-up/SignUpComponent';
+import UserProfileComponent from './pages/user-profile/UserProfileComponent';
+import Home from './pages/home/home'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
-import AdminHomePage from './admin/components/AdminHomePage';
+import AdminHomePage from './pages/admin/AdminHomePage';
 import './App.css'
-import CreateTemplate from './Pages/create-template/CreateTemplate';
-import ParsePdf from './Pages/parse-pdf/ParsePdf';
+import CreateTemplate from './pages/create-template/CreateTemplate';
+import ParsePdf from './pages/parse-pdf/ParsePdf';
 import CustomCropper from './commons/components/cropper-component/CustomCropper';
 import PdfViewer from './commons/components/cropper-component/test';
 import {useSelector} from 'react-redux';
