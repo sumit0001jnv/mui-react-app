@@ -1,17 +1,22 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import CustomTable from '../../commons/components/custom-table/CustomTable';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import theme from '../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
 
 
-export default function AdminHomePage() {
+export default function G2UserHomePage() {
     const columns = [
         {
-            field: 'username',
+            field: 'group',
+            headerName: 'Group',
+            minWidth: 300,
+            flex: 2,
+        },
+        {
+            field: 'name',
             headerName: 'Name',
             minWidth: 300,
             flex: 2,
@@ -19,25 +24,19 @@ export default function AdminHomePage() {
         {
             field: 'email',
             headerName: 'Email',
-            minWidth: 300,
-            flex: 2,
-        },
-        {
-            field: 'password',
-            headerName: 'Password',
             minWidth: 150,
             flex: 2,
         },
         {
-            field: 'group',
-            headerName: 'Group',
+            field: 'status',
+            headerName: 'Status',
             minWidth: 150,
             flex: 2,
 
         },
         {
-            field: 'mobile_number',
-            headerName: 'Mobile No',
+            field: 'message',
+            headerName: 'Message',
             minWidth: 200,
             flex: 2,
         },
@@ -46,7 +45,7 @@ export default function AdminHomePage() {
             headerName: 'Actions',
             type: 'tableAction',
             minWidth: 110,
-            renderCell: (params) => <><IconButton size="small" onClick={() => handleClick(params.row)('edit')}><EditIcon color={'secondary'} /></IconButton><IconButton size="small" onClick={() => handleClick(params.row)('delete')}><DeleteIcon color={'red'} /></IconButton></>,
+            renderCell: (params) => <><IconButton size="small" onClick={() => handleClick(params.row)('delete')}><VisibilityIcon color={'red'} /></IconButton></>,
             flex: 2,
         }
     ];
@@ -78,15 +77,17 @@ export default function AdminHomePage() {
         setLoading(true);
         axios({
             method: 'post',
-            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-user-list',
+            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-g2-user-projects',
         }).then(res => {
-            let _tableData = (res.data.users_list || []).map(row => {
+            let _tableData = (res.data.projects_data || []).map(row => {
                 return {
-                    username: row[2],
-                    email: row[1],
-                    password: row[3],
-                    group: row[5],
-                    mobile_number: row[4],
+                    group: "Group 2",
+                    name: row[3],
+                    email: row[3],
+                    status: "pending",
+                    message: row[5],
+                    subject: row[4],
+                    body: row[6],
                     id: row[0]
                 }
             })
@@ -143,12 +144,8 @@ export default function AdminHomePage() {
                 columns={columns}
                 actionLabel={actionLabel}
                 actionFormData={formData}
-                submitFormAction={onDataChange}
                 loading={loading}
                 refreshTable={onRefresh}
-                drawerState={drawerState}
-                drawer={{ type: initialDrawerPos }}
-                onDrawerStateChange={onDrawerStateChange}
                 showToolbar
                 toolBarBtnClick={addUserOnClick}></CustomTable>
         </ThemeProvider>

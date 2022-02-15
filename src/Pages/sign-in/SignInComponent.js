@@ -55,7 +55,7 @@ export default function SignIn() {
     bodyFormData.append('password', formData.password);
     axios({
       method: 'post',
-      url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/user-login',
+      url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/user-login',
       data: bodyFormData,
       headers: {
         "Content-Type": "multipart/form-data",
@@ -92,7 +92,7 @@ export default function SignIn() {
         case 'Group 2':
         case 'Group 2B':
         case 'Group 3': {
-          obj.pathname = '/create-template';
+          obj.pathname = '/g2-user';
           obj.userCategory = formData.userCategory;
           break;
         }

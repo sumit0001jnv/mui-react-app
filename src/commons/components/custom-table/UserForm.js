@@ -27,7 +27,7 @@ export default function UserForm(props) {
     });
     const handleSubmit = (event) => {
         event.preventDefault();
-        props.onDataChange({formData});
+        props.onFormSubmit({formData});
         props.closeDrawer();
         // props.setDrawerStatus({ ...drawerStatus, right: false });
 

@@ -4,6 +4,7 @@ import UserProfileComponent from './pages/user-profile/UserProfileComponent';
 import Home from './pages/home/home'
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import AdminHomePage from './pages/admin/AdminHomePage';
+import G2UserHomePage from './pages/g2-user/G2UserHomePage';
 import './App.css'
 import CreateTemplate from './pages/create-template/CreateTemplate';
 import ParsePdf from './pages/parse-pdf/ParsePdf';
@@ -29,6 +30,7 @@ function App() {
           <Route path="/admin" component={AdminHomePage} exact></Route>
           <Route path="/parse-pdf" component={ParsePdf} exact></Route>
           <Route path="/create-template" component={CreateTemplate} exact></Route>
+          <Route path="/g2-user" component={G2UserHomePage} exact></Route>
           <Route path="/test" component={CustomCropper} exact></Route>
           {/* <Route path="/test2" component={PdfViewer} exact></Route> */}
           <Route path="***">
