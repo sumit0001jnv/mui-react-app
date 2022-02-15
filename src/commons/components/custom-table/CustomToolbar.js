@@ -18,16 +18,20 @@ export default function CustomToolbar(props) {
             <Grid container spacing={3}>
                 <Grid item sx={{ marginRight: 'auto' }} >
                     <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-                        Users
+                        {props.title || ''}
                     </Typography>
                 </Grid>
                 <Grid item sx={{}}>
                     <IconButton variant="text" onClick={refreshTable}>
                         <RefreshIcon />
                     </IconButton>
-                    <Button variant="text" onClick={addUserClick}>
-                        + Add User
-                    </Button>
+                    {props.hideBtn ?
+                        '' :
+                        <Button variant="text" onClick={addUserClick}>
+                            + Add User
+                        </Button>
+                    }
+
 
                 </Grid>
             </Grid>

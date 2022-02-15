@@ -46,7 +46,12 @@ export default function CustomTable(props) {
                     }}
                     loading={props.loading}
                     componentsProps={{
-                        toolbar: { addUserClick, onRefresh }
+                        toolbar: {
+                            addUserClick,
+                            onRefresh,
+                            hideBtn: props.hideActionBtn,
+                            title: props.toolbarTitle
+                        }
                     }}
                     disableSelectionOnClick
                 />

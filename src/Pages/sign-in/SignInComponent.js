@@ -43,11 +43,11 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
-  
+
   const history = useHistory();
   const dispatch = useDispatch();
   const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
-  const [formData, setformData] = useState({ email: 'mike@gmail.com', password: '12345', userCategory: 'Admin', showPassword: false })
+  const [formData, setformData] = useState({ email: '', password: '', userCategory: 'Admin', showPassword: false })
   const handleSubmit = (event) => {
     event.preventDefault();
     let obj = { login: true, userName: 'Avinash', pathname: '/', userCategory: 'Admin' }

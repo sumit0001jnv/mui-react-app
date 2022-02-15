@@ -14,20 +14,23 @@ export default function AdminHomePage() {
             field: 'username',
             headerName: 'Name',
             minWidth: 300,
-            flex: 2,
+            flex: 3,
         },
         {
             field: 'email',
             headerName: 'Email',
             minWidth: 300,
-            flex: 2,
+            flex: 3,
         },
-        {
-            field: 'password',
-            headerName: 'Password',
-            minWidth: 150,
-            flex: 2,
-        },
+        // {
+        //     field: 'password',
+        //     headerName: 'Password',
+        //     options: {
+        //         display: false,
+        //       },
+        //     minWidth: 150,
+        //     flex: 2,
+        // },
         {
             field: 'group',
             headerName: 'Group',
@@ -55,7 +58,7 @@ export default function AdminHomePage() {
         password: '',
         'confirm-password': '',
         email: '',
-        group: 'Group A',
+        group: 'Group 1',
         mobile_number: '',
         showPassword: false,
         showConfirmPassword: false,
@@ -80,7 +83,7 @@ export default function AdminHomePage() {
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-user-list',
         }).then(res => {
-            let _tableData = (res.data.users_list || []).map(row => {
+            let _tableData = (res.data.users_list || []).reverse().map(row => {
                 return {
                     username: row[2],
                     email: row[1],
@@ -150,6 +153,7 @@ export default function AdminHomePage() {
                 drawer={{ type: initialDrawerPos }}
                 onDrawerStateChange={onDrawerStateChange}
                 showToolbar
+                toolbarTitle='Users'
                 toolBarBtnClick={addUserOnClick}></CustomTable>
         </ThemeProvider>
     );

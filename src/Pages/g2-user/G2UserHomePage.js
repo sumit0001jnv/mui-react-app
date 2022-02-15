@@ -81,7 +81,7 @@ export default function G2UserHomePage() {
         }).then(res => {
             let _tableData = (res.data.projects_data || []).map(row => {
                 return {
-                    group: "Group 2",
+                    group: "Group 1",
                     name: row[3],
                     email: row[3],
                     status: "pending",
@@ -147,6 +147,8 @@ export default function G2UserHomePage() {
                 loading={loading}
                 refreshTable={onRefresh}
                 showToolbar
+                hideActionBtn
+                toolbarTitle='G2 Users'
                 toolBarBtnClick={addUserOnClick}></CustomTable>
         </ThemeProvider>
     );

@@ -122,10 +122,10 @@ export default function Header(props) {
         history.push("/profile");
         break;
       }
-      case 'register': {
-        history.push("/sign-up");
-        break;
-      }
+      // case 'register': {
+      //   history.push("/sign-up");
+      //   break;
+      // }
 
     }
   };
@@ -193,7 +193,7 @@ export default function Header(props) {
                       backgroundColor: "#ffb74d",
                     },
                     textTransform: 'capitalize'
-                  }} onClick={handleClick}>Login/Register</Button></>}
+                  }} href="/sign-in">Login</Button></>}
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
@@ -210,7 +210,6 @@ export default function Header(props) {
                   </>
                   : <>
                     <MenuItem onClick={handleClose('login')}>Login</MenuItem>
-                    <MenuItem onClick={handleClose('register')}>Register</MenuItem>
                   </>
                 }
               </Menu>
