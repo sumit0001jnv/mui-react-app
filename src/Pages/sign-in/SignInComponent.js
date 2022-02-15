@@ -43,6 +43,7 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignIn() {
+  
   const history = useHistory();
   const dispatch = useDispatch();
   const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
