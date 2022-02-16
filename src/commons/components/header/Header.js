@@ -86,9 +86,9 @@ export default function Header(props) {
   const [userCategory, setUserCategory] = useState('');
   const userCategories = ['Group 1', 'Group 2', 'Group 2B', 'Group 3'];
 
-  const abbreviateWord = (word='') => {
+  const abbreviateWord = (word = '') => {
     let abbrWord = ''
-    word.split(" ").forEach(w => abbrWord = abbrWord + (w[0] ||'').toUpperCase());
+    word.split(" ").forEach(w => abbrWord = abbrWord + (w[0] || '').toUpperCase());
     return abbrWord;
   }
 
@@ -115,7 +115,7 @@ export default function Header(props) {
         // setlogin(false);
         localStorage.removeItem('pdf_parser_app');
         dispatch(loginAction.logOut());
-        dispatch(uiAction.showSnackbar({message:'User logged out successfully',type:'info'}));
+        dispatch(uiAction.showSnackbar({ message: 'User logged out successfully', type: 'info' }));
         break;
       }
       case 'profile': {
@@ -129,6 +129,10 @@ export default function Header(props) {
 
     }
   };
+
+  const onSignIn = () => {
+    history.push("/sign-in");
+  }
 
   return (
     <>
@@ -166,7 +170,7 @@ export default function Header(props) {
                 color: 'rgb(26 33 77)',
                 textTransform: 'capitalize'
               }} href="/create-template">Create Template</Button> : ''}
-              {userCategories.includes(userCategory) ? <Button color="inherit" sx={{
+              {(userCategories.includes(userCategory)) ? <Button color="inherit" sx={{
                 mr: 2,
                 ':hover': {
                   bgcolor: '#fff',
@@ -193,7 +197,7 @@ export default function Header(props) {
                       backgroundColor: "#ffb74d",
                     },
                     textTransform: 'capitalize'
-                  }} href="/sign-in">Login</Button></>}
+                  }} onClick={onSignIn}>Login</Button></>}
               <Menu
                 id="basic-menu"
                 anchorEl={anchorEl}
