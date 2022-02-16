@@ -2,7 +2,7 @@ import SignIn from './pages/sign-in/SignInComponent';
 import SignUpComponent from './pages/sign-up/SignUpComponent';
 import UserProfileComponent from './pages/user-profile/UserProfileComponent';
 import Home from './pages/home/home'
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch,HashRouter } from 'react-router-dom';
 import AdminHomePage from './pages/admin/AdminHomePage';
 import G2UserHomePage from './pages/g2-user/G2UserHomePage';
 import './App.css'
@@ -21,7 +21,7 @@ function App() {
   }, [isLogedIn]);
   return (
     <>
-      <Router>
+      <HashRouter>
         <Switch>
           <Route path="/" component={Home} exact></Route>
           <Route path="/sign-up" component={SignUpComponent} exact></Route>
@@ -37,7 +37,7 @@ function App() {
             <h1>No page found</h1>
           </Route>
         </Switch>
-      </Router>
+      </HashRouter>
       <CustomSnackbar/>
     </>
   );
