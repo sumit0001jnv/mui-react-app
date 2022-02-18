@@ -2,6 +2,23 @@ import { useState, useRef, useEffect } from 'react';
 import 'cropperjs/dist/cropper.css';
 import { Cropper } from 'react-cropper';
 import { Document, Page, pdfjs } from 'react-pdf';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material/styles';
+import MobileStepper from '@mui/material/MobileStepper';
+import Button from '@mui/material/Button';
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
+import CropIcon from '@mui/icons-material/Crop';
+
+const Item = styled(Paper)(({ theme }) => ({
+    ...theme.typography.body2,
+    padding: theme.spacing(1),
+    textAlign: 'center',
+    color: theme.palette.text.secondary,
+}));
 
 const defaultSrc = 'image/company-logo.jpeg';
 
@@ -111,79 +128,78 @@ export default function CustomCropper() {
         }
     };
 
+    const theme = useTheme();
+    const [activeStep, setActiveStep] = useState(0);
+
+    const handleNext = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+    };
+
+    const handleBack = () => {
+        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+    };
+
     return (
         <>
-            <div>
-                <div className="main">
-                    <div className="main">
-                        <Document
-                            file={url}
-                            onLoadSuccess={onDocumentLoadSuccess}
-                        >
-                            <Page pageNumber={pageNumber} />
-                        </Document>
-                        <div>
-                            <div className="pagec">
-                                Page {pageNumber || (numPages ? 1 : '--')} of {numPages || '--'}
-                            </div>
-                            <div className="buttonc">
-                                <button
-                                    type="button"
-                                    disabled={pageNumber <= 1}
-                                    onClick={previousPage}
-                                    className="Pre"
-
-                                >
-                                    Previous
-                                </button>
-                                <button
-                                    type="button"
-                                    disabled={pageNumber >= numPages}
-                                    onClick={nextPage}
-
-                                >
+            <Grid container spacing={2} sx={{ px: 2 }}>
+                <Grid item xs={7}>
+                    <Item>
+                        <Button variant="outlined" sx={{ mb: 1 }} onClick={getCropData} startIcon={<CropIcon />}>Crop Image</Button>
+                        <Cropper
+                            style={{ height: 'calc(100vh - 208px)', width: '100%' }}
+                            // initialAspectRatio={16 / 9}
+                            preview=".img-preview"
+                            guides={true}
+                            src={'/test.png'}
+                            ref={imageRef}
+                            dragMode={'move'}
+                            checkOrientation={true} // https://github.com/fengyuanchen/cropperjs/issues/671
+                            onInitialized={(instance) => {
+                                setCropper(instance);
+                            }}
+                        />
+                        <MobileStepper
+                            variant="dots"
+                            steps={10}
+                            position="static"
+                            activeStep={activeStep}
+                            sx={{ flexGrow: 1 }}
+                            nextButton={
+                                <Button size="small" onClick={handleNext} disabled={activeStep === 5}>
                                     Next
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div style={{ width: '100%' }}>
-                    <input type="file" onChange={onChange} />
-                    {/* <button>Use default img</button> */}
-                    <br />
-                    <br />
-                    <Cropper
-                        style={{ height: 400, width: '100%' }}
-                        initialAspectRatio={16 / 9}
-                        preview=".img-preview"
-                        guides={true}
-                        src={image}
-                        ref={imageRef}
-                        dragMode={'move'}
-                        checkOrientation={true} // https://github.com/fengyuanchen/cropperjs/issues/671
-                        onInitialized={(instance) => {
-                            setCropper(instance);
-                        }}
-                    />
-                </div>
-                <div>
-                    {/* <div className="box" style={{ width: '50%', float: 'right' }}>
-                    <h1>Preview</h1>
-                    <div className="img-preview" style={{ width: '100%', float: 'left', height: 300 }} />
-                </div> */}
-                    <div className="box" style={{ width: '50%', float: 'right' }}>
-                        <h1>
-                            <span>Crop</span>
-                            <button style={{ float: 'right' }} onClick={getCropData}>
-                                Crop Image
-                            </button>
-                        </h1>
-                        <img style={{ width: '100%' }} src={cropData} alt="cropped image" />
-                    </div>
-                </div>
-                <br style={{ clear: 'both' }} />
-            </div>
+                                    {theme.direction === 'rtl' ? (
+                                        <KeyboardArrowLeft />
+                                    ) : (
+                                        <KeyboardArrowRight />
+                                    )}
+                                </Button>
+                            }
+                            backButton={
+                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
+                                    {theme.direction === 'rtl' ? (
+                                        <KeyboardArrowRight />
+                                    ) : (
+                                        <KeyboardArrowLeft />
+                                    )}
+                                    Back
+                                </Button>
+                            }
+                        />
+                    </Item>
+                </Grid>
+                <Grid item xs={5}>
+                    <Item>
+                        <Grid container
+                            direction="row"
+                            justifyContent="flex-start"
+                            alignItems="center"
+                        >
+                            <div xs={6}>Text here</div>
+                            <img xs={6} style={{ width: '100%' }} src={cropData} alt="cropped image" />
+                        </Grid>
+                    </Item>
+                </Grid>
+            </Grid>
         </>
 
     );

@@ -1,13 +1,27 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import CustomTable from '../../commons/components/custom-table/CustomTable';
-import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import theme from '../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
-
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 export default function G2UserHomePage() {
+    const history=useHistory();
+    const getColor = (status) => {
+        switch (status) {
+            case 'completed':
+                return 'success';
+            case 'pending':
+                return 'warning';
+            case 'error':
+                return 'error';
+            default:
+                return 'error';
+
+        }
+    }
     const columns = [
         {
             field: 'group',
@@ -32,7 +46,8 @@ export default function G2UserHomePage() {
             headerName: 'Status',
             minWidth: 150,
             flex: 2,
-
+            renderCell: (params) => <><Chip label={params?.row?.status || 'success'} color={getColor(params?.row.status)} size="small" /></>,
+            // renderCell: (params) => <><Chip label={params?.row?.status ||'pending'} color={params?.row?.status||'success'} size="small" /></>,
         },
         {
             field: 'message',
@@ -45,7 +60,9 @@ export default function G2UserHomePage() {
             headerName: 'Actions',
             type: 'tableAction',
             minWidth: 110,
-            renderCell: (params) => <><IconButton size="small" onClick={() => handleClick(params.row)('delete')}><VisibilityIcon color={'red'} /></IconButton></>,
+            renderCell: (params) => <>
+                <Chip variant="outlined" onClick={()=>onViewClick(params.row)} color="warning" size="small" label='View' icon={<VisibilityIcon color={'red'} />} />
+            </>,
             flex: 2,
         }
     ];
@@ -60,7 +77,7 @@ export default function G2UserHomePage() {
         showConfirmPassword: false,
         isValid: true
     }
-    const initialDrawerPos='right';
+    const initialDrawerPos = 'right';
     const [formData, setFormData] = useState({ ...initialState });
     const [actionLabel, setActionLabel] = useState('create');
     const [drawerState, setDrawerState] = useState({ [initialDrawerPos]: false });
@@ -79,16 +96,16 @@ export default function G2UserHomePage() {
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-g2-user-projects',
         }).then(res => {
-            let _tableData = (res.data.projects_data || []).map(row => {
+            let _tableData = (res.data.projects_data || []).map((row,i) => {
                 return {
                     group: "Group 1",
                     name: row[3],
                     email: row[3],
-                    status: "pending",
+                    status: i%3==0?"pending":i%3==1?"completed":"error",
                     message: row[5],
                     subject: row[4],
                     body: row[6],
-                    id: row[0]
+                    id: row[1]
                 }
             })
 
@@ -129,6 +146,11 @@ export default function G2UserHomePage() {
             console.log(err);
             setLoading(true);
         })
+    }
+
+    const onViewClick=(row)=>{
+       console.log(row.id)
+       history.push('/create-template',{data:{project_id:row.id}})
     }
 
     const onRefresh = () => {

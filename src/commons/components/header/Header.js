@@ -169,7 +169,7 @@ export default function Header(props) {
                 },
                 color: 'rgb(26 33 77)',
                 textTransform: 'capitalize'
-              }} href="/create-template">Create Template</Button> : ''}
+              }} to="/create-template">Create Template</Button> : ''}
               {(userCategories.includes(userCategory)) ? <Button color="inherit" sx={{
                 mr: 2,
                 ':hover': {
@@ -178,7 +178,7 @@ export default function Header(props) {
                 },
                 color: 'rgb(26 33 77)',
                 textTransform: 'capitalize'
-              }} href="/parse-pdf">Parse PDF</Button> : ''}
+              }} to="/parse-pdf">Parse PDF</Button> : ''}
               {
                 login ? (<>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>
