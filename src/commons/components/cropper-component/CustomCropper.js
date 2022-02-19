@@ -1,17 +1,22 @@
 import { useState, useRef, useEffect } from 'react';
 import 'cropperjs/dist/cropper.css';
 import { Cropper } from 'react-cropper';
-import { Document, Page, pdfjs } from 'react-pdf';
 import { styled } from '@mui/material/styles';
-import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { useTheme } from '@mui/material/styles';
 import MobileStepper from '@mui/material/MobileStepper';
 import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 import CropIcon from '@mui/icons-material/Crop';
+import DeleteIcon from '@mui/icons-material/Delete';
+import TextField from "@mui/material/TextField";
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import { useLocation } from "react-router-dom";
+import axios from 'axios';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -20,113 +25,83 @@ const Item = styled(Paper)(({ theme }) => ({
     color: theme.palette.text.secondary,
 }));
 
-const defaultSrc = 'image/company-logo.jpeg';
-
 export default function CustomCropper() {
-    const [image, setImage] = useState(defaultSrc);
-    const [cropData, setCropData] = useState('#');
+    const location = useLocation();
     const imageRef = useRef(null);
     const [cropper, setCropper] = useState();
     let [url, setUrl] = useState('');
-    // const [instance, update] = usePDF({ document });
-    pdfjs.GlobalWorkerOptions.workerSrc =
-        `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjs.version}/pdf.worker.js`;
-    const [numPages, setNumPages] = useState(null);
-    const [pageNumber, setPageNumber] = useState(1);
-
-    /*To Prevent right click on screen*/
-    document.addEventListener("contextmenu", (event) => {
-        event.preventDefault();
-    });
-
-    /*When document gets loaded successfully*/
-    function onDocumentLoadSuccess(obj) {
-        // obj.getPage(1).then(x => {
-        //     console.log(x);
-        // });
-        setTimeout(() => {
-            obj.getPage(1).then((page) => {
-                var scale = 1.5;
-                var viewport = page.getViewport(scale);
-
-                //
-                // Prepare canvas using PDF page dimensions
-                //
-                // var canvas = document.getElementsByClassName('react-pdf__Page__canvas')[0];
-                var canvas = document.createElement('canvas');
-                document.body.appendChild(canvas);
-                var context = canvas.getContext('2d');
-                canvas.height = viewport.height;
-                canvas.width = viewport.width;
-
-                //
-                // Render PDF page into canvas context
-                //
-                var task = page.render({ canvasContext: context, viewport: viewport })
-                task.promise.then(function () {
-                    console.log(canvas.toDataURL('image/png'));
-                });
+    const [templates, setTemplates] = useState([]);
+    const [selectedText, setSelectedText] = useState('');
+    const [selectedCropData, setSelectedCropData] = useState('');
+    useEffect(() => {
+        let bodyFormData = new FormData();
+        const getBase64FromUrl = async (url) => {
+            //'/test.png'
+            const data = await fetch(url, { method: "GET", mode: 'no-cors', headers: { 'Content-Type': 'application/json', } });
+            const blob = await data.blob();
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(blob);
+                reader.onloadend = () => {
+                    const base64data = reader.result;
+                    resolve(base64data);
+                }
             });
-        }, 1000)
-        setNumPages(obj.numPages);
-        setPageNumber(1);
-    }
-
-    function changePage(offset) {
-        setPageNumber(prevPageNumber => prevPageNumber + offset);
-    }
-
-    function previousPage() {
-        changePage(-1);
-    }
-
-    function nextPage() {
-        changePage(1);
-    }
-
-
-    ///////////
-
-    const onChange = (e) => {
-        e.preventDefault();
-        let files;
-        if (e.dataTransfer) {
-            files = e.dataTransfer.files;
-        } else if (e.target) {
-            files = e.target.files;
         }
-        const reader = new FileReader();
-        const base64toBlob = (data) => {
-            // Cut the prefix `data:application/pdf;base64` from the raw base 64
-            const base64WithoutPrefix = data.substr('data:application/pdf;base64,'.length);
+        axios({
+            method: 'post',
+            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
+            data: { project_id: location?.state?.project_id, page_num: 0 }
+        }).then(res => {
+            console.log(res);
+            // reader.readAsDataURL('http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/static/pdfimg/938c575b-9fd1-4f8c-ba3f-e1738a9089b8.png');
+            // setUrl('https://source.unsplash.com/random')
+            getBase64FromUrl(`http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/${res.data.file_url}`).then(_data => {
+                console.log(_data);
+            }).catch(err => {
+                console.log(err);
+            })
+            setUrl(`http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/${res.data.file_url}`);
+        }).catch(err => {
+            console.log(err);
+        })
 
-            const bytes = atob(base64WithoutPrefix);
-            let length = bytes.length;
-            let out = new Uint8Array(length);
-
-            while (length--) {
-                out[length] = bytes.charCodeAt(length);
-            }
-
-            return new Blob([out], { type: 'application/pdf' });
-        };
-        reader.onload = () => {
-            // setImage(pdfAsArray[0]);
-            const blob = base64toBlob(reader.result);
-            const url = URL.createObjectURL(blob);
-            // setImage(url);
-            setUrl(url)
-
-        };
-
-        reader.readAsDataURL(files[0]);
-    };
+    }, [location])
 
     const getCropData = () => {
         if (typeof cropper !== 'undefined') {
-            setCropData(cropper.getCroppedCanvas().toDataURL());
+            let obj = { cropData: selectedCropData, key: selectedText || '' }
+            setTemplates([obj, ...templates]);
+            setSelectedText('');
+            setSelectedCropData('');
+            cropper.clear();
+            // setCropData(cropper.getCroppedCanvas().toDataURL());
         }
     };
+
+    const setCropData = () => {
+        if (typeof cropper !== 'undefined') {
+            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), key: selectedText || '' }
+            setSelectedCropData(cropper.getCroppedCanvas().toDataURL());
+        }
+    };
+
+    const deleteKey = (index) => {
+        templates.splice(index, 1);
+        setTemplates([...templates]);
+    }
+
+    const clearCrop = () => {
+        if (typeof cropper !== 'undefined') {
+            cropper.clear()
+        }
+    }
+
+    const restCrop = () => {
+        if (typeof cropper !== 'undefined') {
+            cropper.reset()
+        }
+    }
 
     const theme = useTheme();
     const [activeStep, setActiveStep] = useState(0);
@@ -139,21 +114,56 @@ export default function CustomCropper() {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
+    const handleText = (event) => {
+        setSelectedText(event.target.value);
+    }
+
+    const enableCrop = () => {
+        if (typeof cropper !== 'undefined') {
+            cropper.crop();
+        }
+    }
+
+    const testImgBase64 = () => {
+        function getBase64Image(img) {
+            var canvas = document.createElement("canvas");
+            canvas.width = img.width;
+            canvas.height = img.height;
+            var ctx = canvas.getContext("2d");
+            ctx.drawImage(img, 0, 0);
+            var dataURL = canvas.toDataURL("image/png");
+            return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
+        }
+
+        var base64 = getBase64Image(document.getElementById("test-image"));
+        console.log(base64);
+    }
+
+
     return (
         <>
             <Grid container spacing={2} sx={{ px: 2 }}>
                 <Grid item xs={7}>
                     <Item>
-                        <Button variant="outlined" sx={{ mb: 1 }} onClick={getCropData} startIcon={<CropIcon />}>Crop Image</Button>
+                        <Grid container spacing={0} justifyContent="flex-end">
+                            <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={setCropData} startIcon={<CropIcon />}>Crop Image</Button>
+                            <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={clearCrop} >Clear crop box</Button>
+                            <Button variant="outlined" size="small" sx={{ mb: 1 }} onClick={restCrop}>Reset crop box</Button>
+                        </Grid>
+                        <Divider />
+
                         <Cropper
                             style={{ height: 'calc(100vh - 208px)', width: '100%' }}
                             // initialAspectRatio={16 / 9}
                             preview=".img-preview"
                             guides={true}
                             src={'/test.png'}
+                            // src={'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/static/pdfimg/938c575b-9fd1-4f8c-ba3f-e1738a9089b8.png'}
                             ref={imageRef}
-                            dragMode={'move'}
-                            checkOrientation={true} // https://github.com/fengyuanchen/cropperjs/issues/671
+                            dragMode={'crop'}
+                            autoCrop={false}
+                            checkCrossOrigin={false}
+                            checkOrientation={true}
                             onInitialized={(instance) => {
                                 setCropper(instance);
                             }}
@@ -165,7 +175,7 @@ export default function CustomCropper() {
                             activeStep={activeStep}
                             sx={{ flexGrow: 1 }}
                             nextButton={
-                                <Button size="small" onClick={handleNext} disabled={activeStep === 5}>
+                                <Button size="small" onClick={handleNext} disabled={activeStep === 10}>
                                     Next
                                     {theme.direction === 'rtl' ? (
                                         <KeyboardArrowLeft />
@@ -188,14 +198,50 @@ export default function CustomCropper() {
                     </Item>
                 </Grid>
                 <Grid item xs={5}>
-                    <Item>
+                    <Item sx={{ height: 'calc(100vh - 116px)' }}>
+                        <Typography variant='h6' sx={{ display: "flex", justifyContent: "flex-start", ml: 1 }}>Add Template</Typography>
+                        <Grid container spacing={0} sx={{ my: 1 }}>
+                            <Grid item xs={7}>
+                                <TextField id="outlined-basic" sx={{ display: 'flex', mx: 1, p: 0 }} label="Key" value={selectedText} onChange={handleText} variant="outlined" size="small" />
+                            </Grid>
+                            <Grid item xs={5} sx={{ m: 0, p: 0 }}>
+                                <Button variant='contained' sx={{ mr: 1 }} onClick={enableCrop}>Select</Button>
+                                <Button disabled={!(selectedCropData && selectedText)} variant='contained' onClick={getCropData}>Add</Button>
+                            </Grid>
+                        </Grid>
+                        {selectedCropData ? <img src={selectedCropData} style={{ width: "100px", minHeight: "40px", maxHeight: "100px", marginRight: "4px" }}></img> : ''}
+                        <Divider sx={{ mb: 1 }} />
                         <Grid container
-                            direction="row"
-                            justifyContent="flex-start"
-                            alignItems="center"
-                        >
-                            <div xs={6}>Text here</div>
-                            <img xs={6} style={{ width: '100%' }} src={cropData} alt="cropped image" />
+                            sx={{ height: 'calc(100vh - 265px)', overflowY: 'auto' }}
+                            direction="column"
+                            alignItems="flex-start" >
+                            {templates.map((temp, index) => {
+                                return <Grid container alignItems={'center'} spacing={0} sx={{ mb: 2 }}>
+                                    <Grid item xs={5}>
+                                        <TextField
+                                            disabled id="outlined-basic"
+                                            sx={{ display: 'flex', mx: 1, p: 0 }}
+                                            label="Key"
+                                            variant="outlined"
+                                            size="small"
+                                            value={temp.key} />
+                                    </Grid>
+                                    <Grid container xs={7} spacing={0} sx={{ m: 0, p: 0 }} >
+                                        <img style={{ width: "calc(100% - 60px)", minHeight: "40px", maxHeight: "100px", marginRight: "4px" }} src={temp.cropData} alt="cropped image" />
+                                        <IconButton color="secondary" aria-label="add an alarm" onClick={() => deleteKey(index)}>
+                                            <DeleteIcon />
+                                        </IconButton>
+                                    </Grid>
+                                </Grid>
+                            })}
+                        </Grid>
+                        <Grid container spacing={0} sx={{ my: 1 }}>
+                            <Grid item sx={{ flexGrow: 1 }}>
+                                <TextField id="outlined-basic" sx={{ width: "100%", display: 'flex', mx: 1, p: 0 }} label="Template Name" variant="outlined" size="small" />
+                            </Grid>
+                            <Grid item xs sx={{ m: 0, p: 0 }}>
+                                <Button variant='contained' sx={{ mr: 1 }} color={'success'}>Save</Button>
+                            </Grid>
                         </Grid>
                     </Item>
                 </Grid>

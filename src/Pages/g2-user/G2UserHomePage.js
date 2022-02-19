@@ -8,7 +8,7 @@ import { ThemeProvider } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 export default function G2UserHomePage() {
-    const history=useHistory();
+    const history = useHistory();
     const getColor = (status) => {
         switch (status) {
             case 'completed':
@@ -61,7 +61,7 @@ export default function G2UserHomePage() {
             type: 'tableAction',
             minWidth: 110,
             renderCell: (params) => <>
-                <Chip variant="outlined" onClick={()=>onViewClick(params.row)} color="warning" size="small" label='View' icon={<VisibilityIcon color={'red'} />} />
+                <Chip variant="outlined" onClick={() => onViewClick(params.row)} color="warning" size="small" label='View' icon={<VisibilityIcon color={'red'} />} />
             </>,
             flex: 2,
         }
@@ -96,12 +96,12 @@ export default function G2UserHomePage() {
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-g2-user-projects',
         }).then(res => {
-            let _tableData = (res.data.projects_data || []).map((row,i) => {
+            let _tableData = (res.data.projects_data || []).map((row, i) => {
                 return {
                     group: "Group 1",
                     name: row[3],
                     email: row[3],
-                    status: i%3==0?"pending":i%3==1?"completed":"error",
+                    status: i % 3 == 0 ? "pending" : i % 3 == 1 ? "completed" : "error",
                     message: row[5],
                     subject: row[4],
                     body: row[6],
@@ -148,9 +148,15 @@ export default function G2UserHomePage() {
         })
     }
 
-    const onViewClick=(row)=>{
-       console.log(row.id)
-       history.push('/create-template',{data:{project_id:row.id}})
+    const onViewClick = (row) => {
+        // console.log(row.id)
+        // pathname: obj.pathname,
+        //     state: obj
+        history.push({
+            pathname: '/create-template',
+            state: { project_id: row.id }
+        }
+        )
     }
 
     const onRefresh = () => {
