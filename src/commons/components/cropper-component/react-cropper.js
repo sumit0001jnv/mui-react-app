@@ -119,7 +119,7 @@ const ReactCropper = React.forwardRef(({...props}, ref) => {
         return () => {
             combinedRef.current?.cropper?.destroy();
         };
-    }, [combinedRef]);
+    }, [combinedRef,dragMode]);
 
     const imageProps = React.useMemo(() => ({...rest, crossOrigin, src, alt}), [rest, crossOrigin, src, alt]);
 

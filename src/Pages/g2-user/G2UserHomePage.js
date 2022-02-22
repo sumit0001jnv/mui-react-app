@@ -154,7 +154,8 @@ export default function G2UserHomePage() {
         //     state: obj
         history.push({
             pathname: '/create-template',
-            state: { project_id: row.id }
+            // state: { project_id: row.id },
+            search: `?project_id=${row.id}`,
         }
         )
     }

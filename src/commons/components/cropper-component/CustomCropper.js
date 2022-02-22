@@ -34,10 +34,27 @@ export default function CustomCropper() {
     const [selectedText, setSelectedText] = useState('');
     const [selectedCropData, setSelectedCropData] = useState('');
     useEffect(() => {
-        let bodyFormData = new FormData();
+        const imageToBaseUrl = (url) => {
+            let image;
+            image = new Image();
+            image.crossOrigin = 'Anonymous';
+            image.addEventListener('load', function () {
+                let canvas = document.createElement('canvas');
+                let context = canvas.getContext('2d');
+                canvas.width = image.width;
+                canvas.height = image.height;
+                context.drawImage(image, 0, 0);
+                try {
+                    setUrl(canvas.toDataURL('image/png'));
+                } catch (err) {
+                    console.error(err)
+                }
+            });
+            image.src = url;
+        }
         const getBase64FromUrl = async (url) => {
             //'/test.png'
-            const data = await fetch(url, { method: "GET", mode: 'no-cors', headers: { 'Content-Type': 'application/json', } });
+            const data = await fetch(url);
             const blob = await data.blob();
             return new Promise((resolve) => {
                 const reader = new FileReader();
@@ -48,20 +65,25 @@ export default function CustomCropper() {
                 }
             });
         }
+        const search = location.search; // could be '?foo=bar'
+        const params = new URLSearchParams(search);
+        const project_id = params.get('project_id'); // bar
         axios({
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
-            data: { project_id: location?.state?.project_id, page_num: 0 }
+            data: { project_id, page_num: 0 }
         }).then(res => {
-            console.log(res);
+            console.log(res.data.file_url);
             // reader.readAsDataURL('http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/static/pdfimg/938c575b-9fd1-4f8c-ba3f-e1738a9089b8.png');
             // setUrl('https://source.unsplash.com/random')
-            getBase64FromUrl(`http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/${res.data.file_url}`).then(_data => {
-                console.log(_data);
-            }).catch(err => {
-                console.log(err);
-            })
-            setUrl(`http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/${res.data.file_url}`);
+            // getBase64FromUrl(`${res.data.file_url}`).then(_data => {
+            //     // console.log(_data);
+            //     setUrl(`${_data}`);
+            // }).catch(err => {
+            //     console.log(err);
+            // })
+            imageToBaseUrl(res.data.file_url);
+            // setUrl(`${res.data.file_url}`);
         }).catch(err => {
             console.log(err);
         })
@@ -69,11 +91,13 @@ export default function CustomCropper() {
     }, [location])
 
     const getCropData = () => {
+
         if (typeof cropper !== 'undefined') {
-            let obj = { cropData: selectedCropData, key: selectedText || '' }
+            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), key: selectedText || '' }
             setTemplates([obj, ...templates]);
             setSelectedText('');
             setSelectedCropData('');
+            cropper.setDragMode("move");
             cropper.clear();
             // setCropData(cropper.getCroppedCanvas().toDataURL());
         }
@@ -81,7 +105,7 @@ export default function CustomCropper() {
 
     const setCropData = () => {
         if (typeof cropper !== 'undefined') {
-            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), key: selectedText || '' }
+            // let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), key: selectedText || '' }
             setSelectedCropData(cropper.getCroppedCanvas().toDataURL());
         }
     };
@@ -120,25 +144,11 @@ export default function CustomCropper() {
 
     const enableCrop = () => {
         if (typeof cropper !== 'undefined') {
-            cropper.crop();
+            cropper.setDragMode("crop");
+            // cropper.reset();
+            // cropper.crop();
         }
     }
-
-    const testImgBase64 = () => {
-        function getBase64Image(img) {
-            var canvas = document.createElement("canvas");
-            canvas.width = img.width;
-            canvas.height = img.height;
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(img, 0, 0);
-            var dataURL = canvas.toDataURL("image/png");
-            return dataURL.replace(/^data:image\/(png|jpg);base64,/, "");
-        }
-
-        var base64 = getBase64Image(document.getElementById("test-image"));
-        console.log(base64);
-    }
-
 
     return (
         <>
@@ -146,9 +156,9 @@ export default function CustomCropper() {
                 <Grid item xs={7}>
                     <Item>
                         <Grid container spacing={0} justifyContent="flex-end">
-                            <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={setCropData} startIcon={<CropIcon />}>Crop Image</Button>
+                            {/* <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={setCropData} startIcon={<CropIcon />}>Crop Image</Button> */}
                             <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={clearCrop} >Clear crop box</Button>
-                            <Button variant="outlined" size="small" sx={{ mb: 1 }} onClick={restCrop}>Reset crop box</Button>
+                            {/* <Button variant="outlined" size="small" sx={{ mb: 1 }} onClick={restCrop}>Reset crop box</Button> */}
                         </Grid>
                         <Divider />
 
@@ -157,12 +167,13 @@ export default function CustomCropper() {
                             // initialAspectRatio={16 / 9}
                             preview=".img-preview"
                             guides={true}
-                            src={'/test.png'}
+                            src={url}
                             // src={'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/static/pdfimg/938c575b-9fd1-4f8c-ba3f-e1738a9089b8.png'}
                             ref={imageRef}
-                            dragMode={'crop'}
+                            dragMode={'move'}
                             autoCrop={false}
                             checkCrossOrigin={false}
+                            crossOrigin={'anonymous'}
                             checkOrientation={true}
                             onInitialized={(instance) => {
                                 setCropper(instance);
@@ -206,28 +217,27 @@ export default function CustomCropper() {
                             </Grid>
                             <Grid item xs={5} sx={{ m: 0, p: 0 }}>
                                 <Button variant='contained' sx={{ mr: 1 }} onClick={enableCrop}>Select</Button>
-                                <Button disabled={!(selectedCropData && selectedText)} variant='contained' onClick={getCropData}>Add</Button>
+                                <Button disabled={!(selectedText)} variant='contained' onClick={getCropData}>Add</Button>
                             </Grid>
                         </Grid>
-                        {selectedCropData ? <img src={selectedCropData} style={{ width: "100px", minHeight: "40px", maxHeight: "100px", marginRight: "4px" }}></img> : ''}
                         <Divider sx={{ mb: 1 }} />
                         <Grid container
-                            sx={{ height: 'calc(100vh - 265px)', overflowY: 'auto' }}
+                            sx={{ height: 'calc(100vh - 265px)', flexWrap: 'nowrap', overflowY: 'auto' }}
                             direction="column"
-                            alignItems="flex-start" >
+                        >
                             {templates.map((temp, index) => {
-                                return <Grid container alignItems={'center'} spacing={0} sx={{ mb: 2 }}>
+                                return <Grid container alignItems={'center'} spacing={0} sx={{ mb: 2, p: 1 }}>
                                     <Grid item xs={5}>
                                         <TextField
                                             disabled id="outlined-basic"
-                                            sx={{ display: 'flex', mx: 1, p: 0 }}
+                                            sx={{ display: 'flex', mx: 1, p: 0, bgcolor: "#fff" }}
                                             label="Key"
                                             variant="outlined"
                                             size="small"
                                             value={temp.key} />
                                     </Grid>
                                     <Grid container xs={7} spacing={0} sx={{ m: 0, p: 0 }} >
-                                        <img style={{ width: "calc(100% - 60px)", minHeight: "40px", maxHeight: "100px", marginRight: "4px" }} src={temp.cropData} alt="cropped image" />
+                                        <img style={{ width: "calc(100% - 60px)", minHeight: "40px", maxHeight: "100px", marginRight: "4px", padding: "4px" }} src={temp.cropData} crossOrigin="anonymous" alt="cropped image" />
                                         <IconButton color="secondary" aria-label="add an alarm" onClick={() => deleteKey(index)}>
                                             <DeleteIcon />
                                         </IconButton>
