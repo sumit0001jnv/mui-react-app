@@ -17,6 +17,9 @@ import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { useLocation } from "react-router-dom";
 import axios from 'axios';
+import { purple } from '@mui/material/colors';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -31,69 +34,68 @@ export default function CustomCropper() {
     const [cropper, setCropper] = useState();
     let [url, setUrl] = useState('');
     const [templates, setTemplates] = useState([]);
+    const [pageNo, setPageNo] = useState(0);
+    const [projectId, setProjectId] = useState('');
     const [selectedText, setSelectedText] = useState('');
+    const [selectedTemplate, setSelectedTemplate] = useState('');
     const [selectedCropData, setSelectedCropData] = useState('');
+    const imageToBaseUrl = (url) => {
+        let image;
+        image = new Image();
+        image.crossOrigin = 'Anonymous';
+        image.addEventListener('load', function () {
+            let canvas = document.createElement('canvas');
+            let context = canvas.getContext('2d');
+            canvas.width = image.width;
+            canvas.height = image.height;
+            context.drawImage(image, 0, 0);
+            try {
+                setUrl(canvas.toDataURL('image/png'));
+            } catch (err) {
+                console.error(err)
+            }
+        });
+        image.src = url;
+    }
+
     useEffect(() => {
-        const imageToBaseUrl = (url) => {
-            let image;
-            image = new Image();
-            image.crossOrigin = 'Anonymous';
-            image.addEventListener('load', function () {
-                let canvas = document.createElement('canvas');
-                let context = canvas.getContext('2d');
-                canvas.width = image.width;
-                canvas.height = image.height;
-                context.drawImage(image, 0, 0);
-                try {
-                    setUrl(canvas.toDataURL('image/png'));
-                } catch (err) {
-                    console.error(err)
-                }
-            });
-            image.src = url;
-        }
-        const getBase64FromUrl = async (url) => {
-            //'/test.png'
-            const data = await fetch(url);
-            const blob = await data.blob();
-            return new Promise((resolve) => {
-                const reader = new FileReader();
-                reader.readAsDataURL(blob);
-                reader.onloadend = () => {
-                    const base64data = reader.result;
-                    resolve(base64data);
-                }
-            });
-        }
         const search = location.search; // could be '?foo=bar'
         const params = new URLSearchParams(search);
         const project_id = params.get('project_id'); // bar
+        setProjectId(project_id);
         axios({
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
-            data: { project_id, page_num: 0 }
+            data: { project_id, page_num: pageNo }
         }).then(res => {
             console.log(res.data.file_url);
-            // reader.readAsDataURL('http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/static/pdfimg/938c575b-9fd1-4f8c-ba3f-e1738a9089b8.png');
-            // setUrl('https://source.unsplash.com/random')
-            // getBase64FromUrl(`${res.data.file_url}`).then(_data => {
-            //     // console.log(_data);
-            //     setUrl(`${_data}`);
-            // }).catch(err => {
-            //     console.log(err);
-            // })
             imageToBaseUrl(res.data.file_url);
-            // setUrl(`${res.data.file_url}`);
         }).catch(err => {
             console.log(err);
         })
 
-    }, [location])
+    }, [pageNo])
+
+    useEffect(() => {
+        if (projectId) {
+            axios({
+                method: 'post',
+                url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
+                data: { project_id: projectId, page_num: pageNo }
+            }).then(res => {
+                console.log(res.data.file_url);
+                imageToBaseUrl(res.data.file_url);
+            }).catch(err => {
+                console.log(err);
+            })
+        }
+    }, [pageNo,projectId])
 
     const getCropData = () => {
 
         if (typeof cropper !== 'undefined') {
-            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), key: selectedText || '' }
+            const { left, top, width, height } = cropper.getCropBoxData();
+            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${left} ${top} ${width} ${height}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
             setTemplates([obj, ...templates]);
             setSelectedText('');
             setSelectedCropData('');
@@ -121,33 +123,51 @@ export default function CustomCropper() {
         }
     }
 
-    const restCrop = () => {
-        if (typeof cropper !== 'undefined') {
-            cropper.reset()
-        }
-    }
-
     const theme = useTheme();
-    const [activeStep, setActiveStep] = useState(0);
 
     const handleNext = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep + 1);
+        setPageNo((pageNo) => pageNo + 1);
     };
 
     const handleBack = () => {
-        setActiveStep((prevActiveStep) => prevActiveStep - 1);
+        setPageNo((pageNo) => pageNo - 1);
     };
 
     const handleText = (event) => {
         setSelectedText(event.target.value);
     }
 
+    const handleTemplateName = (event) => {
+        setSelectedTemplate(event.target.value);
+    }
+
     const enableCrop = () => {
         if (typeof cropper !== 'undefined') {
             cropper.setDragMode("crop");
-            // cropper.reset();
-            // cropper.crop();
         }
+    }
+
+    const onSave = () => {
+        const data = templates.map(template => {
+            const { page_num, annotationName, annotationBox } = template;
+            return { page_num, annotationName, annotationBox };
+        })
+        let payload = {
+            project_id: projectId,
+            template_name: selectedTemplate,
+            data
+        }
+
+        axios({
+            method: 'post',
+            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/save-annotation',
+            data: payload
+        }).then(res => {
+            console.log(res);
+        }).catch(err => {
+            console.log(err);
+        })
+
     }
 
     return (
@@ -179,7 +199,7 @@ export default function CustomCropper() {
                                 setCropper(instance);
                             }}
                         />
-                        <MobileStepper
+                        {/* <MobileStepper
                             variant="dots"
                             steps={10}
                             position="static"
@@ -205,7 +225,28 @@ export default function CustomCropper() {
                                     Back
                                 </Button>
                             }
-                        />
+                        /> */}
+                        <Box conatiner sx={{ width: "100%", display: 'flex', justifyContent: "center" }}>
+                            <Button size="small" onClick={handleBack}>
+                                {theme.direction === 'rtl' ? (
+                                    <KeyboardArrowRight />
+                                ) : (
+                                    <KeyboardArrowLeft />
+                                )}
+                                Back
+                            </Button>
+                            <Avatar sx={{ bgcolor: purple[500] }}>{pageNo + 1}</Avatar>
+                            <Button size="small" onClick={handleNext}>
+                                Next
+                                {theme.direction === 'rtl' ? (
+                                    <KeyboardArrowLeft />
+                                ) : (
+                                    <KeyboardArrowRight />
+                                )}
+                            </Button>
+                        </Box>
+
+
                     </Item>
                 </Grid>
                 <Grid item xs={5}>
@@ -247,10 +288,14 @@ export default function CustomCropper() {
                         </Grid>
                         <Grid container spacing={0} sx={{ my: 1 }}>
                             <Grid item sx={{ flexGrow: 1 }}>
-                                <TextField id="outlined-basic" sx={{ width: "100%", display: 'flex', mx: 1, p: 0 }} label="Template Name" variant="outlined" size="small" />
+                                <TextField id="outlined-basic"
+                                    sx={{ width: "100%", display: 'flex', mx: 1, p: 0 }}
+                                    label="Template Name" variant="outlined" size="small"
+                                    value={selectedTemplate} onChange={handleTemplateName}
+                                />
                             </Grid>
                             <Grid item xs sx={{ m: 0, p: 0 }}>
-                                <Button variant='contained' sx={{ mr: 1 }} color={'success'}>Save</Button>
+                                <Button variant='contained' sx={{ mr: 1 }} color={'success'} disabled={!(selectedTemplate && templates.length)} onClick={onSave}>Save</Button>
                             </Grid>
                         </Grid>
                     </Item>
