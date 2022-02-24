@@ -69,7 +69,8 @@ export default function CustomCropper() {
             data: { project_id, page_num: pageNo }
         }).then(res => {
             console.log(res.data.file_url);
-            imageToBaseUrl(res.data.file_url);
+            // imageToBaseUrl(res.data.file_url);
+            setUrl(res.data.file_url);
         }).catch(err => {
             console.log(err);
         })
@@ -84,7 +85,8 @@ export default function CustomCropper() {
                 data: { project_id: projectId, page_num: pageNo }
             }).then(res => {
                 console.log(res.data.file_url);
-                imageToBaseUrl(res.data.file_url);
+                // imageToBaseUrl(res.data.file_url);
+                setUrl(res.data.file_url);
             }).catch(err => {
                 console.log(err);
             })
