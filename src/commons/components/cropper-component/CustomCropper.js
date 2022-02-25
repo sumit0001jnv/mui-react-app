@@ -34,35 +34,51 @@ export default function CustomCropper() {
     const [cropper, setCropper] = useState();
     let [url, setUrl] = useState('');
     const [templates, setTemplates] = useState([]);
-    const [pageNo, setPageNo] = useState(0);
+    const [pageNo, setPageNo] = useState(1);
     const [projectId, setProjectId] = useState('');
     const [selectedText, setSelectedText] = useState('');
     const [selectedTemplate, setSelectedTemplate] = useState('');
     const [selectedCropData, setSelectedCropData] = useState('');
-    const imageToBaseUrl = (url) => {
-        let image;
-        image = new Image();
-        image.crossOrigin = 'Anonymous';
-        image.addEventListener('load', function () {
-            let canvas = document.createElement('canvas');
-            let context = canvas.getContext('2d');
-            canvas.width = image.width;
-            canvas.height = image.height;
-            context.drawImage(image, 0, 0);
-            try {
-                setUrl(canvas.toDataURL('image/png'));
-            } catch (err) {
-                console.error(err)
-            }
-        });
-        image.src = url;
+
+    const onPageChange = (page) => {
+        if (projectId) {
+            axios({
+                method: 'post',
+                url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
+                data: { project_id: projectId, page_num: page }
+            }).then(res => {
+                setUrl(res.data.file_url);
+                setPageNo(() => res.data.page_num);
+            }).catch(err => {
+                console.log(err);
+            })
+        }
     }
+    // const imageToBaseUrl = (url) => {
+    //     let image;
+    //     image = new Image();
+    //     image.crossOrigin = 'Anonymous';
+    //     image.addEventListener('load', function () {
+    //         let canvas = document.createElement('canvas');
+    //         let context = canvas.getContext('2d');
+    //         canvas.width = image.width;
+    //         canvas.height = image.height;
+    //         context.drawImage(image, 0, 0);
+    //         try {
+    //             setUrl(canvas.toDataURL('image/png'));
+    //         } catch (err) {
+    //             console.error(err)
+    //         }
+    //     });
+    //     image.src = url;
+    // }
 
     useEffect(() => {
         const search = location.search; // could be '?foo=bar'
         const params = new URLSearchParams(search);
         const project_id = params.get('project_id'); // bar
         setProjectId(project_id);
+
         axios({
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
@@ -71,33 +87,35 @@ export default function CustomCropper() {
             console.log(res.data.file_url);
             // imageToBaseUrl(res.data.file_url);
             setUrl(res.data.file_url);
+            setPageNo(() => res.data.page_num);
+
         }).catch(err => {
             console.log(err);
         })
 
-    }, [pageNo])
+    }, [])
 
-    useEffect(() => {
-        if (projectId) {
-            axios({
-                method: 'post',
-                url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
-                data: { project_id: projectId, page_num: pageNo }
-            }).then(res => {
-                console.log(res.data.file_url);
-                // imageToBaseUrl(res.data.file_url);
-                setUrl(res.data.file_url);
-            }).catch(err => {
-                console.log(err);
-            })
-        }
-    }, [pageNo,projectId])
+    // useEffect(() => {
+    //     if (projectId) {
+    //         axios({
+    //             method: 'post',
+    //             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
+    //             data: { project_id: projectId, page_num: pageNo }
+    //         }).then(res => {
+    //             console.log(res.data.file_url);
+    //             // imageToBaseUrl(res.data.file_url);
+    //             setUrl(res.data.file_url);
+    //         }).catch(err => {
+    //             console.log(err);
+    //         })
+    //     }
+    // }, [pageNo, projectId])
 
     const getCropData = () => {
 
         if (typeof cropper !== 'undefined') {
             const { left, top, width, height } = cropper.getCropBoxData();
-            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${left} ${top} ${width} ${height}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
+            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${left},${top},${width},${height}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
             setTemplates([obj, ...templates]);
             setSelectedText('');
             setSelectedCropData('');
@@ -127,12 +145,14 @@ export default function CustomCropper() {
 
     const theme = useTheme();
 
+   
+
     const handleNext = () => {
-        setPageNo((pageNo) => pageNo + 1);
+        onPageChange(pageNo + 1)
     };
 
     const handleBack = () => {
-        setPageNo((pageNo) => pageNo - 1);
+        onPageChange(pageNo - 1)
     };
 
     const handleText = (event) => {
@@ -237,7 +257,7 @@ export default function CustomCropper() {
                                 )}
                                 Back
                             </Button>
-                            <Avatar sx={{ bgcolor: purple[500] }}>{pageNo + 1}</Avatar>
+                            <Avatar sx={{ bgcolor: purple[500] }}>{pageNo}</Avatar>
                             <Button size="small" onClick={handleNext}>
                                 Next
                                 {theme.direction === 'rtl' ? (
