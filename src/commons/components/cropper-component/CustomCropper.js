@@ -20,6 +20,7 @@ import axios from 'axios';
 import { purple } from '@mui/material/colors';
 import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
+import { fontWeight } from '@mui/system';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -114,8 +115,9 @@ export default function CustomCropper() {
     const getCropData = () => {
 
         if (typeof cropper !== 'undefined') {
-            const { left, top, width, height } = cropper.getCropBoxData();
-            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${left},${top},${width},${height}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
+            const { x, y, width, height } = cropper.getData();
+            // const { left2, top2, width2, height2 } = cropper.getCropBoxData();
+            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${x},${y},${width},${height}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
             setTemplates([obj, ...templates]);
             setSelectedText('');
             setSelectedCropData('');
@@ -257,7 +259,7 @@ export default function CustomCropper() {
                                 )}
                                 Back
                             </Button>
-                            <Avatar sx={{ bgcolor: purple[500] }}>{pageNo}</Avatar>
+                            <div style={{ fontWeight:500,lineHeight:2,padding:'2px' }}>Page No: {pageNo}</div>
                             <Button size="small" onClick={handleNext}>
                                 Next
                                 {theme.direction === 'rtl' ? (
