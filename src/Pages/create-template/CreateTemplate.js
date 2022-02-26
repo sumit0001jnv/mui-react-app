@@ -5,7 +5,6 @@ import Header from '../../commons/components/header/Header';
 export default function CreateTemplate() {
     return <>
         <Header></Header>
-        {/* <CustomDropzone></CustomDropzone> */}
         <CustomCropper></CustomCropper>
 
     </>

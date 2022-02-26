@@ -83,18 +83,27 @@ export default function SignIn() {
       dispatch(loginAction.setUser(parsedStore));
       localStorage.setItem('pdf_parser_app', JSON.stringify(parsedStore));
 
-      switch (formData.userCategory) {
-        case 'Admin': {
+      switch (parsedStore.userCategory) {
+        case 'admin': {
           obj.pathname = '/admin';
           obj.userCategory = 'Admin';
           break;
         }
-        case 'Group 1':
-        case 'Group 2':
-        case 'Group 2B':
-        case 'Group 3': {
-          obj.pathname = '/g2-user';
-          obj.userCategory = formData.userCategory;
+        case 'g2':
+          {
+            obj.pathname = '/g2-user';
+            obj.userCategory = 'Group 2';
+            break;
+          }
+        case 'g2b':
+          {
+            obj.pathname = '/g2b-user';
+            obj.userCategory = 'Group 2B';
+            break;
+          }
+        case 'g3': {
+          obj.pathname = '/g3-user';
+          obj.userCategory = 'Group 3';
           break;
         }
       }
@@ -116,14 +125,14 @@ export default function SignIn() {
 
   const handleClickShowPassword = (prop) => () => {
     setformData({
-        ...formData,
-        [prop]: !formData[prop],
+      ...formData,
+      [prop]: !formData[prop],
     });
-};
+  };
 
-const handleMouseDownPassword = (event) => {
+  const handleMouseDownPassword = (event) => {
     event.preventDefault();
-};
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -229,20 +238,6 @@ const handleMouseDownPassword = (event) => {
                   }
                 />
               </FormControl>
-              <Autocomplete
-                sx={{ mt: 2 }}
-                disablePortal
-                id="combo-box-demo"
-                options={userCategories}
-                // sx={{ width: 300 }}
-                // value={formData.group}
-                defaultValue={formData.userCategory || userCategories[0]}
-                // onChange={handleChange('group')}
-                onInputChange={(event, newInputValue) => {
-                  setformData({ ...formData, userCategory: newInputValue })
-                }}
-                renderInput={(params) => <TextField disabled {...params} label="User Category" />}
-              />
               <FormControlLabel
                 control={<Checkbox value="remember" color="primary" />}
                 label="Remember me"

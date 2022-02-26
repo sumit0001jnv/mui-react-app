@@ -5,22 +5,19 @@ import { styled } from '@mui/material/styles';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { useTheme } from '@mui/material/styles';
-import MobileStepper from '@mui/material/MobileStepper';
 import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
-import CropIcon from '@mui/icons-material/Crop';
 import DeleteIcon from '@mui/icons-material/Delete';
 import TextField from "@mui/material/TextField";
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import { useLocation } from "react-router-dom";
 import axios from 'axios';
-import { purple } from '@mui/material/colors';
-import Avatar from '@mui/material/Avatar';
 import Box from '@mui/material/Box';
-import { fontWeight } from '@mui/system';
+import { useDispatch } from 'react-redux';
+import uiAction from '../../../store/actions/uiAction';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -31,6 +28,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function CustomCropper() {
     const location = useLocation();
+    const dispatch=useDispatch();
     const imageRef = useRef(null);
     const [cropper, setCropper] = useState();
     let [url, setUrl] = useState('');
@@ -52,6 +50,7 @@ export default function CustomCropper() {
                 setPageNo(() => res.data.page_num);
             }).catch(err => {
                 console.log(err);
+                dispatch(uiAction.showSnackbar({ message: 'Something went wrong!!!',type:'error' }));
             })
         }
     }
@@ -85,32 +84,16 @@ export default function CustomCropper() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
             data: { project_id, page_num: pageNo }
         }).then(res => {
-            console.log(res.data.file_url);
             // imageToBaseUrl(res.data.file_url);
             setUrl(res.data.file_url);
             setPageNo(() => res.data.page_num);
 
         }).catch(err => {
             console.log(err);
+            dispatch(uiAction.showSnackbar({ message: 'Something went wrong!!!',type:'error' }));
         })
 
     }, [])
-
-    // useEffect(() => {
-    //     if (projectId) {
-    //         axios({
-    //             method: 'post',
-    //             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
-    //             data: { project_id: projectId, page_num: pageNo }
-    //         }).then(res => {
-    //             console.log(res.data.file_url);
-    //             // imageToBaseUrl(res.data.file_url);
-    //             setUrl(res.data.file_url);
-    //         }).catch(err => {
-    //             console.log(err);
-    //         })
-    //     }
-    // }, [pageNo, projectId])
 
     const getCropData = () => {
 
@@ -124,13 +107,6 @@ export default function CustomCropper() {
             cropper.setDragMode("move");
             cropper.clear();
             // setCropData(cropper.getCroppedCanvas().toDataURL());
-        }
-    };
-
-    const setCropData = () => {
-        if (typeof cropper !== 'undefined') {
-            // let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), key: selectedText || '' }
-            setSelectedCropData(cropper.getCroppedCanvas().toDataURL());
         }
     };
 
@@ -188,8 +164,10 @@ export default function CustomCropper() {
             data: payload
         }).then(res => {
             console.log(res);
+            dispatch(uiAction.showSnackbar({ message: 'Template saved successfully',type:'success' }));
         }).catch(err => {
             console.log(err);
+            dispatch(uiAction.showSnackbar({ message: 'Something went wrong!!!',type:'error' }));
         })
 
     }
@@ -207,7 +185,7 @@ export default function CustomCropper() {
                         <Divider />
 
                         <Cropper
-                            style={{ height: 'calc(100vh - 208px)', width: '100%' }}
+                            style={{ height: 'calc(100vh - 200px)', width: '100%' }}
                             // initialAspectRatio={16 / 9}
                             preview=".img-preview"
                             guides={true}
@@ -259,7 +237,7 @@ export default function CustomCropper() {
                                 )}
                                 Back
                             </Button>
-                            <div style={{ fontWeight:500,lineHeight:2,padding:'2px' }}>Page No: {pageNo}</div>
+                            <div style={{ fontWeight:600,lineHeight:2,padding:'8px' }}>Page No: {pageNo}</div>
                             <Button size="small" onClick={handleNext}>
                                 Next
                                 {theme.direction === 'rtl' ? (

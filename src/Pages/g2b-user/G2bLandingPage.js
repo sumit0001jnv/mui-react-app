@@ -149,11 +149,8 @@ export default function G2bLandingPage() {
     }
 
     const onViewClick = (row) => {
-        // console.log(row.id)
-        // pathname: obj.pathname,
-        //     state: obj
         history.push({
-            pathname: '/create-template',
+            pathname: '/quote-detail',
             // state: { project_id: row.id },
             search: `?project_id=${row.id}`,
         }
@@ -177,7 +174,7 @@ export default function G2bLandingPage() {
                 refreshTable={onRefresh}
                 showToolbar
                 hideActionBtn
-                toolbarTitle='G2 Users'
+                toolbarTitle='Group 2B Users'
                 toolBarBtnClick={addUserOnClick}></CustomTable>
         </ThemeProvider>
     );
