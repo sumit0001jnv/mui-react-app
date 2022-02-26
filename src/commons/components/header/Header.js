@@ -20,6 +20,9 @@ import { ThemeProvider } from '@mui/material/styles';
 import { useDispatch } from 'react-redux';
 import loginAction from '../../../store/actions/loginAction';
 import uiAction from '../../../store/actions/uiAction';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+
+
 
 function HideOnScroll(props) {
   const { children, window } = props;
@@ -85,6 +88,7 @@ export default function Header(props) {
   const open = Boolean(anchorEl);
   const [userCategory, setUserCategory] = useState('');
   const userCategories = ['Group 1', 'Group 2', 'Group 2B', 'Group 3'];
+  const userCategoryKeys = ['g1', 'g2', 'g2b', 'g3'];
 
   const abbreviateWord = (word = '') => {
     let abbrWord = ''
@@ -161,6 +165,10 @@ export default function Header(props) {
               </Typography>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               </Typography>
+              {['g2', 'g2b'].includes(userCategory) ?
+                <Badge color="error" badgeContent={10} sx={{mx:4}}>
+                  <NotificationsIcon  sx={{color:'#3f51b5',width:"30px",height:"30px"}}  />
+                </Badge> : ''}
               {userCategories.includes(userCategory) ? <Button color="inherit" sx={{
                 mr: 2,
                 ':hover': {

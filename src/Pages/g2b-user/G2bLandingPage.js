@@ -174,7 +174,7 @@ export default function G2bLandingPage() {
                 refreshTable={onRefresh}
                 showToolbar
                 hideActionBtn
-                toolbarTitle='Group 2B Users'
+                toolbarTitle='Project Details'
                 toolBarBtnClick={addUserOnClick}></CustomTable>
         </ThemeProvider>
     );

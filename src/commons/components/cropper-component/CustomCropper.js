@@ -100,7 +100,8 @@ export default function CustomCropper() {
         if (typeof cropper !== 'undefined') {
             const { x, y, width, height } = cropper.getData();
             // const { left2, top2, width2, height2 } = cropper.getCropBoxData();
-            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${x},${y},${width},${height}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
+            var rounded = (num)=>Math.round((num + Number.EPSILON) * 100) / 100;
+            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${rounded(x)},${rounded(y)},${rounded(width)},${rounded(height)}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
             setTemplates([obj, ...templates]);
             setSelectedText('');
             setSelectedCropData('');

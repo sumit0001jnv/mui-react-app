@@ -47,10 +47,10 @@ export default function SignIn() {
   const history = useHistory();
   const dispatch = useDispatch();
   const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
-  const [formData, setformData] = useState({ email: '', password: '', userCategory: 'Admin', showPassword: false })
+  const [formData, setformData] = useState({ email: '', password: '', showPassword: false })
   const handleSubmit = (event) => {
     event.preventDefault();
-    let obj = { login: true, userName: 'Avinash', pathname: '/', userCategory: 'Admin' }
+    let obj = { login: true, userName: '', pathname: '/', userCategory: '' }
     let bodyFormData = new FormData();
     bodyFormData.append('username', formData.email);
     bodyFormData.append('password', formData.password);
@@ -86,27 +86,28 @@ export default function SignIn() {
       switch (parsedStore.userCategory) {
         case 'admin': {
           obj.pathname = '/admin';
-          obj.userCategory = 'Admin';
+          // obj.userCategory = 'Admin';
           break;
         }
         case 'g2':
           {
             obj.pathname = '/g2-user';
-            obj.userCategory = 'Group 2';
+            // obj.userCategory = 'Group 2';
             break;
           }
         case 'g2b':
           {
             obj.pathname = '/g2b-user';
-            obj.userCategory = 'Group 2B';
+            // obj.userCategory = 'Group 2B';
             break;
           }
         case 'g3': {
           obj.pathname = '/g3-user';
-          obj.userCategory = 'Group 3';
+          // obj.userCategory = 'Group 3';
           break;
         }
       }
+      obj.userCategory=parsedStore.userCategory
       history.push({
         pathname: obj.pathname,
         state: obj

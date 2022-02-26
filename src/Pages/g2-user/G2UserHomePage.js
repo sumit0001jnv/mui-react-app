@@ -177,7 +177,7 @@ export default function G2UserHomePage() {
                 refreshTable={onRefresh}
                 showToolbar
                 hideActionBtn
-                toolbarTitle='G2 Users'
+                toolbarTitle='Project Details'
                 toolBarBtnClick={addUserOnClick}></CustomTable>
         </ThemeProvider>
     );
