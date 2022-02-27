@@ -13,8 +13,8 @@ import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { useHistory, useLocation } from "react-router-dom";
-import { deepOrange, deepPurple } from '@mui/material/colors';
+import { useHistory } from "react-router-dom";
+import { deepOrange } from '@mui/material/colors';
 import theme from '../../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
 import { useDispatch } from 'react-redux';
@@ -79,7 +79,6 @@ const StyledBadge = styled(Badge)(({ theme }) => ({
 }));
 
 export default function Header(props) {
-  const location = useLocation();
   const dispatch = useDispatch();
   const history = useHistory();
   const [login, setlogin] = useState(false);
@@ -87,8 +86,8 @@ export default function Header(props) {
   const [anchorEl, setAnchorEl] = useState(null);
   const open = Boolean(anchorEl);
   const [userCategory, setUserCategory] = useState('');
-  const userCategories = ['Group 1', 'Group 2', 'Group 2B', 'Group 3'];
-  const userCategoryKeys = ['g1', 'g2', 'g2b', 'g3'];
+  // const userCategoryKeys = ['Group 1', 'Group 2', 'Group 2B', 'Group 3'];
+  // const userCategoryKeys = ['g1', 'g2', 'g2b', 'g3'];
 
   const abbreviateWord = (word = '') => {
     let abbrWord = ''
@@ -116,7 +115,9 @@ export default function Header(props) {
       }
       case 'logout': {
         history.push("/");
-        // setlogin(false);
+        setlogin(false);
+        setUserName('');
+        setUserCategory('');
         localStorage.removeItem('pdf_parser_app');
         dispatch(loginAction.logOut());
         dispatch(uiAction.showSnackbar({ message: 'User logged out successfully', type: 'info' }));
@@ -130,6 +131,9 @@ export default function Header(props) {
       //   history.push("/sign-up");
       //   break;
       // }
+      default: {
+        history.push("/");
+      }
 
     }
   };
@@ -158,7 +162,7 @@ export default function Header(props) {
             </Typography> */}
               {/* <Avatar sx={{ bgcolor: '#fff' }} variant="rounded">
             </Avatar> */}
-              <img src='images/company-logo.jpeg' width="60"></img>
+              <img src='images/company-logo.jpeg' width="60" alt="company-logo"></img>
               {/* <Avatar sx={{ width: 56, height: 56 }} alt="App logo" src="images/company-logo.jpeg" /> */}
               <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl: 2, color: 'rgb(26 33 77)', textTransform: 'capitalize' }}>
                 PDF Parser
@@ -166,10 +170,10 @@ export default function Header(props) {
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               </Typography>
               {['g2', 'g2b'].includes(userCategory) ?
-                <Badge color="error" badgeContent={10} sx={{mx:4}}>
-                  <NotificationsIcon  sx={{color:'#3f51b5',width:"30px",height:"30px"}}  />
+                <Badge color="error" badgeContent={10} sx={{ mx: 4 }}>
+                  <NotificationsIcon sx={{ color: '#3f51b5', width: "30px", height: "30px" }} />
                 </Badge> : ''}
-              {userCategories.includes(userCategory) ? <Button color="inherit" sx={{
+              {/* {userCategoryKeys.includes(userCategory) ? <Button color="inherit" sx={{
                 mr: 2,
                 ':hover': {
                   bgcolor: '#fff',
@@ -178,7 +182,7 @@ export default function Header(props) {
                 color: 'rgb(26 33 77)',
                 textTransform: 'capitalize'
               }} to="/create-template">Create Template</Button> : ''}
-              {(userCategories.includes(userCategory)) ? <Button color="inherit" sx={{
+              {(userCategoryKeys.includes(userCategory)) ? <Button color="inherit" sx={{
                 mr: 2,
                 ':hover': {
                   bgcolor: '#fff',
@@ -186,7 +190,7 @@ export default function Header(props) {
                 },
                 color: 'rgb(26 33 77)',
                 textTransform: 'capitalize'
-              }} to="/parse-pdf">Parse PDF</Button> : ''}
+              }} to="/parse-pdf">Parse PDF</Button> : ''} */}
               {
                 login ? (<>
                   <Box sx={{ display: 'flex', alignItems: 'center' }}>

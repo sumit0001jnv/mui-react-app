@@ -50,7 +50,7 @@ export default function CustomCropper() {
                 setPageNo(() => res.data.page_num);
             }).catch(err => {
                 console.log(err);
-                dispatch(uiAction.showSnackbar({ message: 'Something went wrong!!!',type:'error' }));
+                dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time',type:'error' }));
             })
         }
     }
@@ -90,7 +90,7 @@ export default function CustomCropper() {
 
         }).catch(err => {
             console.log(err);
-            dispatch(uiAction.showSnackbar({ message: 'Something went wrong!!!',type:'error' }));
+            dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time',type:'error' }));
         })
 
     }, [])
@@ -168,7 +168,7 @@ export default function CustomCropper() {
             dispatch(uiAction.showSnackbar({ message: 'Template saved successfully',type:'success' }));
         }).catch(err => {
             console.log(err);
-            dispatch(uiAction.showSnackbar({ message: 'Something went wrong!!!',type:'error' }));
+            dispatch(uiAction.showSnackbar({ message:err?.data?.msg || 'Something went wrong.Please try after some time',type:'error' }));
         })
 
     }

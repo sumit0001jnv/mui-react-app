@@ -14,7 +14,6 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { useHistory } from "react-router-dom";
-import Autocomplete from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
 import InputLabel from '@mui/material/InputLabel';
 import OutlinedInput from '@mui/material/OutlinedInput';
@@ -46,7 +45,7 @@ export default function SignIn() {
 
   const history = useHistory();
   const dispatch = useDispatch();
-  const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
+  // const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
   const [formData, setformData] = useState({ email: '', password: '', showPassword: false })
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -67,6 +66,10 @@ export default function SignIn() {
       // }
     }).then(res => {
       const data = res.data.user_data;
+      if (!data) {
+        dispatch(uiAction.showSnackbar({ type: 'error', message: res.data.msg }));
+        return;
+      }
       obj.userName = data.user_name;
       dispatch(loginAction.logIn());
       dispatch(uiAction.showSnackbar({ type: 'success', message: 'User logged in successfully' }));
@@ -106,15 +109,18 @@ export default function SignIn() {
           // obj.userCategory = 'Group 3';
           break;
         }
+        default:{
+          obj.pathname='/'
+        }
       }
-      obj.userCategory=parsedStore.userCategory
+      obj.userCategory = parsedStore.userCategory
       history.push({
         pathname: obj.pathname,
         state: obj
       })
     }).catch(err => {
       console.log(err);
-      dispatch(uiAction.showSnackbar({ type: 'error', message: 'There is problem in login.Please try after some time' }));
+      dispatch(uiAction.showSnackbar({ type: 'error', message: 'Something went wrong.Please try after some time' }));
     });
 
 
