@@ -1,5 +1,5 @@
 // import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Paper from '@mui/material/Paper';
@@ -46,7 +46,12 @@ export default function SignIn() {
   const history = useHistory();
   const dispatch = useDispatch();
   // const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
-  const [formData, setformData] = useState({ email: '', password: '', showPassword: false })
+  const [formData, setformData] = useState({ email: '', password: '', showPassword: false });
+  const [video, SetVideo] = useState('videos/home-video-3.mp4');
+  useEffect(() => {
+    let userData = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
+    SetVideo(userData.user_org_video_url);
+  }, []);
   const handleSubmit = (event) => {
     event.preventDefault();
     let obj = { login: true, userName: '', pathname: '/', userCategory: '' }
@@ -83,6 +88,10 @@ export default function SignIn() {
       parsedStore.userName = data.user_name;
       parsedStore.isLogin = true;
       parsedStore.userCategory = data.user_group;
+      parsedStore.user_id = data.user_id;
+      parsedStore.user_org_name = data.user_org_name;
+      parsedStore.user_org_logo_url = data.user_org_logo_url;
+      parsedStore.user_org_video_url = data.user_org_video_url;
       dispatch(loginAction.setUser(parsedStore));
       localStorage.setItem('pdf_parser_app', JSON.stringify(parsedStore));
 
@@ -109,8 +118,8 @@ export default function SignIn() {
           // obj.userCategory = 'Group 3';
           break;
         }
-        default:{
-          obj.pathname='/'
+        default: {
+          obj.pathname = '/'
         }
       }
       obj.userCategory = parsedStore.userCategory
@@ -159,8 +168,8 @@ export default function SignIn() {
         <video style={{
           height: "100%",
         }} id="background-video" autoPlay loop muted>
-          <source src="videos/home-video-3.mp4" type="video/mp4" />
-          <source src="videos/home-video-3.mp4" type="video/ogg" />
+          <source src={video || "videos/home-video-3.mp4"} type="video/mp4" />
+          <source src={video || "videos/home-video-3.mp4"} type="video/ogg" />
           Your browser does not support the video tag.
         </video>
       </Grid>

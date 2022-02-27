@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { green, orange, purple, red, blue,indigo } from '@mui/material/colors';
+import { green, orange, purple, red, blue,indigo ,grey} from '@mui/material/colors';
 
 export default createTheme({
     palette: {
@@ -20,6 +20,9 @@ export default createTheme({
         },
         indigo: {
             main: indigo[500]
+        },
+        grey: {
+            main: grey[500]
         }
     },
 });

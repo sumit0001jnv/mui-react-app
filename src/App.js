@@ -15,6 +15,7 @@ import CustomSnackbar from './commons/components/snackbar/CustomSnackbar'
 import G2bLandingPage from './pages/g2b-user/G2bLandingPage';
 import QuoteDetail from './pages/g2b-user/QuoteDetail';
 import { useHistory } from "react-router-dom";
+import Setting from './pages/admin/Setting';
 
 function App() {
   // const history = useHistory();
@@ -71,6 +72,7 @@ function App() {
           <Route path="/g2-user" component={G2UserHomePage} exact></Route>
           <Route path="/g2b-user" component={G2bLandingPage} exact></Route>
           <Route path="/quote-detail" component={QuoteDetail} exact></Route>
+          <Route path="/setting" component={Setting} exact></Route>
           <Route path="***">
             <h1>No page found</h1>
           </Route>

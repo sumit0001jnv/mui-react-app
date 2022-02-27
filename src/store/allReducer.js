@@ -4,7 +4,8 @@ const initialState = {
     isLogedIn: false,
     user: {
         userName: "",
-        userCategory: ''
+        userCategory: '',
+        user_id: '',
     }
 };
 const loggedReducer = (state = initialState, action) => {

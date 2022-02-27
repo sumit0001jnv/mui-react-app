@@ -21,6 +21,8 @@ import { useDispatch } from 'react-redux';
 import loginAction from '../../../store/actions/loginAction';
 import uiAction from '../../../store/actions/uiAction';
 import NotificationsIcon from '@mui/icons-material/Notifications';
+import SettingsIcon from '@mui/icons-material/Settings';
+import IconButton from '@mui/material/IconButton';
 
 
 
@@ -84,6 +86,8 @@ export default function Header(props) {
   const [login, setlogin] = useState(false);
   const [userName, setUserName] = useState('');
   const [anchorEl, setAnchorEl] = useState(null);
+  const [logo, setLogo] = useState('images/company-logo.jpeg');
+  const [orgName, setOrgName] = useState('Sielo App');
   const open = Boolean(anchorEl);
   const [userCategory, setUserCategory] = useState('');
   // const userCategoryKeys = ['Group 1', 'Group 2', 'Group 2B', 'Group 3'];
@@ -100,6 +104,8 @@ export default function Header(props) {
     setlogin(userData.isLogin);
     setUserName(userData.userName);
     setUserCategory(userData.userCategory);
+    setOrgName(userData.user_org_name);
+    setLogo(userData.user_org_logo_url);
   }, []);
 
   const handleClick = (event) => {
@@ -142,6 +148,10 @@ export default function Header(props) {
     history.push("/sign-in");
   }
 
+  const handleSetting = () => {
+    history.push("/setting");
+  }
+
   return (
     <>
       <ThemeProvider theme={theme}>
@@ -162,13 +172,24 @@ export default function Header(props) {
             </Typography> */}
               {/* <Avatar sx={{ bgcolor: '#fff' }} variant="rounded">
             </Avatar> */}
-              <img src='images/company-logo.jpeg' width="60" alt="company-logo"></img>
+              <img src={logo || 'images/company-logo.jpeg'} width="60" alt="company-logo"></img>
               {/* <Avatar sx={{ width: 56, height: 56 }} alt="App logo" src="images/company-logo.jpeg" /> */}
               <Typography variant="h6" component="div" sx={{ flexGrow: 1, pl: 2, color: 'rgb(26 33 77)', textTransform: 'capitalize' }}>
-                PDF Parser
+                {orgName || 'Sielo App'}
               </Typography>
               <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
               </Typography>
+              {'admin' === userCategory ?
+                <IconButton
+                  size="large"
+                  edge="start"
+                  color="grey"
+                  aria-label="menu"
+                  sx={{ mr: 2 }}
+                  onClick={handleSetting}
+                >
+                  <SettingsIcon />
+                </IconButton> : ''}
               {['g2', 'g2b'].includes(userCategory) ?
                 <Badge color="error" badgeContent={10} sx={{ mx: 4 }}>
                   <NotificationsIcon sx={{ color: '#3f51b5', width: "30px", height: "30px" }} />
