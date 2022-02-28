@@ -112,7 +112,6 @@ export default function Header(props) {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = (type) => (eventType) => {
-    // console.log(type);
     setAnchorEl(null);
     switch (type) {
       case 'login': {
@@ -138,7 +137,7 @@ export default function Header(props) {
       //   break;
       // }
       default: {
-        history.push("/");
+        // history.push("/");
       }
 
     }
@@ -219,7 +218,7 @@ export default function Header(props) {
                       overlap="circular"
                       anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
                       variant="dot"
-                      onClick={handleClick}
+                      onClick={(event)=>handleClick(event)}
                     >
                       <Avatar sx={{ bgcolor: deepOrange[500] }}>{abbreviateWord(userName)}</Avatar>
                     </StyledBadge></Box></>) :
