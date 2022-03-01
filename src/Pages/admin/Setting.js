@@ -22,7 +22,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import IconButton from '@mui/material/IconButton';
 import ImageIcon from '@mui/icons-material/Image';
-
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -37,9 +37,24 @@ export default function Setting(props) {
     { title: 'Application Logo', key: 'org_logo', value: '' },
     { title: 'Application Homepage Video', key: 'org_video', value: '' }
     ]);
+
+
     const [image, setImage] = useState('');
     const [loading, setLoading] = useState(false);
     const [video, setVideo] = useState('');
+
+    useEffect(() => {
+        let userData = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
+        setVideo(userData.user_org_video_url || '');
+        setImage(userData.user_org_logo_url || '');
+        // if (userData.user_org_logo_url && userData.user_org_video_url) {
+        //     setTableData((data) => {
+        //         data[1].value = userData.user_org_logo_url;
+        //         data[2].value = userData.user_org_video_url;
+        //         return [...data];
+        //     })
+        // }
+    }, [])
     const handleText = (value, rowIndex) => {
         setTableData((data) => {
             data[rowIndex].value = value;
@@ -107,8 +122,11 @@ export default function Setting(props) {
                     width: '500px',
                     maxWidth: '100%',
                 }}>
-                <Grid container direction={'column'} spacing={0} sx={{ height: 'calc(100vh - 116px)', maxHeight: 'calc(100vh - 116px)', flexWrap: 'nowrap', overflowY: 'auto', m: 0, p: 1 }}>
+                <Grid container direction={'column'} sx={{ height: 'calc(100vh - 116px)', maxHeight: 'calc(100vh - 116px)', flexWrap: 'nowrap', overflowY: 'auto', m: 0, p: 1 }}>
                     <Grid container alignItems={'center'}>
+                        <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
+                            <KeyboardBackspaceIcon />
+                        </IconButton>
                         <Typography component="h1" variant="h5" sx={{ textAlign: 'initial', mr: 'auto' }}>
                             Configuration
                         </Typography>
@@ -117,8 +135,8 @@ export default function Setting(props) {
                         </IconButton>
                     </Grid>
                     <Divider sx={{ mb: 2, mt: 1 }} />
-                    <Grid container alignItems={'center'} sx={{ mb: 4 }}>
-                        <Grid item xs={12} md={6}
+                    <Grid container alignItems={'center'} sx={{ mb: 4, p: 1 }}>
+                        <Grid item xs={12}
                         >
                             <TextField
                                 margin="normal"
@@ -135,13 +153,9 @@ export default function Setting(props) {
                                 onChange={(event) => handleText(event.target.value, 0)}
                             />
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Typography component="h6" variant="h6" sx={{ textAlign: 'initial', pl: 2 }}>
-                                {tableData[0].value}
-                            </Typography>
-                        </Grid>
                     </Grid>
-                    <Grid container sx={{ mb: 4 }}>
+                    <Divider sx={{ mb: 2, mt: 1 }} />
+                    <Grid container sx={{ mb: 4, p: 1 }}>
                         <Grid container xs={12} md={6} alignItems={'center'} justifyContent={'flex-end'}>
                             {/* <Grid item > */}
                             <Button
@@ -185,7 +199,8 @@ export default function Setting(props) {
 
                         </Grid>
                     </Grid>
-                    <Grid container sx={{ mb: 4 }}>
+                    <Divider sx={{ mb: 2, mt: 1 }} />
+                    <Grid container sx={{ mb: 4, p: 1 }}>
                         <Grid container xs={12} md={6} justifyContent={'center'} alignItems={'center'}>
                             {/* <Grid item   > */}
                             <Button
@@ -232,7 +247,7 @@ export default function Setting(props) {
                             </Box>
                         </Grid>
                     </Grid>
-
+                    <Divider sx={{ mb: 2, mt: 1 }} />
                     <LoadingButton
                         type="submit"
                         loading={loading}
