@@ -95,17 +95,18 @@ export default function Setting(props) {
                 data[1].value = file;
                 return [...data];
             })
-            setImage(URL.createObjectURL(file))
-
-            console.log(file);
+            setImage(URL.createObjectURL(file));
         } else {
             setTableData((data) => {
                 data[2].value = file;
                 return [...data];
             })
-            setVideo(() => URL.createObjectURL(file))
+            setTimeout(()=>{
+                setVideo(() => URL.createObjectURL(file))
+            },1000)
+            setVideo(() => '')
+            
         }
-
     }
     const navigateBack = () => {
         history.push('/admin')
@@ -157,7 +158,6 @@ export default function Setting(props) {
                     <Divider sx={{ mb: 2, mt: 1 }} />
                     <Grid container sx={{ mb: 4, p: 1 }}>
                         <Grid container xs={12} md={6} alignItems={'center'} justifyContent={'flex-end'}>
-                            {/* <Grid item > */}
                             <Button
                                 variant="outlined"
                                 component="label"
@@ -174,7 +174,6 @@ export default function Setting(props) {
                                     onChange={(event) => handleInput(event, 'img')}
                                 />
                             </Button>
-                            {/* </Grid> */}
                         </Grid>
                         <Grid item sx={12} md={6} sx={{ margin: 0, paddingTop: '0 !important', paddingLeft: '8px !important' }}>
                             <Box sx={{
@@ -202,7 +201,6 @@ export default function Setting(props) {
                     <Divider sx={{ mb: 2, mt: 1 }} />
                     <Grid container sx={{ mb: 4, p: 1 }}>
                         <Grid container xs={12} md={6} justifyContent={'center'} alignItems={'center'}>
-                            {/* <Grid item   > */}
                             <Button
                                 variant="outlined"
                                 component="label"
@@ -220,7 +218,6 @@ export default function Setting(props) {
                                     onChange={(event) => handleInput(event, 'video')}
                                 />
                             </Button>
-                            {/* </Grid> */}
                         </Grid>
                         <Grid item xs={12} md={6} sx={{ margin: 0, paddingTop: '0 !important', paddingLeft: '8px !important' }}>
                             <Box sx={{
@@ -229,7 +226,7 @@ export default function Setting(props) {
                                 width: '180px',
                                 border: '1px solid #ccc',
                             }}>
-                                {video ? <video style={{
+                                {video ? <video key={video} style={{
                                     maxHeight: '100px',
                                     height: '100px',
                                     width: '180px',
