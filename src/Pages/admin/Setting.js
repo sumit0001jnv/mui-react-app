@@ -12,9 +12,17 @@ import Box from '@mui/material/Box';
 import { useLocation } from "react-router-dom";
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import VideoCameraBackIcon from '@mui/icons-material/VideoCameraBack';
+import VideoFileIcon from '@mui/icons-material/VideoFile';
 import axios from 'axios';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SaveIcon from '@mui/icons-material/Save';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import CloseIcon from '@mui/icons-material/Close';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import IconButton from '@mui/material/IconButton';
+import ImageIcon from '@mui/icons-material/Image';
+
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -24,6 +32,7 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 export default function Setting(props) {
     const dispatch = useDispatch();
+    const history = useHistory();
     const [tableData, setTableData] = useState([{ title: 'Application Title', key: 'org_name', value: 'Sielo App' },
     { title: 'Application Logo', key: 'org_logo', value: '' },
     { title: 'Application Homepage Video', key: 'org_video', value: '' }
@@ -54,10 +63,6 @@ export default function Setting(props) {
             headers: {
                 "Content-Type": "multipart/form-data",
             },
-            // data: {
-            //   username: formData.email,
-            //   password: formData.password
-            // }
         }).then(res => {
             console.log(res);
             setLoading(false);
@@ -83,43 +88,67 @@ export default function Setting(props) {
                 data[2].value = file;
                 return [...data];
             })
-            setVideo(URL.createObjectURL(file))
+            setVideo(() => URL.createObjectURL(file))
         }
 
     }
-    return <> <Header></Header>
-        <Item
-            sx={{
-                marginTop: 8,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                px: 2,
-                m: 2,
+    const navigateBack = () => {
+        history.push('/admin')
+    }
 
-            }}>
-            <Grid container spacing={0} sx={{ height: 'calc(100vh - 116px)', maxHeight: 'calc(100vh - 116px)', width: '500px', maxWidth: '100%', flexWrap: 'nowrap', overflowY: 'auto' }}>
-                <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 2 }}>
-                    <TextField
-                        margin="normal"
-                        required
-                        id="name"
-                        label={tableData[0].title}
-                        name="name"
-                        type="text"
-                        autoFocus
-                        sx={{ mr: 2, width: '100%' }}
-                        value={tableData[0].value}
-                        onChange={(event) => handleText(event.target.value, 0)}
-                    />
-                    <Grid container justifyContent="flex-start"
-                        alignItems="center">
-                        <Grid item xs={'auto'}>
+    return <> <Header></Header>
+        <Grid container justifyContent={'center'}>
+            <Item
+                sx={{
+                    // px: 2,
+                    // mx: 2,
+                    m: 0,
+                    p: 0,
+                    width: '500px',
+                    maxWidth: '100%',
+                }}>
+                <Grid container direction={'column'} spacing={0} sx={{ height: 'calc(100vh - 116px)', maxHeight: 'calc(100vh - 116px)', flexWrap: 'nowrap', overflowY: 'auto', m: 0, p: 1 }}>
+                    <Grid container alignItems={'center'}>
+                        <Typography component="h1" variant="h5" sx={{ textAlign: 'initial', mr: 'auto' }}>
+                            Configuration
+                        </Typography>
+                        <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
+                            <CloseIcon />
+                        </IconButton>
+                    </Grid>
+                    <Divider sx={{ mb: 2, mt: 1 }} />
+                    <Grid container alignItems={'center'} sx={{ mb: 4 }}>
+                        <Grid item xs={12} md={6}
+                        >
+                            <TextField
+                                margin="normal"
+                                required
+                                fullWidth
+                                id="name"
+                                label={tableData[0].title}
+                                name="name"
+                                type="text"
+                                autoFocus
+                                size={'small'}
+                                sx={{ mr: 2, width: '100%' }}
+                                value={tableData[0].value}
+                                onChange={(event) => handleText(event.target.value, 0)}
+                            />
+                        </Grid>
+                        <Grid item xs={12} md={6}>
+                            <Typography component="h6" variant="h6" sx={{ textAlign: 'initial', pl: 2 }}>
+                                {tableData[0].value}
+                            </Typography>
+                        </Grid>
+                    </Grid>
+                    <Grid container sx={{ mb: 4 }}>
+                        <Grid container xs={12} md={6} alignItems={'center'} justifyContent={'flex-end'}>
+                            {/* <Grid item > */}
                             <Button
                                 variant="outlined"
                                 component="label"
-                                xs={12}
-                                sx={{ my: 2 }}
+                                fullWidth
+                                size={'small'}
                                 startIcon={<CameraAltIcon />}
                             >
                                 Upload Image
@@ -131,64 +160,94 @@ export default function Setting(props) {
                                     onChange={(event) => handleInput(event, 'img')}
                                 />
                             </Button>
+                            {/* </Grid> */}
                         </Grid>
+                        <Grid item sx={12} md={6} sx={{ margin: 0, paddingTop: '0 !important', paddingLeft: '8px !important' }}>
+                            <Box sx={{
+                                maxHeight: '100px',
+                                height: '100px',
+                                width: '180px',
+                                border: '1px solid #ccc',
+                                alignSelf: 'center'
+                            }}>
+                                {image ? <img src={image} style={{
+                                    maxHeight: '100px',
+                                    height: '100px',
+                                    maxWidth: '180px',
+                                }} alt='logo'></img> : <Box sx={{
+                                    height: '100px',
+                                    width: '180px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}><ImageIcon /></Box>}
+                            </Box>
 
-
-                        {image ? <Grid xs={12} container
-                            direction="row"
-                            justifyContent="flex-start"
-                            sx={{ mb: 2 }}
-                            alignItems="center"><img src={image} width="120px" alt='logo'></img></Grid> : ''}
+                        </Grid>
                     </Grid>
-                    <Grid container>
-                        <Button
-                            variant="outlined"
-                            component="label"
-                            startIcon={<VideoCameraBackIcon />}
-                        >
-                            Upload Video
-                            <input
-                                accept="video/*"
-                                id="raised-button-file-2"
-                                type="file"
-                                hidden
-                                onChange={(event) => handleInput(event, 'video')}
-                            />
-                        </Button>
-                        {video ? <Grid xs={12} container
-                            direction="row"
-                            justifyContent="flex-start"
-                            sx={{ my: 2 }}
-                            alignItems="center"><video style={{
-                                maxWidth: '120px',
-                            }} id="background-video" autoPlay loop muted>
-                                <source src={video} type="video/mp4" />
-                                <source src={video} type="video/ogg" />
-                                Your browser does not support the video tag.
-                            </video></Grid> : ''}
-
+                    <Grid container sx={{ mb: 4 }}>
+                        <Grid container xs={12} md={6} justifyContent={'center'} alignItems={'center'}>
+                            {/* <Grid item   > */}
+                            <Button
+                                variant="outlined"
+                                component="label"
+                                fullWidth
+                                size={'small'}
+                                fullWidth
+                                startIcon={<VideoCameraBackIcon />}
+                            >
+                                Upload Video
+                                <input
+                                    accept="video/*"
+                                    id="raised-button-file-2"
+                                    type="file"
+                                    hidden
+                                    onChange={(event) => handleInput(event, 'video')}
+                                />
+                            </Button>
+                            {/* </Grid> */}
+                        </Grid>
+                        <Grid item xs={12} md={6} sx={{ margin: 0, paddingTop: '0 !important', paddingLeft: '8px !important' }}>
+                            <Box sx={{
+                                maxHeight: '100px',
+                                height: '100px',
+                                width: '180px',
+                                border: '1px solid #ccc',
+                            }}>
+                                {video ? <video style={{
+                                    maxHeight: '100px',
+                                    height: '100px',
+                                    width: '180px',
+                                }} id="background-video" autoPlay loop muted>
+                                    <source src={video} type="video/mp4" />
+                                    <source src={video} type="video/ogg" />
+                                    Your browser does not support the video tag.
+                                </video> : <Box sx={{
+                                    height: '100px',
+                                    width: '180px',
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    justifyContent: 'center'
+                                }}><VideoFileIcon color="primary" /></Box>}
+                            </Box>
+                        </Grid>
                     </Grid>
 
-                    {/* <Button
-                        type="submit"
-                        fullWidth
-                        variant="contained"
-                        sx={{ mt: 3, mb: 2 }}
-                    >
-                        Save
-                    </Button> */}
                     <LoadingButton
                         type="submit"
                         loading={loading}
                         loadingPosition="start"
                         startIcon={<SaveIcon />}
-                        variant="outlined"
+                        variant="contained"
                         sx={{ mt: 3, mb: 2 }}
+                        onClick={handleSubmit}
                     >
                         Save
                     </LoadingButton>
+                </Grid>
 
-                </Box>
-            </Grid>
-        </Item></>
+
+            </Item>
+        </Grid >
+    </>
 }

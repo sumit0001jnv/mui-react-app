@@ -18,6 +18,8 @@ import axios from 'axios';
 import Box from '@mui/material/Box';
 import { useDispatch } from 'react-redux';
 import uiAction from '../../../store/actions/uiAction';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -28,7 +30,8 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function CustomCropper() {
     const location = useLocation();
-    const dispatch=useDispatch();
+    const history = useHistory();
+    const dispatch = useDispatch();
     const imageRef = useRef(null);
     const [cropper, setCropper] = useState();
     let [url, setUrl] = useState('');
@@ -50,7 +53,7 @@ export default function CustomCropper() {
                 setPageNo(() => res.data.page_num);
             }).catch(err => {
                 console.log(err);
-                dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time',type:'error' }));
+                dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
             })
         }
     }
@@ -90,7 +93,7 @@ export default function CustomCropper() {
 
         }).catch(err => {
             console.log(err);
-            dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time',type:'error' }));
+            dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
         })
 
     }, [])
@@ -100,7 +103,7 @@ export default function CustomCropper() {
         if (typeof cropper !== 'undefined') {
             const { x, y, width, height } = cropper.getData();
             // const { left2, top2, width2, height2 } = cropper.getCropBoxData();
-            var rounded = (num)=>Math.round((num + Number.EPSILON) * 100) / 100;
+            var rounded = (num) => Math.round((num + Number.EPSILON) * 100) / 100;
             let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${rounded(x)},${rounded(y)},${rounded(width)},${rounded(height)}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
             setTemplates([obj, ...templates]);
             setSelectedText('');
@@ -122,9 +125,13 @@ export default function CustomCropper() {
         }
     }
 
+    const navigateBack = () => {
+        history.push('/g2-user')
+    }
+
     const theme = useTheme();
 
-   
+
 
     const handleNext = () => {
         onPageChange(pageNo + 1)
@@ -165,10 +172,10 @@ export default function CustomCropper() {
             data: payload
         }).then(res => {
             console.log(res);
-            dispatch(uiAction.showSnackbar({ message: 'Template saved successfully',type:'success' }));
+            dispatch(uiAction.showSnackbar({ message: 'Template saved successfully', type: 'success' }));
         }).catch(err => {
             console.log(err);
-            dispatch(uiAction.showSnackbar({ message:err?.data?.msg || 'Something went wrong.Please try after some time',type:'error' }));
+            dispatch(uiAction.showSnackbar({ message: err?.data?.msg || 'Something went wrong.Please try after some time', type: 'error' }));
         })
 
     }
@@ -178,8 +185,12 @@ export default function CustomCropper() {
             <Grid container spacing={2} sx={{ px: 2 }}>
                 <Grid item xs={7}>
                     <Item>
-                        <Grid container spacing={0} justifyContent="flex-end">
+                        <Grid container spacing={0} alignItems={'center'}>
                             {/* <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={setCropData} startIcon={<CropIcon />}>Crop Image</Button> */}
+                            <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
+                                <KeyboardBackspaceIcon />
+                            </IconButton>
+                            <Typography variant='h6' sx={{ ml: 1, mr: 'auto' }}>Create Template</Typography>
                             <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={clearCrop} >Clear crop box</Button>
                             {/* <Button variant="outlined" size="small" sx={{ mb: 1 }} onClick={restCrop}>Reset crop box</Button> */}
                         </Grid>
@@ -238,7 +249,7 @@ export default function CustomCropper() {
                                 )}
                                 Back
                             </Button>
-                            <div style={{ fontWeight:600,lineHeight:2,padding:'8px' }}>Page No: {pageNo}</div>
+                            <div style={{ fontWeight: 600, lineHeight: 2, padding: '8px' }}>Page No: {pageNo}</div>
                             <Button size="small" onClick={handleNext}>
                                 Next
                                 {theme.direction === 'rtl' ? (

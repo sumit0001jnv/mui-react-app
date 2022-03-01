@@ -13,7 +13,9 @@ import IconButton from '@mui/material/IconButton';
 import { useLocation } from "react-router-dom";
 import { useDispatch } from 'react-redux';
 import uiAction from '../../store/actions/uiAction';
-
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import Typography from '@mui/material/Typography';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -25,6 +27,7 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function G2bLandingPage() {
     const location = useLocation();
+    const history = useHistory();
     const dispatch = useDispatch();
     const [tableData, setTableData] = useState([]);
 
@@ -90,9 +93,13 @@ export default function G2bLandingPage() {
         })
     }
 
-    const sendData=()=>{
+    const sendData = () => {
         console.log(tableData);
         dispatch(uiAction.showSnackbar({ message: 'Quote sent successfully' }));
+    }
+
+    const navigateBack = () => {
+        history.push('/g2b-user')
     }
 
     return <>
@@ -100,8 +107,12 @@ export default function G2bLandingPage() {
         <Header></Header>
         <Item sx={{ m: 2, px: 2, }}>
             <Grid container spacing={0} justifyContent={'center'} sx={{ height: 'calc(100vh - 116px)' }}>
-                <Grid container spacing={0} direction="column" sx={{ width: '800px', maxWidth: '100%',border:'1px solid #ccc' }}>
-                    <Grid container justifyContent={'flex-end'} sx={{ p: 2  }}>
+                <Grid container spacing={0} direction="column" sx={{ width: '800px', maxWidth: '100%', border: '1px solid #ccc' }}>
+                    <Grid container justifyContent={'flex-end'} alignItems={'center'} sx={{ p: 2 }}>
+                        <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
+                            <KeyboardBackspaceIcon />
+                        </IconButton>
+                        <Typography variant='h6' sx={{ ml: 1, mr: 'auto' }}>Create Template</Typography>
                         <Button variant='contained' onClick={addRow}>Add</Button>
                     </Grid>
                     <Grid container justifyContent={'center'}>
@@ -113,7 +124,7 @@ export default function G2bLandingPage() {
                             </>
                         })}
                     </Grid>
-                    <Grid container spacing={0} direction="column" sx={{ width: '900px', maxWidth: '100%', maxHeight: 'calc(100vh - 310px)',height: 'calc(100vh - 310px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
+                    <Grid container spacing={0} direction="column" sx={{ width: '900px', maxWidth: '100%', maxHeight: 'calc(100vh - 310px)', height: 'calc(100vh - 310px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
                         {tableData.map((row, i) => {
                             return <>
                                 <Grid container justifyContent={'center'}>
