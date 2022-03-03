@@ -123,7 +123,7 @@ export default function Setting(props) {
                     width: '500px',
                     maxWidth: '100%',
                 }}>
-                <Grid container direction={'column'} sx={{ height: 'calc(100vh - 116px)', maxHeight: 'calc(100vh - 116px)', flexWrap: 'nowrap', overflowY: 'auto', m: 0, p: 1 }}>
+                <Grid container direction={'column'} sx={{  flexWrap: 'nowrap', overflowY: 'auto', m: 0, p: 1 }}>
                     <Grid container alignItems={'center'}>
                         <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
                             <KeyboardBackspaceIcon />
@@ -165,7 +165,7 @@ export default function Setting(props) {
                                 size={'small'}
                                 startIcon={<CameraAltIcon />}
                             >
-                                Upload Image
+                                Change Logo
                                 <input
                                     accept="image/*"
                                     id="raised-button-file"
@@ -209,7 +209,7 @@ export default function Setting(props) {
                                 fullWidth
                                 startIcon={<VideoCameraBackIcon />}
                             >
-                                Upload Video
+                                Change Background Video
                                 <input
                                     accept="video/*"
                                     id="raised-button-file-2"

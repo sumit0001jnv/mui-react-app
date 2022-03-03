@@ -20,6 +20,10 @@ import { useDispatch } from 'react-redux';
 import uiAction from '../../../store/actions/uiAction';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import PreviewIcon from '@mui/icons-material/Preview';
+import CustomActionList from '../CustomActionList';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -27,6 +31,26 @@ const Item = styled(Paper)(({ theme }) => ({
     textAlign: 'center',
     color: theme.palette.text.secondary,
 }));
+
+function TabPanel(props) {
+    const { children, value, index, ...other } = props;
+
+    return (
+        <div
+            role="tabpanel"
+            hidden={value !== index}
+            id={`full-width-tabpanel-${index}`}
+            aria-labelledby={`full-width-tab-${index}`}
+            {...other}
+        >
+            {value === index && (
+                <Box sx={{ p: 2 }}>
+                    <Typography>{children}</Typography>
+                </Box>
+            )}
+        </div>
+    );
+}
 
 export default function CustomCropper() {
     const location = useLocation();
@@ -40,8 +64,36 @@ export default function CustomCropper() {
     const [projectId, setProjectId] = useState('');
     const [selectedText, setSelectedText] = useState('');
     const [selectedTemplate, setSelectedTemplate] = useState('');
-    const [selectedCropData, setSelectedCropData] = useState('');
+    const [value, setValue] = useState(0);
+    const [exitingTemplates, setExitingTemplates] = useState([]);
+    const [isPreviewed, setIsPreviewed] = useState(false);
+    const [quoteTableData, setQuoteTableData] = useState([]);
 
+    const columns = [
+        {
+            field: 'attribute',
+            headerName: 'Attribute',
+            flex: 5
+        },
+        {
+            field: 'value',
+            headerName: 'Value',
+            flex: 6
+        },
+        {
+            field: 'action',
+            headerName: '',
+            flex: 1
+        },
+    ];
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
+
+    const handleChangeIndex = (index) => {
+        setValue(index);
+    };
     const onPageChange = (page) => {
         if (projectId) {
             axios({
@@ -49,6 +101,10 @@ export default function CustomCropper() {
                 url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
                 data: { project_id: projectId, page_num: page }
             }).then(res => {
+                if (res.data.msg === 'Failed') {
+                    dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+                    return;
+                }
                 setUrl(res.data.file_url);
                 setPageNo(() => res.data.page_num);
             }).catch(err => {
@@ -57,25 +113,6 @@ export default function CustomCropper() {
             })
         }
     }
-    // const imageToBaseUrl = (url) => {
-    //     let image;
-    //     image = new Image();
-    //     image.crossOrigin = 'Anonymous';
-    //     image.addEventListener('load', function () {
-    //         let canvas = document.createElement('canvas');
-    //         let context = canvas.getContext('2d');
-    //         canvas.width = image.width;
-    //         canvas.height = image.height;
-    //         context.drawImage(image, 0, 0);
-    //         try {
-    //             setUrl(canvas.toDataURL('image/png'));
-    //         } catch (err) {
-    //             console.error(err)
-    //         }
-    //     });
-    //     image.src = url;
-    // }
-
     useEffect(() => {
         const search = location.search; // could be '?foo=bar'
         const params = new URLSearchParams(search);
@@ -87,7 +124,10 @@ export default function CustomCropper() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
             data: { project_id, page_num: pageNo }
         }).then(res => {
-            // imageToBaseUrl(res.data.file_url);
+            if (res.data.msg === 'Failed') {
+                dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+                return;
+            }
             setUrl(res.data.file_url);
             setPageNo(() => res.data.page_num);
 
@@ -95,6 +135,31 @@ export default function CustomCropper() {
             console.log(err);
             dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
         })
+
+        axios({
+            method: 'post',
+            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-user-templates',
+            data: { user_id: 'user4@gmail.com' }
+        }).then(res => {
+            if (res.data.msg === 'Failed') {
+                dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+                return;
+            }
+
+            const templates = res.data.templates
+                .filter(template => template[2])
+                .map(template => {
+                    return { id: template[0], name: template[1] }
+                });
+
+            setExitingTemplates([...templates]);
+
+        }).catch(err => {
+            console.log(err);
+            dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
+        })
+
+
 
     }, [])
 
@@ -107,7 +172,6 @@ export default function CustomCropper() {
             let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${rounded(x)},${rounded(y)},${rounded(width)},${rounded(height)}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
             setTemplates([obj, ...templates]);
             setSelectedText('');
-            setSelectedCropData('');
             cropper.setDragMode("move");
             cropper.clear();
             // setCropData(cropper.getCroppedCanvas().toDataURL());
@@ -180,6 +244,38 @@ export default function CustomCropper() {
 
     }
 
+    const onPreview = (templateId) => {
+        setIsPreviewed(true);
+        axios({
+            method: 'post',
+            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/extract-data',
+            data: { project_id: projectId, template_id: templateId }
+        }).then(res => {
+            if (res.data.msg === 'Failed') {
+                dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+                return;
+            }
+
+            // console.log(res.data);
+            setQuoteTableData(res.data.data.map(row => {
+                return {
+                    attribute: row.name,
+                    value: row.text
+                }
+            }))
+        }).catch(err => {
+            console.log(err);
+            dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
+        })
+
+    }
+
+    const onSetTableData = (data) => {
+        setQuoteTableData(() => [...data]);
+    }
+
+
+
     return (
         <>
             <Grid container spacing={2} sx={{ px: 2 }}>
@@ -213,33 +309,6 @@ export default function CustomCropper() {
                                 setCropper(instance);
                             }}
                         />
-                        {/* <MobileStepper
-                            variant="dots"
-                            steps={10}
-                            position="static"
-                            activeStep={activeStep}
-                            sx={{ flexGrow: 1 }}
-                            nextButton={
-                                <Button size="small" onClick={handleNext} disabled={activeStep === 10}>
-                                    Next
-                                    {theme.direction === 'rtl' ? (
-                                        <KeyboardArrowLeft />
-                                    ) : (
-                                        <KeyboardArrowRight />
-                                    )}
-                                </Button>
-                            }
-                            backButton={
-                                <Button size="small" onClick={handleBack} disabled={activeStep === 0}>
-                                    {theme.direction === 'rtl' ? (
-                                        <KeyboardArrowRight />
-                                    ) : (
-                                        <KeyboardArrowLeft />
-                                    )}
-                                    Back
-                                </Button>
-                            }
-                        /> */}
                         <Box conatiner sx={{ width: "100%", display: 'flex', justifyContent: "center" }}>
                             <Button size="small" onClick={handleBack}>
                                 {theme.direction === 'rtl' ? (
@@ -265,53 +334,107 @@ export default function CustomCropper() {
                 </Grid>
                 <Grid item xs={5}>
                     <Item sx={{ height: 'calc(100vh - 116px)' }}>
-                        <Typography variant='h6' sx={{ display: "flex", justifyContent: "flex-start", ml: 1 }}>Add Template</Typography>
-                        <Grid container spacing={0} sx={{ my: 1 }}>
-                            <Grid item xs={7}>
-                                <TextField id="outlined-basic" sx={{ display: 'flex', mx: 1, p: 0 }} label="Key" value={selectedText} onChange={handleText} variant="outlined" size="small" />
-                            </Grid>
-                            <Grid item xs={5} sx={{ m: 0, p: 0 }}>
-                                <Button variant='contained' sx={{ mr: 1 }} onClick={enableCrop}>Select</Button>
-                                <Button disabled={!(selectedText)} variant='contained' onClick={getCropData}>Add</Button>
-                            </Grid>
-                        </Grid>
-                        <Divider sx={{ mb: 1 }} />
-                        <Grid container
-                            sx={{ height: 'calc(100vh - 265px)', flexWrap: 'nowrap', overflowY: 'auto' }}
-                            direction="column"
-                        >
-                            {templates.map((temp, index) => {
-                                return <Grid container alignItems={'center'} spacing={0} sx={{ mb: 2, p: 1 }}>
-                                    <Grid item xs={5}>
-                                        <TextField
-                                            disabled id="outlined-basic"
-                                            sx={{ display: 'flex', mx: 1, p: 0, bgcolor: "#fff" }}
-                                            label="Key"
-                                            variant="outlined"
-                                            size="small"
-                                            value={temp.key} />
-                                    </Grid>
-                                    <Grid container xs={7} spacing={0} sx={{ m: 0, p: 0 }} >
-                                        <img style={{ width: "calc(100% - 60px)", minHeight: "40px", maxHeight: "100px", marginRight: "4px", padding: "4px" }} src={temp.cropData} crossOrigin="anonymous" alt="cropped image" />
-                                        <IconButton color="secondary" aria-label="add an alarm" onClick={() => deleteKey(index)}>
-                                            <DeleteIcon />
-                                        </IconButton>
-                                    </Grid>
+                        <Tabs
+                            value={value}
+                            onChange={handleChange}
+                            indicatorColor="secondary"
+                            textColor="inherit"
+                            variant="fullWidth"
+                            aria-label="full width tabs example"
+                            centered>
+                            <Tab label="Add Template" />
+                            <Tab label="Selected Templates" />
+                        </Tabs>
+
+                        <TabPanel value={value} index={0}>
+                            <Grid container spacing={0} sx={{ my: 1 }}>
+                                <Grid item xs={7}>
+                                    <TextField id="outlined-basic" sx={{ display: 'flex', mx: 1, p: 0 }} label="Key" value={selectedText} onChange={handleText} variant="outlined" size="small" />
                                 </Grid>
-                            })}
-                        </Grid>
-                        <Grid container spacing={0} sx={{ my: 1 }}>
-                            <Grid item sx={{ flexGrow: 1 }}>
-                                <TextField id="outlined-basic"
-                                    sx={{ width: "100%", display: 'flex', mx: 1, p: 0 }}
-                                    label="Template Name" variant="outlined" size="small"
-                                    value={selectedTemplate} onChange={handleTemplateName}
-                                />
+                                <Grid item xs={5} sx={{ m: 0, p: 0 }}>
+                                    <Button variant='contained' sx={{ mr: 1 }} onClick={enableCrop}>Select</Button>
+                                    <Button disabled={!(selectedText)} variant='contained' onClick={getCropData}>Add</Button>
+                                </Grid>
                             </Grid>
-                            <Grid item xs sx={{ m: 0, p: 0 }}>
-                                <Button variant='contained' sx={{ mr: 1 }} color={'success'} disabled={!(selectedTemplate && templates.length)} onClick={onSave}>Save</Button>
+                            <Divider sx={{ mb: 1 }} />
+                            <Grid container
+                                sx={{ height: 'calc(100vh - 310px)', flexWrap: 'nowrap', overflowY: 'auto' }}
+                                direction="column"
+                            >
+                                {templates.map((temp, index) => {
+                                    return <Grid container alignItems={'center'} spacing={0} sx={{ mb: 2, p: 1 }}>
+                                        <Grid item xs={5}>
+                                            <TextField
+                                                disabled id="outlined-basic"
+                                                sx={{ display: 'flex', mx: 1, p: 0, bgcolor: "#fff" }}
+                                                label="Key"
+                                                variant="outlined"
+                                                size="small"
+                                                value={temp.key} />
+                                        </Grid>
+                                        <Grid container xs={7} spacing={0} sx={{ m: 0, p: 0 }} >
+                                            <img style={{ width: "calc(100% - 60px)", minHeight: "40px", maxHeight: "100px", marginRight: "4px", padding: "4px" }} src={temp.cropData} crossOrigin="anonymous" alt="cropped image" />
+                                            <IconButton color="secondary" aria-label="add an alarm" onClick={() => deleteKey(index)}>
+                                                <DeleteIcon />
+                                            </IconButton>
+                                        </Grid>
+                                    </Grid>
+                                })}
                             </Grid>
-                        </Grid>
+                            <Grid container spacing={0} sx={{ my: 1 }}>
+                                <Grid item sx={{ flexGrow: 1 }}>
+                                    <TextField id="outlined-basic"
+                                        sx={{ width: "100%", display: 'flex', mx: 1, p: 0 }}
+                                        label="Template Name" variant="outlined" size="small"
+                                        value={selectedTemplate} onChange={handleTemplateName}
+                                    />
+                                </Grid>
+                                <Grid item xs sx={{ m: 0, p: 0 }}>
+                                    <Button variant='contained' sx={{ mr: 1 }} color={'success'} disabled={!(selectedTemplate && templates.length)} onClick={onSave}>Save</Button>
+                                </Grid>
+                            </Grid>
+                        </TabPanel>
+                        <TabPanel value={value} index={1} sx={{ m: 1 }}>
+                            {!isPreviewed ? <><Typography variant='p' sx={{ display: "flex", justifyContent: "flex-start", ml: 1, mb: 1, fontWeight: "500" }}>Existing Templates</Typography>
+                                <Grid container
+                                    sx={{ height: 'calc(100vh - 210px)', flexWrap: 'nowrap', overflowY: 'auto' }}
+                                    direction="column"
+                                >
+                                    {exitingTemplates.map((temp) => {
+                                        return <Grid container alignItems={'center'} spacing={0} sx={{ mb: 2, p: 1 }}>
+                                            <Grid item sx={{ flexGrow: 1, mr: 2 }}>
+                                                <TextField
+                                                    disabled
+                                                    id="outlined-basic"
+                                                    sx={{ display: 'flex', mr: 0, p: 0, bgcolor: "#fff" }}
+                                                    fullWidth
+                                                    variant="outlined"
+                                                    size="small"
+                                                    value={temp.name} />
+                                            </Grid>
+                                            <Grid item xs sx={{ m: 0, p: 0 }} >
+                                                <Button variant="contained" startIcon={<PreviewIcon />} onClick={() => onPreview(temp.id)}>
+                                                    Preview
+                                                </Button>
+                                            </Grid>
+                                        </Grid>
+                                    })}
+                                </Grid> </> : <>
+                                <Grid container alignItems={'center'} spacing={0} sx={{ mb: 1, p: 0 }}>
+                                    <IconButton aria-label="add an alarm" sx={{ p: 0, m: 0 }} onClick={() => setIsPreviewed(false)}>
+                                        <KeyboardBackspaceIcon />
+                                    </IconButton>
+                                    <Typography variant='p' sx={{ display: "flex", justifyContent: "flex-start", ml: 1, fontWeight: "500" }}>Quote Detail</Typography>
+                                </Grid>
+                                <Grid container
+                                    sx={{ height: 'calc(100vh - 216px)', flexWrap: 'nowrap', overflowY: 'auto' }}
+                                    direction="column"
+                                >
+                                    <CustomActionList columns={columns} tableData={quoteTableData} onSetTableData={onSetTableData}
+                                        actionBtnText='Confirm'></CustomActionList>
+                                </Grid>
+                            </>}
+                        </TabPanel>
                     </Item>
                 </Grid>
             </Grid>
