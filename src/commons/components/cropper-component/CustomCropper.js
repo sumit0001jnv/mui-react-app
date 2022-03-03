@@ -68,6 +68,7 @@ export default function CustomCropper() {
     const [exitingTemplates, setExitingTemplates] = useState([]);
     const [isPreviewed, setIsPreviewed] = useState(false);
     const [quoteTableData, setQuoteTableData] = useState([]);
+    const [templateId, selectedTemplateId] = useState('');
 
     const columns = [
         {
@@ -245,6 +246,7 @@ export default function CustomCropper() {
     }
 
     const onPreview = (templateId) => {
+        selectedTemplateId(templateId);
         setIsPreviewed(true);
         axios({
             method: 'post',
@@ -255,14 +257,12 @@ export default function CustomCropper() {
                 dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
                 return;
             }
-
-            // console.log(res.data);
-            setQuoteTableData(res.data.data.map(row => {
+            setQuoteTableData(() => [...res.data.data.map(row => {
                 return {
                     attribute: row.name,
                     value: row.text
                 }
-            }))
+            })])
         }).catch(err => {
             console.log(err);
             dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
@@ -272,6 +272,32 @@ export default function CustomCropper() {
 
     const onSetTableData = (data) => {
         setQuoteTableData(() => [...data]);
+    }
+
+    const onSaveQuote = (data) => {
+        console.log(data);
+        let obj = {};
+        data.forEach(element => {
+            obj[element.attribute] = element.value;
+        });
+        axios({
+            method: 'post',
+            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/save-g2-project-data',
+            data: { project_id: projectId, template_id: templateId, project_data: obj }
+        }).then(res => {
+            if (res.data.msg === 'Failed') {
+                dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+                return;
+            }
+            dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'success' }));
+        }).catch(err => {
+            console.log(err);
+            dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
+        })
+    }
+
+    const addRow = () => {
+        setQuoteTableData((data) => [{ attribute: '', value: '' }, ...data]);
     }
 
 
@@ -343,7 +369,7 @@ export default function CustomCropper() {
                             aria-label="full width tabs example"
                             centered>
                             <Tab label="Add Template" />
-                            <Tab label="Selected Templates" />
+                            <Tab label="Existing Templates" />
                         </Tabs>
 
                         <TabPanel value={value} index={0}>
@@ -395,7 +421,7 @@ export default function CustomCropper() {
                             </Grid>
                         </TabPanel>
                         <TabPanel value={value} index={1} sx={{ m: 1 }}>
-                            {!isPreviewed ? <><Typography variant='p' sx={{ display: "flex", justifyContent: "flex-start", ml: 1, mb: 1, fontWeight: "500" }}>Existing Templates</Typography>
+                            {!isPreviewed ? <><Typography variant='span' sx={{ display: "flex", justifyContent: "flex-start", ml: 1, mb: 1, fontWeight: "500" }}>Existing Templates</Typography>
                                 <Grid container
                                     sx={{ height: 'calc(100vh - 210px)', flexWrap: 'nowrap', overflowY: 'auto' }}
                                     direction="column"
@@ -424,14 +450,15 @@ export default function CustomCropper() {
                                     <IconButton aria-label="add an alarm" sx={{ p: 0, m: 0 }} onClick={() => setIsPreviewed(false)}>
                                         <KeyboardBackspaceIcon />
                                     </IconButton>
-                                    <Typography variant='p' sx={{ display: "flex", justifyContent: "flex-start", ml: 1, fontWeight: "500" }}>Quote Detail</Typography>
+                                    <Typography variant='span' sx={{ display: "flex", justifyContent: "flex-start", ml: 1, mr: 'auto', fontWeight: "500" }}>Quote Detail</Typography>
+                                    <Button variant='contained' size={'small'} sx={{ mr: 1 }} onClick={addRow}>Add</Button>
                                 </Grid>
                                 <Grid container
-                                    sx={{ height: 'calc(100vh - 216px)', flexWrap: 'nowrap', overflowY: 'auto' }}
+                                    sx={{ maxHeight: 'calc(100vh - 216px)' }}
                                     direction="column"
                                 >
-                                    <CustomActionList columns={columns} tableData={quoteTableData} onSetTableData={onSetTableData}
-                                        actionBtnText='Confirm'></CustomActionList>
+                                    <CustomActionList columns={columns} tableData={quoteTableData} onDataChange={onSetTableData}
+                                        actionBtnText='Confirm' onSave={onSaveQuote}></CustomActionList>
                                 </Grid>
                             </>}
                         </TabPanel>

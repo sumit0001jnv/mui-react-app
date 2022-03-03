@@ -28,64 +28,62 @@ const Item = styled(Paper)(({ theme }) => ({
 
 export default function CustomActionList(props) {
 
-    const columns = useState(props.columns || []);
-    const tableData = useState(props.tableData || []);
+    const [columns, setColumns] = useState(props.columns || []);
+    const [tableData, setTableData] = useState(props.tableData || []);
+
+    useEffect(() => {
+        setTableData([...props.tableData])
+    }, [props.tableData])
+
+    useEffect(() => {
+        setColumns([...props.columns])
+    }, [props.columns])
+
     const handleText = (event, rowIndex, field) => {
-        // props.setTableData((data) => {
         let data = tableData;
         data[rowIndex][field] = event.target.value;
-        return [...data];
-        // })
-    }
-
-    const addRow = () => {
-        // props.setTableData((data) => {
-        return [{attribute: '', value: '' }, ...tableData];
-        // })
+        props.onDataChange([...data]);
     }
 
     const removeRow = (index) => {
-        // props.setTableData((data) => {
         let data = tableData;
-        data.splice(index, 1)
-        return [...data];
-        // })
+        data.splice(index, 1);
+        props.onDataChange([...data]);
     }
 
     const sendData = () => {
+        props.onSave([...tableData])
     }
 
-    return <Grid container spacing={0} justifyContent={'center'} sx={{ height: '100%', px: 1 }}>
-        <Grid container spacing={0} direction="column" sx={{ width: '800px', maxWidth: '100%', border: '1px solid #ccc' }}>
-            <Grid container justifyContent={'center'}>
-                {(props.columns || []).map((col) => {
-                    return <>
-                        <Grid item xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc', bgcolor: "turquoise" }}>
-                            <div style={{ fontWeight: 600 }}>{col.headerName}</div>
-                        </Grid>
-                    </>
-                })}
-            </Grid>
-            <Grid container spacing={0} direction="column" sx={{ width: '800px', maxWidth: '100%', maxHeight: 'calc(100% - 118x)', height: 'calc(100% - 118px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
-                {(tableData || []).map((row, i) => {
-                    return <>
-                        <Grid container justifyContent={'center'}>
-                            {columns.map((col, index) => {
-                                return <>
-                                    <Grid item xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc' }}>
-                                        {index == 2 ? <IconButton color="error" aria-label="add an alarm" onClick={() => removeRow(i)}>
-                                            <DeleteIcon />
-                                        </IconButton> : <TextField id="outlined-size-normal" size={'small'} value={row[col.field]} onChange={(event) => handleText(event, i, col.field)} sx={{ width: '100%', color: "#ccc" }} />}
-                                    </Grid>
-                                </>
-                            })}
-                        </Grid>
-                    </>
-                })}
-            </Grid>
-            <Grid container justifyContent={'flex-end'} sx={{ p: 1 }}>
-                <Button variant='contained' color={'success'} onClick={sendData} sx={{ mr: 2 }}>{props.actionBtnText || "Send"}</Button>
-            </Grid>
+    return <Grid container spacing={0} direction="column" sx={{ width: '800px', maxWidth: '100%', height: "calc(100vh - 222px)", maxHeight: "calc(100vh - 222px)", border: '1px solid #ccc' }}>
+        <Grid container justifyContent={'center'}>
+            {(props.columns || []).map((col) => {
+                return <>
+                    <Grid item xs={col.flex} key={col.headerName} sx={{ p: 2, borderBottom: '1px solid #ccc', bgcolor: "turquoise" }}>
+                        <div style={{ fontWeight: 600 }}>{col.headerName}</div>
+                    </Grid>
+                </>
+            })}
+        </Grid>
+        <Grid container spacing={0} direction="column" sx={{ width: '800px', maxWidth: '100%', height: 'calc(100% - 118px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
+            {(tableData || []).map((row, i) => {
+                return <>
+                    <Grid container justifyContent={'center'}>
+                        {columns.map((col, index) => {
+                            return <>
+                                <Grid item xs={col.flex} key={col.headerName + index} sx={{ p: 2, borderBottom: '1px solid #ccc' }}>
+                                    {index == 2 ? <IconButton color="error" aria-label="add an alarm" onClick={() => removeRow(i)}>
+                                        <DeleteIcon />
+                                    </IconButton> : <TextField id="outlined-size-normal" size={'small'} value={row[col.field]} onChange={(event) => handleText(event, i, col.field)} sx={{ width: '100%', color: "#ccc" }} />}
+                                </Grid>
+                            </>
+                        })}
+                    </Grid>
+                </>
+            })}
+        </Grid>
+        <Grid container justifyContent={'flex-end'} sx={{ p: 1 }}>
+            <Button variant='contained' color={'success'} onClick={sendData} sx={{ mr: 2 }}>{props.actionBtnText || "Send"}</Button>
         </Grid>
     </Grid>
 }
