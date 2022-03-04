@@ -26,7 +26,7 @@ export default function G2bLandingPage() {
         {
             field: 'group',
             headerName: 'Group',
-            minWidth: 300,
+            minWidth: 200,
             flex: 2,
         },
         {
@@ -38,7 +38,7 @@ export default function G2bLandingPage() {
         {
             field: 'email',
             headerName: 'Email',
-            minWidth: 150,
+            minWidth: 300,
             flex: 2,
         },
         {
@@ -52,7 +52,7 @@ export default function G2bLandingPage() {
         {
             field: 'message',
             headerName: 'Message',
-            minWidth: 200,
+            minWidth: 300,
             flex: 2,
         },
         {
@@ -99,13 +99,13 @@ export default function G2bLandingPage() {
             let _tableData = (res.data.projects_data || []).map((row, i) => {
                 return {
                     group: "Group 2",
-                    name: row[3],
-                    email: row[3],
-                    status: i % 3 == 0 ? "pending" : i % 3 == 1 ? "completed" : "error",
-                    message: row[5],
-                    subject: row[4],
-                    body: row[6],
-                    id: row[1]
+                    name: row[1],
+                    email: row[2],
+                    status: row[5] === "0" ? "error" : row[5] == "1" ? "pending" : "completed",
+                    message: row[3],
+                    subject: row[3],
+                    body: row[3],
+                    id: row[0]
                 }
             })
 
