@@ -29,7 +29,6 @@ export default function CustomTable(props) {
 
     return (
         <>
-            <Header></Header>
             <Typography variant="div" component="div" sx={{ margin: 4, backgroundColor: "#fff", display: 'flex', height: 'calc(100vh - 128px)', flexGrow: 1 }}>
                 <DataGrid
                     rows={props.tableData || []}

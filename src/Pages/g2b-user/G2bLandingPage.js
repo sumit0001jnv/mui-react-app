@@ -6,6 +6,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import theme from '../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import Header from '../../commons/components/header/Header';
 
 export default function G2bLandingPage() {
     const history = useHistory();
@@ -23,12 +24,12 @@ export default function G2bLandingPage() {
         }
     }
     const columns = [
-        {
-            field: 'group',
-            headerName: 'Group',
-            minWidth: 200,
-            flex: 2,
-        },
+        // {
+        //     field: 'group',
+        //     headerName: 'Group',
+        //     minWidth: 200,
+        //     flex: 2,
+        // },
         {
             field: 'name',
             headerName: 'Name',
@@ -48,6 +49,12 @@ export default function G2bLandingPage() {
             flex: 2,
             renderCell: (params) => <><Chip label={params?.row?.status || 'success'} color={getColor(params?.row.status)} size="small" /></>,
             // renderCell: (params) => <><Chip label={params?.row?.status ||'pending'} color={params?.row?.status||'success'} size="small" /></>,
+        },
+        {
+            field: 'date',
+            headerName: 'Date',
+            minWidth: 300,
+            flex: 2,
         },
         {
             field: 'message',
@@ -80,6 +87,7 @@ export default function G2bLandingPage() {
     const initialDrawerPos = 'right';
     const [formData, setFormData] = useState({ ...initialState });
     const [actionLabel, setActionLabel] = useState('create');
+    const [notificationCount, setNotificationCount] = useState(0);
     const [drawerState, setDrawerState] = useState({ [initialDrawerPos]: false });
 
     const [tableData, setTableData] = useState([]);
@@ -98,16 +106,20 @@ export default function G2bLandingPage() {
         }).then(res => {
             let _tableData = (res.data.projects_data || []).map((row, i) => {
                 return {
-                    group: "Group 2",
                     name: row[1],
                     email: row[2],
                     status: row[5] === "0" ? "error" : row[5] == "1" ? "pending" : "completed",
                     message: row[3],
                     subject: row[3],
                     body: row[3],
+                    date: row[4],
                     id: row[0]
                 }
             })
+
+            console.log(_tableData)
+
+            setNotificationCount(_tableData.filter(row => row.status === 'pending').length);
 
             setTableData([..._tableData]);
             setLoading(false);
@@ -165,6 +177,7 @@ export default function G2bLandingPage() {
     }
     return (
         <ThemeProvider theme={theme}>
+            <Header notificationCount={notificationCount}></Header>
             <CustomTable
                 tableData={tableData}
                 columns={columns}

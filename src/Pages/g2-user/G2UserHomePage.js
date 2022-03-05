@@ -6,6 +6,7 @@ import VisibilityIcon from '@mui/icons-material/Visibility';
 import theme from '../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import Header from '../../commons/components/header/Header';
 
 export default function G2UserHomePage() {
     const history = useHistory();
@@ -23,12 +24,6 @@ export default function G2UserHomePage() {
         }
     }
     const columns = [
-        {
-            field: 'group',
-            headerName: 'Group',
-            minWidth: 200,
-            flex: 2,
-        },
         {
             field: 'name',
             headerName: 'Name',
@@ -48,6 +43,12 @@ export default function G2UserHomePage() {
             flex: 2,
             renderCell: (params) => <><Chip label={params?.row?.status || 'success'} color={getColor(params?.row.status)} size="small" /></>,
             // renderCell: (params) => <><Chip label={params?.row?.status ||'pending'} color={params?.row?.status||'success'} size="small" /></>,
+        },
+        {
+            field: 'date',
+            headerName: 'Date',
+            minWidth: 200,
+            flex: 2,
         },
         {
             field: 'message',
@@ -81,6 +82,7 @@ export default function G2UserHomePage() {
     const [formData, setFormData] = useState({ ...initialState });
     const [actionLabel, setActionLabel] = useState('create');
     const [drawerState, setDrawerState] = useState({ [initialDrawerPos]: false });
+    const [notificationCount, setNotificationCount] = useState(0);
 
     const [tableData, setTableData] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -98,16 +100,16 @@ export default function G2UserHomePage() {
         }).then(res => {
             let _tableData = (res.data.projects_data || []).map((row, i) => {
                 return {
-                    group: "Group 1",
                     name: row[1],
                     email: row[2],
                     status: row[5] === "0" ? "error" : row[5] == "1" ? "pending" : "completed",
                     message: row[3],
-                    subject: row[4],
+                    date: row[4],
                     body: row[6],
                     id: row[0]
                 }
             })
+            setNotificationCount(_tableData.filter(row => row.status === 'pending').length);
 
             setTableData([..._tableData]);
             setLoading(false);
@@ -168,6 +170,7 @@ export default function G2UserHomePage() {
     }
     return (
         <ThemeProvider theme={theme}>
+            <Header notificationCount={notificationCount}></Header>
             <CustomTable
                 tableData={tableData}
                 columns={columns}

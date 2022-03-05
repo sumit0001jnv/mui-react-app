@@ -189,8 +189,8 @@ export default function Header(props) {
                 >
                   <SettingsIcon />
                 </IconButton> : ''}
-              {['g2', 'g2b'].includes(userCategory) ?
-                <Badge color="error" badgeContent={10} sx={{ mx: 4 }}>
+              {['g2', 'g2b'].includes(userCategory) && !props.hideNotification ?
+                <Badge color="error" badgeContent={props.notificationCount || 10} sx={{ mx: 4 }}>
                   <NotificationsIcon sx={{ color: '#3f51b5', width: "30px", height: "30px" }} />
                 </Badge> : ''}
               {/* {userCategoryKeys.includes(userCategory) ? <Button color="inherit" sx={{

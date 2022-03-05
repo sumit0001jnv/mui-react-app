@@ -6,6 +6,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import theme from '../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
+import Header from '../../commons/components/header/Header';
 
 
 export default function AdminHomePage() {
@@ -141,6 +142,7 @@ export default function AdminHomePage() {
     }
     return (
         <ThemeProvider theme={theme}>
+            <Header></Header>
             <CustomTable
                 tableData={tableData}
                 columns={columns}

@@ -4,7 +4,7 @@ import CustomCropper from '../../commons/components/cropper-component/CustomCrop
 import Header from '../../commons/components/header/Header';
 export default function CreateTemplate() {
     return <>
-        <Header></Header>
+        <Header hideNotification></Header>
         <CustomCropper></CustomCropper>
 
     </>
