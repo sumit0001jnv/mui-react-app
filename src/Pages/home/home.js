@@ -1,15 +1,56 @@
 import { useEffect, useState } from 'react';
 import Header from '../../commons/components/header/Header';
+import { useSelector } from 'react-redux';
+import { useHistory } from "react-router-dom";
 
 export default function Home() {
+    const history = useHistory();
     const [video, SetVideo] = useState('videos/home-video-3.mp4');
+    const { isLogedIn, user } = useSelector(state => state.login);
+    useEffect(() => {
+        let obj = { pathname: '/' };
+        if (isLogedIn) {
+            switch (user.userCategory) {
+                case 'admin': {
+                    obj.pathname = '/admin';
+                    obj.userCategory = 'Admin';
+                    break;
+                }
+                case 'g2':
+                    {
+                        obj.pathname = '/g2-user';
+                        obj.userCategory = 'Group 2';
+                        break;
+                    }
+                case 'g2b':
+                    {
+                        obj.pathname = '/g2b-user';
+                        obj.userCategory = 'Group 2B';
+                        break;
+                    }
+                case 'g3': {
+                    obj.pathname = '/g3-user';
+                    obj.userCategory = 'Group 3';
+                    break;
+                }
+            }
+            if (obj.pathname) {
+                if (history) {
+                    history.push({
+                        pathname: obj.pathname,
+                        state: obj
+                    })
+                }
+            }
+        }
+    }, [isLogedIn]);
     const getFaviconEl = () => {
         return document.getElementById("favicon");
     }
 
-    const setFebicon = (url='') => {
+    const setFebicon = (url = '') => {
         const favicon = getFaviconEl();
-        if(favicon){
+        if (favicon) {
             favicon.href = url || 'images/company-logo.jpeg';
         }
     }

@@ -175,7 +175,7 @@ export default function Setting(props) {
                                 />
                             </Button>
                         </Grid>
-                        <Grid item sx={12} md={6} sx={{ margin: 0, paddingTop: '0 !important', paddingLeft: '8px !important' }}>
+                        <Grid item xs={12} md={6} sx={{ margin: 0, paddingTop: '0 !important', paddingLeft: '8px !important' }}>
                             <Box sx={{
                                 maxHeight: '100px',
                                 height: '100px',
@@ -206,7 +206,6 @@ export default function Setting(props) {
                                 component="label"
                                 fullWidth
                                 size={'small'}
-                                fullWidth
                                 startIcon={<VideoCameraBackIcon />}
                             >
                                 Change Background Video

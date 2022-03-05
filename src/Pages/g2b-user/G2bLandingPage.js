@@ -116,11 +116,7 @@ export default function G2bLandingPage() {
                     id: row[0]
                 }
             })
-
-            console.log(_tableData)
-
             setNotificationCount(_tableData.filter(row => row.status === 'pending').length);
-
             setTableData([..._tableData]);
             setLoading(false);
         }).catch(err => {
