@@ -72,7 +72,7 @@ export default function SignIn() {
     }).then(res => {
       const data = res.data.user_data;
       if (!data) {
-        dispatch(uiAction.showSnackbar({ type: 'error', message: res.data.msg }));
+        dispatch(uiAction.showSnackbar({ type: 'error', message: res.data.message }));
         return;
       }
       obj.userName = data.user_name;

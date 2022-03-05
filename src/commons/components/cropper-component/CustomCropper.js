@@ -102,8 +102,8 @@ export default function CustomCropper() {
                 url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
                 data: { project_id: projectId, page_num: page }
             }).then(res => {
-                if (res.data.msg === 'Failed') {
-                    dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+                if (res.data.message === 'Failed') {
+                    dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                     return;
                 }
                 setUrl(res.data.file_url);
@@ -125,8 +125,8 @@ export default function CustomCropper() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-page',
             data: { project_id, page_num: pageNo }
         }).then(res => {
-            if (res.data.msg === 'Failed') {
-                dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+            if (res.data.message === 'Failed') {
+                dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                 return;
             }
             setUrl(res.data.file_url);
@@ -142,8 +142,8 @@ export default function CustomCropper() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-user-templates',
             data: { user_id: 'user4@gmail.com' }
         }).then(res => {
-            if (res.data.msg === 'Failed') {
-                dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+            if (res.data.message === 'Failed') {
+                dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                 return;
             }
 
@@ -240,7 +240,7 @@ export default function CustomCropper() {
             dispatch(uiAction.showSnackbar({ message: 'Template saved successfully', type: 'success' }));
         }).catch(err => {
             console.log(err);
-            dispatch(uiAction.showSnackbar({ message: err?.data?.msg || 'Something went wrong.Please try after some time', type: 'error' }));
+            dispatch(uiAction.showSnackbar({ message: err?.data?.message || 'Something went wrong.Please try after some time', type: 'error' }));
         })
 
     }
@@ -253,8 +253,8 @@ export default function CustomCropper() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/extract-data',
             data: { project_id: projectId, template_id: templateId }
         }).then(res => {
-            if (res.data.msg === 'Failed') {
-                dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+            if (res.data.message === 'Failed') {
+                dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                 return;
             }
             setQuoteTableData(() => [...res.data.data.map(row => {
@@ -285,11 +285,11 @@ export default function CustomCropper() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/save-g2-project-data',
             data: { project_id: projectId, template_id: templateId, project_data: obj }
         }).then(res => {
-            if (res.data.msg === 'Failed') {
-                dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'error' }));
+            if (res.data.message === 'Failed') {
+                dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                 return;
             }
-            dispatch(uiAction.showSnackbar({ message: res.data.msg, type: 'success' }));
+            dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'success' }));
         }).catch(err => {
             console.log(err);
             dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
