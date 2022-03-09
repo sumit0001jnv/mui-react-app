@@ -70,14 +70,15 @@ export default function SignIn() {
       //   password: formData.password
       // }
     }).then(res => {
-      const data = res.data.user_data;
-      if (!data) {
+      if (!res.data.status) {
         dispatch(uiAction.showSnackbar({ type: 'error', message: res.data.message }));
         return;
       }
+
+      const data = res.data.user_data;
       obj.userName = data.user_name;
       dispatch(loginAction.logIn());
-      dispatch(uiAction.showSnackbar({ type: 'success', message: 'User logged in successfully' }));
+      dispatch(uiAction.showSnackbar({ type: 'success', message: res.data.message || 'User logged in successfully' }));
       let store = localStorage.getItem('pdf_parser_app');
       if (!store) {
         localStorage.setItem('pdf_parser_app', '{}');

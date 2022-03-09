@@ -18,6 +18,7 @@ import Typography from '@mui/material/Typography';
 import { deepOrange, deepPurple } from '@mui/material/colors';
 import Avatar from '@mui/material/Avatar';
 import Autocomplete from '@mui/material/Autocomplete';
+import AddIcon from '@mui/icons-material/Add';
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -44,23 +45,7 @@ export default function G2bLandingPage() {
         { name: 'Mike', time: '7th march 2022, 11:20', type: 'u1' },
         { name: 'Anish', time: '8th march 2022, 11:40', type: 'u2' }]);
 
-    const columns = [
-        {
-            field: 'attribute',
-            headerName: 'Attribute',
-            flex: 5
-        },
-        {
-            field: 'value',
-            headerName: 'Value',
-            flex: 6
-        },
-        {
-            field: 'action',
-            headerName: '',
-            flex: 1
-        },
-    ];
+
     useEffect(() => {
         const search = location.search; // could be '?foo=bar'
         const params = new URLSearchParams(search);
@@ -125,6 +110,26 @@ export default function G2bLandingPage() {
         })
     }
 
+    const columns = [
+        {
+            field: 'attribute',
+            headerName: 'Attribute',
+            flex: 5
+        },
+        {
+            field: 'value',
+            headerName: 'Value',
+            flex: 5
+        },
+        {
+            field: 'action',
+            headerName: <IconButton color="secondary" aria-label="upload picture" sx={{ p: 0 }} component="span" onClick={addRow}>
+                <AddIcon />
+            </IconButton>,
+            flex: 2
+        },
+    ];
+
     const removeRow = (index) => {
         setTableData((data) => {
             data.splice(index, 1)
@@ -140,7 +145,7 @@ export default function G2bLandingPage() {
     }
 
     const sendData = () => {
-        console.log(tableData);
+        // console.log(tableData);
         let obj = {};
         tableData.forEach(row => {
             obj[row.attribute] = row.value;
@@ -191,6 +196,7 @@ export default function G2bLandingPage() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-project-chat-data',
             data: { project_id: projectId, g2b_user_id: loggedInUser, g3_user_id: g3User.id }
         }).then(res => {
+
             console.log(res.data);
         }).catch(err => {
             console.log(err);
@@ -209,8 +215,8 @@ export default function G2bLandingPage() {
                             <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
                                 <KeyboardBackspaceIcon />
                             </IconButton>
-                            <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Quote Template</Typography>
-                            <Button variant='contained' sx={{ ml: 1 }} onClick={addRow}>Add</Button>
+                            <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Quote Requested</Typography>
+
                             {!isInitialQuote ? <><Autocomplete
                                 sx={{ mx: 2, width: 100, flexGrow: 1, height: '40px', maxHeight: '40px' }}
                                 size={'small'}
@@ -218,6 +224,7 @@ export default function G2bLandingPage() {
                                 options={g3Users}
                                 getOptionLabel={(option) => option.name}
                                 disableClearable
+                                defaultValue={g3Users[0]?.name}
                                 onChange={(event, newInputValue) => onG2UserChange(newInputValue)}
                                 renderInput={(params) => <TextField {...params} label="Group 3 Users" placeholder='Select Group 3 user' />}
                             />
@@ -310,7 +317,6 @@ export default function G2bLandingPage() {
                         </Grid>
 
                     </Grid></> : ''}
-
             </Grid>
         </Item>
     </>;

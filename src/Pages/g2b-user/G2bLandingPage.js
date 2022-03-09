@@ -11,10 +11,11 @@ import Header from '../../commons/components/header/Header';
 export default function G2bLandingPage() {
     const history = useHistory();
     const statusMap = {
-        "0": "Pending",
-        "1": "QuoteRequested",
-        "2": "Accepted",
-        "3": "Decline"
+        "0": "Error",
+        "1": "Pending",
+        "2": "Quote Requested",
+        "3": "Accepted",
+        "4": "Declined"
     }
     const getColor = (status) => {
         switch (status) {
@@ -22,9 +23,9 @@ export default function G2bLandingPage() {
                 return 'success';
             case 'Pending':
                 return 'warning';
-            case 'Decline':
+            case 'Declined':
                 return 'error';
-            case 'QuoteRequested':
+            case 'Quote Requested':
                 return 'primary';
             default:
                 return 'error';
@@ -110,7 +111,7 @@ export default function G2bLandingPage() {
         setLoading(true);
         axios({
             method: 'post',
-            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-g2-user-projects',
+            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-g2b-user-projects',
         }).then(res => {
             let _tableData = (res.data.projects_data || []).map((row, i) => {
                 return {
@@ -168,7 +169,7 @@ export default function G2bLandingPage() {
         history.push({
             pathname: '/quote-detail',
             // state: { project_id: row.id },
-            search: `?project_id=${row.id}&isInitialQuote=${row.status=='QuoteRequested'}`,
+            search: `?project_id=${row.id}&isInitialQuote=${row.status == 'QuoteRequested'}`,
         }
         )
     }

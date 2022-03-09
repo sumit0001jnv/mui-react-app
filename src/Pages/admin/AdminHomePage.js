@@ -7,7 +7,8 @@ import IconButton from '@mui/material/IconButton';
 import theme from '../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
 import Header from '../../commons/components/header/Header';
-
+import { useDispatch } from 'react-redux';
+import uiAction from '../../store/actions/uiAction';
 
 export default function AdminHomePage() {
     const userMap = { 'admin': 'Admin', g1: 'Group 1', g2: 'Group 2', g2b: 'Group 2B', g3: 'Group 3' }
@@ -67,6 +68,7 @@ export default function AdminHomePage() {
         isValid: true
     }
     const initialDrawerPos = 'right';
+    const dispatch = useDispatch();
     const [formData, setFormData] = useState({ ...initialState });
     const [actionLabel, setActionLabel] = useState('create');
     const [drawerState, setDrawerState] = useState({ [initialDrawerPos]: false });
@@ -112,27 +114,39 @@ export default function AdminHomePage() {
         setDrawerState({ [initialDrawerPos]: true })
     }
     const onDataChange = (data) => {
+        if (actionLabel == 'create') {
+            const formData = data.formData;
+            let bodyFormData = new FormData();
+            bodyFormData.append('username', formData.username);
+            bodyFormData.append('password', formData.password);
+            bodyFormData.append('email', formData.email);
+            bodyFormData.append('user_group', formData.group);
+            bodyFormData.append('mobile_number', formData.mobile_number);
+            axios({
+                method: 'post',
+                url: "http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/user-registration",
+                data: bodyFormData,
+                headers: {
+                    "Content-Type": "multipart/form-data",
+                },
+            }).then(res => {
+                if (res.data.status) {
+                    dispatch(uiAction.showSnackbar({ message: res.data.message || 'User has been successfully registered!', type: 'success' }));
+                } else {
+                    dispatch(uiAction.showSnackbar({ message: res.data.message || 'Failed to register User', type: 'error' }));
+                }
+            }).catch(err => {
+                console.log(err);
+                dispatch(uiAction.showSnackbar({ message: err.message || 'Failed to register User', type: 'error' }));
+                setLoading(true);
+            })
+        } else if (actionLabel == 'delete') {
+            console.log("delete action")
+        }else{
+            console.log("edit action")
+        }
 
-        const formData = data.formData;
-        let bodyFormData = new FormData();
-        bodyFormData.append('username', formData.username);
-        bodyFormData.append('password', formData.password);
-        bodyFormData.append('email', formData.email);
-        bodyFormData.append('user_group', formData.group);
-        bodyFormData.append('mobile_number', formData.mobile_number);
-        axios({
-            method: 'post',
-            url: "http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/user-registration",
-            data: bodyFormData,
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        }).then(res => {
-            console.log("User Added")
-        }).catch(err => {
-            console.log(err);
-            setLoading(true);
-        })
+
     }
 
     const onRefresh = () => {
