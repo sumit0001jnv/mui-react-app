@@ -10,6 +10,7 @@ import Header from '../../commons/components/header/Header';
 
 
 export default function AdminHomePage() {
+    const userMap = { 'admin': 'Admin', g1: 'Group 1', g2: 'Group 2', g2b: 'Group 2B', g3: 'Group 3' }
     const columns = [
         {
             field: 'username',
@@ -65,7 +66,7 @@ export default function AdminHomePage() {
         showConfirmPassword: false,
         isValid: true
     }
-    const initialDrawerPos='right';
+    const initialDrawerPos = 'right';
     const [formData, setFormData] = useState({ ...initialState });
     const [actionLabel, setActionLabel] = useState('create');
     const [drawerState, setDrawerState] = useState({ [initialDrawerPos]: false });
@@ -89,7 +90,7 @@ export default function AdminHomePage() {
                     username: row[2],
                     email: row[1],
                     password: row[3],
-                    group: row[5],
+                    group: userMap[row[5]],
                     mobile_number: row[4],
                     id: row[0]
                 }

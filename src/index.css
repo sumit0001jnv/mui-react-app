@@ -11,6 +11,31 @@ html,body,#root {
   background-color: #eceff1;
 }
 
+*::-webkit-scrollbar {
+  width: 3px !important;
+  height: 3px !important;
+}
+
+*::-webkit-scrollbar-track {
+  background: rgb(179, 177, 177) !important;
+  border-radius: 3px !important;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: rgb(136, 136, 136) !important;
+  border-radius: 3px !important;
+}
+
+*::-webkit-scrollbar-thumb:hover {
+  background: rgb(100, 100, 100) !important;
+  border-radius: 3px !important;
+}
+
+*::-webkit-scrollbar-thumb:active {
+  background: rgb(68, 68, 68) !important;
+  border-radius: 3px 
+}
+
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
@@ -20,11 +45,13 @@ code {
   color: red;
 }
 
-.odd-column-cell-color{
+/* .odd-column-cell-color{
   background-color: #f5f7fb;
-}
+} */
 .MuiDataGrid-cell{
-  color: #757576;
+  color: #616161;
+  font-size: 12px;
+  font-weight: 300;
 }
 
 .MuiDataGrid-row:nth-child(even){
@@ -43,6 +70,3 @@ code {
   font-size: 10px;
 }
 
-/* .MuiDataGrid-columnHeaderTitleContainer > span{
-  color: #fff;
-}  */

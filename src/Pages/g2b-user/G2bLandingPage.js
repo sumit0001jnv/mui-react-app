@@ -10,14 +10,22 @@ import Header from '../../commons/components/header/Header';
 
 export default function G2bLandingPage() {
     const history = useHistory();
+    const statusMap = {
+        "0": "Pending",
+        "1": "QuoteRequested",
+        "2": "Accepted",
+        "3": "Decline"
+    }
     const getColor = (status) => {
         switch (status) {
-            case 'completed':
+            case 'Accepted':
                 return 'success';
-            case 'pending':
+            case 'Pending':
                 return 'warning';
-            case 'error':
+            case 'Decline':
                 return 'error';
+            case 'QuoteRequested':
+                return 'primary';
             default:
                 return 'error';
 
@@ -47,7 +55,7 @@ export default function G2bLandingPage() {
             headerName: 'Status',
             minWidth: 150,
             flex: 2,
-            renderCell: (params) => <><Chip label={params?.row?.status || 'success'} color={getColor(params?.row.status)} size="small" /></>,
+            renderCell: (params) => <><Chip label={params?.row?.status || 'Pending'} color={getColor(params?.row.status)} size="small" /></>,
             // renderCell: (params) => <><Chip label={params?.row?.status ||'pending'} color={params?.row?.status||'success'} size="small" /></>,
         },
         {
@@ -108,7 +116,7 @@ export default function G2bLandingPage() {
                 return {
                     name: row[1],
                     email: row[2],
-                    status: row[5] === "0" ? "error" : row[5] == "1" ? "pending" : "completed",
+                    status: statusMap[row[5]],
                     message: row[3],
                     subject: row[3],
                     body: row[3],
@@ -116,7 +124,7 @@ export default function G2bLandingPage() {
                     id: row[0]
                 }
             })
-            setNotificationCount(_tableData.filter(row => row.status === 'pending').length);
+            setNotificationCount(_tableData.filter(row => row.status === 'Pending').length);
             setTableData([..._tableData]);
             setLoading(false);
         }).catch(err => {
@@ -160,7 +168,7 @@ export default function G2bLandingPage() {
         history.push({
             pathname: '/quote-detail',
             // state: { project_id: row.id },
-            search: `?project_id=${row.id}`,
+            search: `?project_id=${row.id}&isInitialQuote=${row.status=='QuoteRequested'}`,
         }
         )
     }

@@ -78,6 +78,7 @@ export default function UserForm(props) {
                     disablePortal
                     id="combo-box-demo"
                     options={groups}
+                    disableClearable
                     // sx={{ width: 300 }}
                     // value={formData.group}
                     defaultValue={formData.group || groups[0]}
