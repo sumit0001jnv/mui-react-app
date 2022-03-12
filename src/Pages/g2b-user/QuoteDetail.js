@@ -19,7 +19,13 @@ import { deepOrange, deepPurple } from '@mui/material/colors';
 import Avatar from '@mui/material/Avatar';
 import Autocomplete from '@mui/material/Autocomplete';
 import AddIcon from '@mui/icons-material/Add';
+import PdfViewer from '../../commons/components/cropper-component/PdfViewer';
+import CustomMuiDialogue from '../../commons/components/custom-mui-dialogue/CustomMuiDialogue';
 
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import { Divider } from '@mui/material';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -39,11 +45,13 @@ export default function G2bLandingPage() {
     const [selectedG3User, setSelectedG3User] = useState({});
     const [loggedInUser, setLoggedInUser] = useState('');
     const [projectId, setProjectId] = useState('');
-    const [conversationArr, setConversationArr] = useState([
-        { name: 'Mike', time: '5th march 2022, 01:30', type: 'u1' },
-        { name: 'Anish', time: '6th march 2022, 01:30', type: 'u2' },
-        { name: 'Mike', time: '7th march 2022, 11:20', type: 'u1' },
-        { name: 'Anish', time: '8th march 2022, 11:40', type: 'u2' }]);
+    const [conversationArr, setConversationArr] = useState([]);
+    const [messageObj, setMessageObj] = useState({ message: '', show: false, subject: '' });
+    const [attachment, setAttachment] = useState({
+        show: false,
+        url: ''
+    });
+
 
 
     useEffect(() => {
@@ -191,16 +199,39 @@ export default function G2bLandingPage() {
 
     const onG2UserChange = (g3User) => {
         setSelectedG3User(() => g3User);
+        //g3User.id
         axios({
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-project-chat-data',
             data: { project_id: projectId, g2b_user_id: loggedInUser, g3_user_id: g3User.id }
         }).then(res => {
 
-            console.log(res.data);
+            // console.log(res.data);
+            if (res.data.status) {
+                setConversationArr(() =>
+                    (res.data.message_data || []).map(row => {
+                        return { name: row[8], time: row[7], type: row[3] == loggedInUser ? 'u1' : 'u2', message: row[5], subject: row[4], attachment: row[6] }
+                    })
+                )
+            } else {
+                setConversationArr(() => []);
+                dispatch(uiAction.showSnackbar({ message: res.data.message || 'No data found', type: 'error' }));
+            }
         }).catch(err => {
             console.log(err);
         })
+    }
+
+    function onAttachmentClick(attachment) {
+        setAttachment({ show: true, url: attachment })
+    }
+    function onMessageChange(subject, message) {
+        setMessageObj({ subject, message, show: true })
+
+    }
+
+    function onSetOpenDialogue(state) {
+        setAttachment(() => { return { ...attachment, show: state } });
     }
 
 
@@ -231,32 +262,48 @@ export default function G2bLandingPage() {
                             </> : ''
                             }
                         </Grid>
-                        <Grid container justifyContent={'center'}>
-                            {columns.map((col) => {
-                                return <>
-                                    <Grid item xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc', bgcolor: "turquoise" }}>
-                                        <div style={{ fontWeight: 600 }}>{col.headerName}</div>
-                                    </Grid>
-                                </>
-                            })}
-                        </Grid>
-                        <Grid container spacing={0} direction="column" sx={{ width: '900px', maxWidth: '100%', maxHeight: 'calc(100vh - 310px)', height: 'calc(100vh - 310px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
-                            {tableData.map((row, i) => {
-                                return <>
-                                    <Grid container justifyContent={'center'}>
-                                        {columns.map((col, index) => {
-                                            return <>
-                                                <Grid item xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc' }}>
-                                                    {index == 2 ? <IconButton color="error" aria-label="add an alarm" onClick={() => removeRow(i)}>
-                                                        <DeleteIcon />
-                                                    </IconButton> : <TextField id="outlined-size-normal" size={'small'} value={row[col.field]} onChange={(event) => handleText(event, i, col.field)} sx={{ width: '100%', color: "#ccc" }} />}
-                                                </Grid>
-                                            </>
-                                        })}
-                                    </Grid>
-                                </>
-                            })}
-                        </Grid>
+                        {isInitialQuote ? <>
+                            <Grid container justifyContent={'center'}>
+                                {columns.map((col) => {
+                                    return <>
+                                        <Grid item xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc', bgcolor: "turquoise" }}>
+                                            <div style={{ fontWeight: 600 }}>{col.headerName}</div>
+                                        </Grid>
+                                    </>
+                                })}
+                            </Grid>
+                            <Grid container spacing={0} direction="column" sx={{ width: '900px', maxWidth: '100%', maxHeight: 'calc(100vh - 310px)', height: 'calc(100vh - 310px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
+                                {tableData.map((row, i) => {
+                                    return <>
+                                        <Grid container justifyContent={'center'}>
+                                            {columns.map((col, index) => {
+                                                return <>
+                                                    <Grid item xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc' }}>
+                                                        {index == 2 ? <IconButton color="error" aria-label="add an alarm" onClick={() => removeRow(i)}>
+                                                            <DeleteIcon />
+                                                        </IconButton> : <TextField id="outlined-size-normal" size={'small'} value={row[col.field]} onChange={(event) => handleText(event, i, col.field)} sx={{ width: '100%', color: "#ccc" }} />}
+                                                    </Grid>
+                                                </>
+                                            })}
+                                        </Grid>
+                                    </>
+                                })}
+                            </Grid>
+                        </> : <> <Grid container spacing={0} direction="column" sx={{ maxHeight: 'calc(100vh - 260px)', height: 'calc(100vh - 260px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
+                            {selectedG3User.id && conversationArr.length && messageObj.show ?
+                                <>
+                                    <Divider></Divider>
+                                    <Typography bottomGutter variant="h6" component="div" sx={{ textAlign: 'initial', p:2 }}>
+                                        {messageObj.subject}
+                                    </Typography>
+                                    <Divider></Divider>
+                                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'initial', p:2 }}>
+                                        {messageObj.message}
+                                    </Typography>
+                                    
+                                </> : ''}
+                        </Grid></>}
+                        <Divider></Divider>
                         <Grid container justifyContent={'flex-end'} sx={{ p: 2 }}>
                             {isInitialQuote ? <><Autocomplete
                                 sx={{ mr: 2, width: 200, flexGrow: 1, height: '40px', maxHeight: '40px' }}
@@ -275,16 +322,20 @@ export default function G2bLandingPage() {
                             />
                                 <Button variant='contained' color={'success'} onClick={sendData}>Send</Button></> :
                                 <>
-                                    <Button variant='contained' color={'primary'} sx={{ mr: 2 }} onClick={() => handleAccept(false)}>Decline</Button>
-                                    <Button variant='contained' color={'primary'} onClick={() => handleAccept(true)}>Accept</Button>
+                                    {selectedG3User.id && conversationArr.length ?
+                                        <>
+                                            <Button variant='contained' color={'primary'} sx={{ mr: 2 }} onClick={() => handleAccept(false)}>Decline</Button>
+                                            <Button variant='contained' color={'primary'} onClick={() => handleAccept(true)}>Accept</Button></> : ''}
+
                                 </>}
 
                         </Grid>
+
                     </Grid>
                 </Grid>
                 {!isInitialQuote ? <>
                     <Grid item xs={12} md={7}>
-                        <Grid container direction={'column'}>
+                        <Grid container direction={'column'} sx={{ height: '100%' }}>
                             {conversationArr.map((user) => {
                                 return <Grid container alignItems={'center'} >
                                     <Box sx={{ ...commonStyles, borderColor: 'primary.main' }} >
@@ -306,18 +357,21 @@ export default function G2bLandingPage() {
                                     </Grid>
 
                                     <Box sx={{ ...commonStyles, borderColor: 'primary.main' }} >
-                                        <Button variant='contained' sx={{ mr: 1 }}> Message</Button>
-                                        <Button variant='contained'> Attachment</Button>
+                                        <Button variant='contained' sx={{ mr: 1 }} onClick={() => onMessageChange(user.subject, user.message)} > Message</Button>
+                                        <Button variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Attachment</Button>
                                     </Box>
 
 
                                     {/* <Avatar sx={{ bgcolor: deepPurple[500] }}>OP</Avatar> */}
                                 </Grid>
                             })}
+                            {!conversationArr.length ? <Grid container justifyContent={'center'} alignItems={'center'} sx={{ height: '100%' }}>
+                                {selectedG3User.id ? 'No data found' : 'Please Select G3 user'}</Grid> : ''}
                         </Grid>
 
                     </Grid></> : ''}
             </Grid>
         </Item>
+        <CustomMuiDialogue url={attachment.url} show={attachment.show} onSetOpenDialogue={onSetOpenDialogue}></CustomMuiDialogue>
     </>;
 }
