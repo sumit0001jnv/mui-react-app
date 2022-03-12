@@ -19,12 +19,11 @@ import { deepOrange, deepPurple } from '@mui/material/colors';
 import Avatar from '@mui/material/Avatar';
 import Autocomplete from '@mui/material/Autocomplete';
 import AddIcon from '@mui/icons-material/Add';
-import PdfViewer from '../../commons/components/cropper-component/PdfViewer';
 import CustomMuiDialogue from '../../commons/components/custom-mui-dialogue/CustomMuiDialogue';
+import LoadingButton from '@mui/lab/LoadingButton';
+// import SaveIcon from '@mui/icons-material/Save';
+import SendIcon from '@mui/icons-material/Send';
 
-import Card from '@mui/material/Card';
-import CardActions from '@mui/material/CardActions';
-import CardContent from '@mui/material/CardContent';
 import { Divider } from '@mui/material';
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -39,13 +38,14 @@ export default function G2bLandingPage() {
     const history = useHistory();
     const dispatch = useDispatch();
     const [tableData, setTableData] = useState([]);
-    const [isInitialQuote, setIsInitialQuote] = useState(false);
+    const [isInitialQuote, setIsInitialQuote] = useState(true);
     const [g3Users, setG3Users] = useState([]);
     const [selectedG3Users, setSelectedG3Users] = useState([]);
-    const [selectedG3User, setSelectedG3User] = useState({});
+    const [selectedG3User, setSelectedG3User] = useState({ name: '', id: '' });
     const [loggedInUser, setLoggedInUser] = useState('');
     const [projectId, setProjectId] = useState('');
     const [conversationArr, setConversationArr] = useState([]);
+    const [saving, setSaving] = useState(false);
     const [messageObj, setMessageObj] = useState({ message: '', show: false, subject: '' });
     const [attachment, setAttachment] = useState({
         show: false,
@@ -71,7 +71,6 @@ export default function G2bLandingPage() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/extract-data',
             data: { project_id }
         }).then(res => {
-            console.log(res.data);
             setTableData(() => {
                 return res.data.data.map(row => {
                     return {
@@ -84,7 +83,6 @@ export default function G2bLandingPage() {
         }).catch(err => {
             console.log(err);
         })
-
         axios({
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-g3-user-list',
@@ -97,6 +95,10 @@ export default function G2bLandingPage() {
                 setG3Users(() => {
                     return [...x];
                 })
+                // setSelectedG3User(x[0]);
+                if (!isInitialQuote) {
+                    onG2UserChange(x[1], project_id, userData.user_id);
+                }
             }
             // setTableData(() => {
             //     return res.data.data.map(row => {
@@ -155,6 +157,7 @@ export default function G2bLandingPage() {
     const sendData = () => {
         // console.log(tableData);
         let obj = {};
+        setSaving(true);
         tableData.forEach(row => {
             obj[row.attribute] = row.value;
         })
@@ -168,6 +171,7 @@ export default function G2bLandingPage() {
             } else {
                 dispatch(uiAction.showSnackbar({ message: res.data.message || 'Fail to save quote', type: 'error' }));
             }
+            setSaving(false);
 
         }).catch(err => {
             console.log(err);
@@ -197,20 +201,19 @@ export default function G2bLandingPage() {
     }
 
 
-    const onG2UserChange = (g3User) => {
+    function onG2UserChange(g3User, projId, g2User) {
         setSelectedG3User(() => g3User);
-        //g3User.id
+        const project_id = projectId || projId;
+        const g2b_user_id = loggedInUser || g2User;
         axios({
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-project-chat-data',
-            data: { project_id: projectId, g2b_user_id: loggedInUser, g3_user_id: g3User.id }
+            data: { project_id: project_id, g2b_user_id, g3_user_id: g3User.id }
         }).then(res => {
-
-            // console.log(res.data);
             if (res.data.status) {
                 setConversationArr(() =>
                     (res.data.message_data || []).map(row => {
-                        return { name: row[8], time: row[7], type: row[3] == loggedInUser ? 'u1' : 'u2', message: row[5], subject: row[4], attachment: row[6] }
+                        return { name: row[8], time: row[7], type: row[3] == g2b_user_id ? 'u1' : 'u2', message: row[5], subject: row[4], attachment: row[6] }
                     })
                 )
             } else {
@@ -220,6 +223,7 @@ export default function G2bLandingPage() {
         }).catch(err => {
             console.log(err);
         })
+
     }
 
     function onAttachmentClick(attachment) {
@@ -255,7 +259,8 @@ export default function G2bLandingPage() {
                                 options={g3Users}
                                 getOptionLabel={(option) => option.name}
                                 disableClearable
-                                defaultValue={g3Users[0]?.name}
+                                defaultValue={g3Users[0]}
+                                value={selectedG3User}
                                 onChange={(event, newInputValue) => onG2UserChange(newInputValue)}
                                 renderInput={(params) => <TextField {...params} label="Group 3 Users" placeholder='Select Group 3 user' />}
                             />
@@ -293,14 +298,14 @@ export default function G2bLandingPage() {
                             {selectedG3User.id && conversationArr.length && messageObj.show ?
                                 <>
                                     <Divider></Divider>
-                                    <Typography bottomGutter variant="h6" component="div" sx={{ textAlign: 'initial', p:2 }}>
+                                    <Typography bottomGutter variant="h6" component="div" sx={{ textAlign: 'initial', p: 2 }}>
                                         {messageObj.subject}
                                     </Typography>
                                     <Divider></Divider>
-                                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'initial', p:2 }}>
+                                    <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'initial', p: 2 }}>
                                         {messageObj.message}
                                     </Typography>
-                                    
+
                                 </> : ''}
                         </Grid></>}
                         <Divider></Divider>
@@ -320,7 +325,18 @@ export default function G2bLandingPage() {
                                 }}
                                 renderInput={(params) => <TextField {...params} label="Group 3 Users" placeholder='Select Group 3 user' />}
                             />
-                                <Button variant='contained' color={'success'} onClick={sendData}>Send</Button></> :
+                                {/* <Button variant='contained' color={'success'} onClick={sendData}>Send</Button> */}
+                                <LoadingButton
+                                    loading={saving}
+                                    loadingPosition="start"
+                                    endIcon={<SendIcon />}
+                                    variant="contained"
+                                    onClick={sendData}
+                                    disabled={!selectedG3Users.length}
+                                >
+                                    Send
+                                </LoadingButton>
+                            </> :
                                 <>
                                     {selectedG3User.id && conversationArr.length ?
                                         <>

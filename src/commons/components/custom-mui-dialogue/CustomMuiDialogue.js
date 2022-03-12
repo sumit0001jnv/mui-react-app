@@ -70,7 +70,7 @@ export default function CustomMuiDialogue(props) {
                 aria-describedby="scroll-dialog-description"
             >
                 <DialogTitle id="scroll-dialog-title">Attachment </DialogTitle>
-                <Grid container>
+                {props.url && <Grid container>
                     <Grid container xs={12} alignItems={'center'} >
                         <Button onClick={() => pageChange(pageNumber - 1)}>Previous</Button>
                         <Typography variant="div" gutterBottom component="div">
@@ -80,7 +80,7 @@ export default function CustomMuiDialogue(props) {
                         <Button onClick={() => zoom(zoomVal + 0.5)}>Zoom In</Button>
                         <Button onClick={() => zoom(zoomVal - 0.5)}>Zoom Out</Button>
                     </Grid>
-                </Grid>
+                </Grid>}
 
                 <DialogContent dividers={scroll === 'paper'}>
                     <DialogContentText

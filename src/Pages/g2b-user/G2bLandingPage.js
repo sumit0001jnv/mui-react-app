@@ -169,7 +169,7 @@ export default function G2bLandingPage() {
         history.push({
             pathname: '/quote-detail',
             // state: { project_id: row.id },
-            search: `?project_id=${row.id}&isInitialQuote=${row.status == 'QuoteRequested'}`,
+            search: `?project_id=${row.id}&isInitialQuote=${row.status == 'Pending'}`,
         }
         )
     }
