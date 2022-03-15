@@ -23,6 +23,7 @@ import CustomMuiDialogue from '../../commons/components/custom-mui-dialogue/Cust
 import LoadingButton from '@mui/lab/LoadingButton';
 // import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import { Divider } from '@mui/material';
 
@@ -72,10 +73,12 @@ export default function G2bLandingPage() {
             data: { project_id }
         }).then(res => {
             setTableData(() => {
-                return res.data.data.map(row => {
+                // return getItems(10);
+                return (res.data.data || []).map(row => {
                     return {
                         attribute: row.name,
-                        value: row.text
+                        value: row.text,
+                        id: ID()
                     }
                 })
             })
@@ -116,7 +119,7 @@ export default function G2bLandingPage() {
     }, []);
     const addRow = () => {
         setTableData((data) => {
-            return [{ attribute: '', value: '' }, ...data];
+            return [{ attribute: '', value: '', id: ID() }, ...data];
         })
     }
 
@@ -152,6 +155,10 @@ export default function G2bLandingPage() {
             data[rowIndex][field] = event.target.value;
             return [...data];
         })
+    }
+
+    function ID() {
+        return '_' + Math.random().toString(36).substr(2, 9);
     }
 
     const sendData = () => {
@@ -238,6 +245,64 @@ export default function G2bLandingPage() {
         setAttachment(() => { return { ...attachment, show: state } });
     }
 
+    function onDragEnd(result) {
+        // dropped outside the list
+        if (!result.destination) {
+            return;
+        }
+
+        const items = reorder(
+            tableData,
+            result.source.index,
+            result.destination.index
+        );
+
+        setTableData(() =>
+            items
+        );
+    }
+
+    function reorder(list, startIndex, endIndex) {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+
+        return result;
+    };
+    const getItemStyle = (isDragging, draggableStyle) => ({
+        // some basic styles to make the items look a bit nicer
+        userSelect: "none",
+        padding: '4px',
+        // margin: `0 0 ${4}px 0`,
+
+        // change background colour if dragging
+        background: isDragging ? "lightgreen" : "#fff",
+
+        // styles we need to apply on draggables
+        ...draggableStyle
+    });
+
+    const getListStyle = isDraggingOver => ({
+        background: isDraggingOver ? "lightblue" : "#fff",
+        padding: '4px',
+        // width: 250,
+        // display: 'flex',
+        // 'flex-direction': 'column',
+        width: '900px',
+        maxWidth: '100%',
+        maxHeight: 'calc(100vh - 310px)',
+        height: 'calc(100vh - 310px)',
+        flexWrap: 'nowrap',
+        overflowY: 'auto'
+    });
+
+    const getItems = count =>
+        Array.from({ length: count }, (v, k) => k).map(k => ({
+            id: `item-${k}`,
+            content: `item ${k}`
+        }));
+
+
 
 
     return <>
@@ -277,23 +342,46 @@ export default function G2bLandingPage() {
                                     </>
                                 })}
                             </Grid>
-                            <Grid container spacing={0} direction="column" sx={{ width: '900px', maxWidth: '100%', maxHeight: 'calc(100vh - 310px)', height: 'calc(100vh - 310px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
-                                {tableData.map((row, i) => {
-                                    return <>
-                                        <Grid container justifyContent={'center'}>
-                                            {columns.map((col, index) => {
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                <Droppable droppableId="droppable">
+                                    {(provided, snapshot) =>
+                                        <Grid  {...provided.droppableProps}
+                                            ref={provided.innerRef}
+                                            style={getListStyle(snapshot.isDraggingOver)} container spacing={0} direction="column" sx={{}}>
+                                            {tableData.map((row, i) => {
                                                 return <>
-                                                    <Grid item xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc' }}>
-                                                        {index == 2 ? <IconButton color="error" aria-label="add an alarm" onClick={() => removeRow(i)}>
-                                                            <DeleteIcon />
-                                                        </IconButton> : <TextField id="outlined-size-normal" size={'small'} value={row[col.field]} onChange={(event) => handleText(event, i, col.field)} sx={{ width: '100%', color: "#ccc" }} />}
-                                                    </Grid>
+                                                    <Draggable key={row.id} draggableId={row.id} index={i}>
+                                                        {(provided, snapshot) => (
+
+                                                            <Grid
+                                                                ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                style={getItemStyle(
+                                                                    snapshot.isDragging,
+                                                                    provided.draggableProps.style
+                                                                )}
+                                                                container justifyContent={'center'}>
+                                                                {columns.map((col, index) => {
+                                                                    return <>
+                                                                        <Grid item xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc' }}>
+                                                                            {index == 2 ? <IconButton color="error" aria-label="add an alarm" onClick={() => removeRow(i)}>
+                                                                                <DeleteIcon />
+                                                                            </IconButton> : <TextField id="outlined-size-normal" size={'small'} value={row[col.field]} onChange={(event) => handleText(event, i, col.field)} sx={{ width: '100%', color: "#ccc" }} />}
+                                                                        </Grid>
+                                                                    </>
+                                                                })}
+                                                            </Grid>
+                                                        )}
+                                                    </Draggable>
                                                 </>
                                             })}
+                                            {provided.placeholder}
                                         </Grid>
-                                    </>
-                                })}
-                            </Grid>
+                                    }
+                                </Droppable>
+                            </DragDropContext>
+
                         </> : <> <Grid container spacing={0} direction="column" sx={{ maxHeight: 'calc(100vh - 260px)', height: 'calc(100vh - 260px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
                             {selectedG3User.id && conversationArr.length && messageObj.show ?
                                 <>
