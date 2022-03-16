@@ -296,15 +296,6 @@ export default function G2bLandingPage() {
         overflowY: 'auto'
     });
 
-    const getItems = count =>
-        Array.from({ length: count }, (v, k) => k).map(k => ({
-            id: `item-${k}`,
-            content: `item ${k}`
-        }));
-
-
-
-
     return <>
         <Header hideNotification></Header>
         <Item sx={{ m: 2, px: 2, }}>
@@ -347,7 +338,7 @@ export default function G2bLandingPage() {
                                     {(provided, snapshot) =>
                                         <Grid  {...provided.droppableProps}
                                             ref={provided.innerRef}
-                                            style={getListStyle(snapshot.isDraggingOver)} container spacing={0} direction="column" sx={{}}>
+                                            style={getListStyle(snapshot.isDraggingOver)} container spacing={0} direction="column">
                                             {tableData.map((row, i) => {
                                                 return <>
                                                     <Draggable key={row.id} draggableId={row.id} index={i}>
@@ -462,7 +453,7 @@ export default function G2bLandingPage() {
 
                                     <Box sx={{ ...commonStyles, borderColor: 'primary.main' }} >
                                         <Button variant='contained' sx={{ mr: 1 }} onClick={() => onMessageChange(user.subject, user.message)} > Message</Button>
-                                        <Button variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Attachment</Button>
+                                        <Button disabled={!user.attachment} variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Attachments({user.attachment ? 1 : 0})</Button>
                                     </Box>
 
 

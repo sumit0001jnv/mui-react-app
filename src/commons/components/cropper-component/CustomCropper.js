@@ -68,7 +68,9 @@ export default function CustomCropper() {
     const [exitingTemplates, setExitingTemplates] = useState([]);
     const [isPreviewed, setIsPreviewed] = useState(false);
     const [quoteTableData, setQuoteTableData] = useState([]);
-    const [templateId, selectedTemplateId] = useState('');
+    const [templateId, setTemplateId] = useState('');
+    const [loadingBtn, setLoadingBtn] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const columns = [
         {
@@ -221,6 +223,7 @@ export default function CustomCropper() {
     }
 
     const onSave = () => {
+        setLoadingBtn(true);
         const data = templates.map(template => {
             const { page_num, annotationName, annotationBox } = template;
             return { page_num, annotationName, annotationBox };
@@ -236,17 +239,22 @@ export default function CustomCropper() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/save-annotation',
             data: payload
         }).then(res => {
-            console.log(res);
-            dispatch(uiAction.showSnackbar({ message: 'Template saved successfully', type: 'success' }));
+            setLoadingBtn(false);
+            dispatch(uiAction.showSnackbar({ message: res?.data?.message || 'Template saved successfully', type: 'success' }));
         }).catch(err => {
             console.log(err);
+            setLoadingBtn(false);
             dispatch(uiAction.showSnackbar({ message: err?.data?.message || 'Something went wrong.Please try after some time', type: 'error' }));
         })
 
     }
 
+    function ID() {
+        return '_' + Math.random().toString(36).substr(2, 9);
+    }
+
     const onPreview = (templateId) => {
-        selectedTemplateId(templateId);
+        setTemplateId(templateId);
         setIsPreviewed(true);
         axios({
             method: 'post',
@@ -260,7 +268,8 @@ export default function CustomCropper() {
             setQuoteTableData(() => [...res.data.data.map(row => {
                 return {
                     attribute: row.name,
-                    value: row.text
+                    value: row.text,
+                    id: ID()
                 }
             })])
         }).catch(err => {
@@ -275,7 +284,7 @@ export default function CustomCropper() {
     }
 
     const onSaveQuote = (data) => {
-        console.log(data);
+        setLoadingBtn(true);
         let obj = {};
         data.forEach(element => {
             obj[element.attribute] = element.value;
@@ -285,6 +294,7 @@ export default function CustomCropper() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/save-g2-project-data',
             data: { project_id: projectId, template_id: templateId, project_data: obj }
         }).then(res => {
+            setLoadingBtn(false);
             if (res.data.message === 'Failed') {
                 dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                 return;
@@ -292,6 +302,7 @@ export default function CustomCropper() {
             dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'success' }));
         }).catch(err => {
             console.log(err);
+            setLoadingBtn(false);
             dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
         })
     }
@@ -308,13 +319,11 @@ export default function CustomCropper() {
                 <Grid item xs={7}>
                     <Item>
                         <Grid container spacing={0} alignItems={'center'}>
-                            {/* <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={setCropData} startIcon={<CropIcon />}>Crop Image</Button> */}
                             <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
                                 <KeyboardBackspaceIcon />
                             </IconButton>
                             <Typography variant='h6' sx={{ ml: 1, mr: 'auto' }}>Create Template</Typography>
                             <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={clearCrop} >Clear crop box</Button>
-                            {/* <Button variant="outlined" size="small" sx={{ mb: 1 }} onClick={restCrop}>Reset crop box</Button> */}
                         </Grid>
                         <Divider />
 
@@ -458,7 +467,7 @@ export default function CustomCropper() {
                                     direction="column"
                                 >
                                     <CustomActionList columns={columns} tableData={quoteTableData} onDataChange={onSetTableData}
-                                        actionBtnText='Confirm' onSave={onSaveQuote}></CustomActionList>
+                                        actionBtnText='Confirm' onSave={onSaveQuote} loadingBtn={loadingBtn}></CustomActionList>
                                 </Grid>
                             </>}
                         </TabPanel>
