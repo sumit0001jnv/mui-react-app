@@ -24,6 +24,7 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import PreviewIcon from '@mui/icons-material/Preview';
 import CustomActionList from '../CustomActionList';
+import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -166,13 +167,41 @@ export default function CustomCropper() {
 
     }, [])
 
+    function onDragEnd(result) {
+        // dropped outside the list
+        if (!result.destination) {
+            return;
+        }
+
+        const items = reorder(
+            templates,
+            result.source.index,
+            result.destination.index
+        );
+
+        setTemplates(() =>
+            items
+        );
+    }
+
+    function reorder(list, startIndex, endIndex) {
+        const result = Array.from(list);
+        const [removed] = result.splice(startIndex, 1);
+        result.splice(endIndex, 0, removed);
+
+        return result;
+    };
+    function ID() {
+        return '_' + Math.random().toString(36).substr(2, 9);
+    }
+
     const getCropData = () => {
 
         if (typeof cropper !== 'undefined') {
             const { x, y, width, height } = cropper.getData();
             // const { left2, top2, width2, height2 } = cropper.getCropBoxData();
             var rounded = (num) => Math.round((num + Number.EPSILON) * 100) / 100;
-            let obj = { cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${rounded(x)},${rounded(y)},${rounded(width)},${rounded(height)}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
+            let obj = { id: ID(), cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${rounded(x)},${rounded(y)},${rounded(width)},${rounded(height)}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
             setTemplates([obj, ...templates]);
             setSelectedText('');
             cropper.setDragMode("move");
@@ -312,6 +341,30 @@ export default function CustomCropper() {
     }
 
 
+    const getItemStyle = (isDragging, draggableStyle) => ({
+        // some basic styles to make the items look a bit nicer
+        userSelect: "none",
+        padding: '4px',
+        // margin: `0 0 ${4}px 0`,
+
+        // change background colour if dragging
+        background: isDragging ? "lightgreen" : "#fff",
+
+        // styles we need to apply on draggables
+        ...draggableStyle
+    });
+
+    const getListStyle = isDraggingOver => ({
+        background: isDraggingOver ? "lightblue" : "#fff",
+        padding: '4px',
+        maxWidth: '100%',
+        height: 'calc(100vh - 310px)',
+        height: 'calc(100vh - 310px)',
+        flexWrap: 'nowrap',
+        overflowY: 'auto'
+    });
+
+
 
     return (
         <>
@@ -392,30 +445,51 @@ export default function CustomCropper() {
                                 </Grid>
                             </Grid>
                             <Divider sx={{ mb: 1 }} />
-                            <Grid container
-                                sx={{ height: 'calc(100vh - 310px)', flexWrap: 'nowrap', overflowY: 'auto' }}
-                                direction="column"
-                            >
-                                {templates.map((temp, index) => {
-                                    return <Grid container alignItems={'center'} spacing={0} sx={{ mb: 2, p: 1 }}>
-                                        <Grid item xs={5}>
-                                            <TextField
-                                                disabled id="outlined-basic"
-                                                sx={{ display: 'flex', mx: 1, p: 0, bgcolor: "#fff" }}
-                                                label="Key"
-                                                variant="outlined"
-                                                size="small"
-                                                value={temp.key} />
+                            <DragDropContext onDragEnd={onDragEnd}>
+                                <Droppable droppableId="droppable">
+                                    {(provided, snapshot) =>
+                                        <Grid  {...provided.droppableProps}
+                                            ref={provided.innerRef}
+                                            style={getListStyle(snapshot.isDraggingOver)} container
+                                            direction="column"
+                                        >
+                                            {templates.map((temp, index) => {
+                                                return <Draggable key={temp.id} draggableId={temp.id} index={index}>
+                                                    {(provided, snapshot) => (
+                                                        <Grid ref={provided.innerRef}
+                                                            {...provided.draggableProps}
+                                                            {...provided.dragHandleProps}
+                                                            style={getItemStyle(
+                                                                snapshot.isDragging,
+                                                                provided.draggableProps.style
+                                                            )} container alignItems={'center'} spacing={0} sx={{ mb: 2, p: 1, borderBottom: '1px solid #ccc' }}>
+                                                            <Grid item xs={5}>
+                                                                <TextField
+                                                                    disabled id="outlined-basic"
+                                                                    sx={{ display: 'flex', mx: 1, p: 0, bgcolor: "#fff" }}
+                                                                    label="Key"
+                                                                    variant="outlined"
+                                                                    size="small"
+                                                                    value={temp.key} />
+                                                            </Grid>
+                                                            <Grid container xs={7} spacing={0} sx={{ m: 0, p: 0 }} >
+                                                                <img style={{ width: "calc(100% - 60px)", minHeight: "40px", maxHeight: "100px", marginRight: "4px", padding: "4px" }} src={temp.cropData} crossOrigin="anonymous" alt="cropped image" />
+                                                                <IconButton color="secondary" aria-label="add an alarm" onClick={() => deleteKey(index)}>
+                                                                    <DeleteIcon />
+                                                                </IconButton>
+                                                            </Grid>
+                                                        </Grid>)}
+                                                </Draggable>
+                                            })}
+                                            {provided.placeholder}
                                         </Grid>
-                                        <Grid container xs={7} spacing={0} sx={{ m: 0, p: 0 }} >
-                                            <img style={{ width: "calc(100% - 60px)", minHeight: "40px", maxHeight: "100px", marginRight: "4px", padding: "4px" }} src={temp.cropData} crossOrigin="anonymous" alt="cropped image" />
-                                            <IconButton color="secondary" aria-label="add an alarm" onClick={() => deleteKey(index)}>
-                                                <DeleteIcon />
-                                            </IconButton>
-                                        </Grid>
-                                    </Grid>
-                                })}
-                            </Grid>
+                                    }
+                                </Droppable>
+                            </DragDropContext>
+
+
+
+
                             <Grid container spacing={0} sx={{ my: 1 }}>
                                 <Grid item sx={{ flexGrow: 1 }}>
                                     <TextField id="outlined-basic"
