@@ -43,8 +43,11 @@ export default function CustomMuiDialogue(props) {
     }, [props.show]);
 
     function pageChange(pageNo) {
-        if (pageNo == 0) {
+        if (pageNo <= 0) {
             pageNo = numPages;
+        }
+        if (!(pageNo % (numPages + 1))) {
+            pageNo = 1;
         }
         setPageNumber(pageNo % (numPages + 1));
     }

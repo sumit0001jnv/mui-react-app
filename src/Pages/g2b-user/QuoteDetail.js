@@ -100,7 +100,8 @@ export default function G2bLandingPage() {
                 })
                 // setSelectedG3User(x[0]);
                 if (!isInitialQuote) {
-                    onG2UserChange(x[1], project_id, userData.user_id);
+                    const user = params.get('g3User') ? JSON.parse(params.get('g3User')) : x[0];
+                    onG2UserChange(user, project_id, userData.user_id);
                 }
             }
             // setTableData(() => {
@@ -203,8 +204,9 @@ export default function G2bLandingPage() {
         return abbrWord;
     }
 
-    const handleAccept = (isAccepted) => {
-        console.log(isAccepted);
+
+    const handleAcceptDeclineReply = (isReply) => {
+        history.push({ pathname: '/final-quote-detail', search: `?project_id=${projectId}&g3User=${JSON.stringify(selectedG3User)}&reply=${isReply}` })
     }
 
 
@@ -234,7 +236,7 @@ export default function G2bLandingPage() {
     }
 
     function onAttachmentClick(attachment) {
-        setAttachment({ show: true, url: attachment })
+        setAttachment({ show: true, url: attachment[0] })
     }
     function onMessageChange(subject, message) {
         setMessageObj({ subject, message, show: true })
@@ -419,9 +421,8 @@ export default function G2bLandingPage() {
                                 <>
                                     {selectedG3User.id && conversationArr.length ?
                                         <>
-                                            <Button variant='contained' color={'primary'} sx={{ mr: 2 }} onClick={() => handleAccept(false)}>Decline</Button>
-                                            <Button variant='contained' color={'primary'} onClick={() => handleAccept(true)}>Accept</Button></> : ''}
-
+                                            <Button variant='contained' color={'primary'} sx={{ mr: 2 }} onClick={() => handleAcceptDeclineReply(true)}>Reply</Button>
+                                            <Button variant='contained' color={'primary'} onClick={() => handleAcceptDeclineReply(false)}>Accept/Decline</Button></> : ''}
                                 </>}
 
                         </Grid>
@@ -453,7 +454,7 @@ export default function G2bLandingPage() {
 
                                     <Box sx={{ ...commonStyles, borderColor: 'primary.main' }} >
                                         <Button variant='contained' sx={{ mr: 1 }} onClick={() => onMessageChange(user.subject, user.message)} > Message</Button>
-                                        <Button disabled={!user.attachment} variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Attachments({user.attachment ? 1 : 0})</Button>
+                                        <Button disabled={!user.attachment || !user.attachment.length} variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Attachments({(user.attachment && user.attachment.length) ? 1 : 0})</Button>
                                     </Box>
 
 

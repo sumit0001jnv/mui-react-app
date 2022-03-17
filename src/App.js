@@ -16,7 +16,8 @@ import QuoteDetail from './pages/g2b-user/QuoteDetail';
 import { useHistory, Redirect } from "react-router-dom";
 import Setting from './pages/admin/Setting';
 import Unauthorized from './pages/unauthorized/Unauthorized';
-import PdfViewer from './commons/components/cropper-component/PdfViewer';
+// import PdfViewer from './commons/components/cropper-component/PdfViewer';
+import FinalQuoteDecision from './pages/g2b-user/FinalQuoteDecision';
 
 function App() {
   const history = useHistory();
@@ -88,7 +89,7 @@ function App() {
           <ProtectedRoute path="/g2b-user" component={G2bLandingPage} auth={isLogedIn} exact />
           <ProtectedRoute path="/quote-detail" component={QuoteDetail} auth={isLogedIn} exact />
           <ProtectedRoute path="/setting" component={Setting} auth={isLogedIn} exact />
-          <Route path="/test" component={PdfViewer}  exact />
+          <ProtectedRoute path="/final-quote-detail" component={FinalQuoteDecision} auth={isLogedIn} exact />
           <Route path="/unauthorized" component={Unauthorized}>
             {/* <h1>Sorry You don't have access to to view this page</h1> */}
           </Route>
