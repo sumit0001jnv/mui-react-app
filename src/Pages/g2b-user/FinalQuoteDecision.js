@@ -9,12 +9,15 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
 import { useLocation } from "react-router-dom";
 import { useDispatch } from 'react-redux';
+import uiAction from '../../store/actions/uiAction';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import Typography from '@mui/material/Typography';
 import AddIcon from '@mui/icons-material/Add';
 import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
 import { Divider } from '@mui/material';
@@ -34,9 +37,15 @@ export default function FinalQuoteDecision(props) {
     const dispatch = useDispatch();
 
     const [tableData, setTableData] = useState([]);
-    const [saving, setSaving] = useState(false);
+    const [saving, setSaving] = useState({
+        'declineBtn': false,
+        'acceptBtn': false,
+        'replyBtn': false,
+    });
     const [g3User, setG3user] = useState({ id: '', name: '' });
     const [isReply, setIsReply] = useState(true);
+    const [isAccept, setIsAccept] = useState(true);
+    const [loggedInUser, setLoggedInUser] = useState('');
     const [openConfirmationDialogue, setOpenConfirmationDialogue] = useState(false);
     const [dialogueBody, setDialogueBody] = useState({ header: '', content: '' });
     const [projectId, setProjectId] = useState('');
@@ -150,11 +159,51 @@ export default function FinalQuoteDecision(props) {
     function handleAccept(accepted) {
         setOpenConfirmationDialogue(true);
         setDialogueBody({ header: accepted ? 'Accept' : 'Decline', content: `Are you sure you want to ${accepted ? 'Accept' : 'Decline'} this quote?` });
+        setIsAccept(accepted)
 
     }
 
     function onClose(isAgree) {
         if (isAgree) {
+            if (isReply) {
+            } else {
+
+                setSaving((s) => {
+                    let obj = { ...s };
+                    isAccept ? obj.acceptBtn = true : obj.declineBtn = true;
+                    return obj
+                })
+
+                const data = { project_id: projectId, g2b_user_id: loggedInUser, g3_user_id: g3User.id };
+                let url = `http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/${isAccept ? 'accept-final-quote' : 'decline-final-quote'}`;
+                if (isAccept) {
+                    const obj = {};
+                    tableData.forEach(element => {
+                        obj[element.attribute] = element.value;
+                    });
+                    data.project_data = obj;
+                }
+                axios({
+                    method: 'post',
+                    url,
+                    data
+                }).then(res => {
+                    if (res.data.status) {
+                        dispatch(uiAction.showSnackbar({ message: res.data.message || `Quote request has been successfully ${isAccept ? 'accepted' : 'declined'}`, type: 'success' }));
+                    } else {
+                        dispatch(uiAction.showSnackbar({ message: res.data.message || `Fail to ${isAccept ? 'accept' : 'decline'} requested quote`, type: 'error' }));
+                    }
+                    setSaving((s) => {
+                        let obj = { ...s };
+                        isAccept ? obj.acceptBtn = false : obj.declineBtn = false;
+                        return obj
+                    })
+                }).catch(err => {
+                    console.log(err);
+                    dispatch(uiAction.showSnackbar({ message: err.message || `Something went wrong.Please try later`, type: 'error' }));
+                })
+            }
+
         }
         console.log(isAgree);
         setOpenConfirmationDialogue(false);
@@ -168,6 +217,8 @@ export default function FinalQuoteDecision(props) {
         const project_id = params.get('project_id');
         const g3User = JSON.parse(params.get('g3User'));
         const isReply = params.get('reply') === 'true';
+        let userData = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
+        setLoggedInUser(userData.user_id || '');
         setG3user(() => { return { ...g3User } });
         setIsReply(isReply);
         setProjectId(project_id);
@@ -253,9 +304,9 @@ export default function FinalQuoteDecision(props) {
                         </DragDropContext>
                         <Divider></Divider>
                         <Grid container justifyContent={'flex-end'} sx={{ p: 2 }}>
-                            <TextField disabled size={'small'} sx={{ flexGrow: 1, mr: 2 }} value={'test g3 user'} label="Group 3 User" placeholder='Select Group 3 user' />
+                            <TextField disabled size={'small'} sx={{ flexGrow: 1, mr: 2 }} value={g3User.name} label="Group 3 User" placeholder='Select Group 3 user' />
                             {isReply ? <LoadingButton
-                                loading={saving}
+                                loading={saving.replyBtn}
                                 loadingPosition="start"
                                 endIcon={<SendIcon />}
                                 variant="contained"
@@ -266,9 +317,9 @@ export default function FinalQuoteDecision(props) {
                                 Reply
                             </LoadingButton> : <>
                                 <LoadingButton
-                                    loading={saving}
+                                    loading={saving.declineBtn}
                                     loadingPosition="start"
-                                    endIcon={<SendIcon />}
+                                    startIcon={<ThumbDownIcon />}
                                     variant="contained"
                                     onClick={() => handleAccept(false)}
                                     size={'small'}
@@ -279,9 +330,9 @@ export default function FinalQuoteDecision(props) {
                                     Decline
                                 </LoadingButton>
                                 <LoadingButton
-                                    loading={saving}
+                                    loading={saving.acceptBtn}
                                     loadingPosition="start"
-                                    endIcon={<SendIcon />}
+                                    startIcon={<ThumbUpIcon />}
                                     variant="contained"
                                     onClick={() => handleAccept(true)}
                                     size={'small'}
