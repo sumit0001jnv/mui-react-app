@@ -237,12 +237,16 @@ export default function FinalQuoteDecision(props) {
                     })
                 }).catch(err => {
                     console.log(err);
+                    setSaving((s) => {
+                        let obj = { ...s };
+                        isAccept ? obj.acceptBtn = false : obj.declineBtn = false;
+                        return obj
+                    })
                     dispatch(uiAction.showSnackbar({ message: err.message || `Something went wrong.Please try later`, type: 'error' }));
                 })
             }
 
         }
-        console.log(isAgree);
         setOpenConfirmationDialogue(false);
     }
 

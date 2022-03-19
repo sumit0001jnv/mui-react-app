@@ -431,7 +431,7 @@ export default function G2bLandingPage() {
                 </Grid>
                 {!isInitialQuote ? <>
                     <Grid item xs={12} md={7}>
-                        <Grid container direction={'column'} sx={{ height: '100%' }}>
+                        <Grid container direction={'column'} className="test" sx={{ height: 'calc(100vh - 120px)', maxHeight: 'calc(100vh - 120px)', overflow: 'auto',flexWrap:'nowrap' }}>
                             {conversationArr.map((user) => {
                                 return <Grid container alignItems={'center'} >
                                     <Box sx={{ ...commonStyles, borderColor: 'primary.main' }} >
