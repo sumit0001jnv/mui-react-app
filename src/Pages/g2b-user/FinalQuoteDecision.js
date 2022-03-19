@@ -15,7 +15,8 @@ import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import Typography from '@mui/material/Typography';
 import AddIcon from '@mui/icons-material/Add';
 import LoadingButton from '@mui/lab/LoadingButton';
-import SendIcon from '@mui/icons-material/Send';
+// import SendIcon from '@mui/icons-material/Send';
+import ReplyIcon from '@mui/icons-material/Reply';
 import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
@@ -166,6 +167,42 @@ export default function FinalQuoteDecision(props) {
     function onClose(isAgree) {
         if (isAgree) {
             if (isReply) {
+                setSaving((s) => {
+                    let obj = { ...s };
+                    obj.replyBtn = true;
+                    return obj
+                })
+                const obj = {};
+                tableData.forEach(element => {
+                    obj[element.attribute] = element.value;
+                });
+                const data = { project_id: projectId, g3_user_id: g3User.id, project_data: obj };
+                let url = `http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/send-modified-quote`;
+                axios({
+                    method: 'post',
+                    url,
+                    data
+                }).then(res => {
+                    if (res.data.status) {
+                        dispatch(uiAction.showSnackbar({ message: res.data.message || `Quote reply has been sent successfully ${isAccept ? 'accepted' : 'declined'}`, type: 'success' }));
+                    } else {
+                        dispatch(uiAction.showSnackbar({ message: res.data.message || `Fail to send reply to requested quote`, type: 'error' }));
+                    }
+                    setSaving((s) => {
+                        let obj = { ...s };
+                        obj.replyBtn = false;
+                        return obj
+                    })
+                }).catch(err => {
+                    console.log(err);
+                    dispatch(uiAction.showSnackbar({ message: err.message || `Something went wrong.Please try later`, type: 'error' }));
+                    setSaving((s) => {
+                        let obj = { ...s };
+                        obj.replyBtn = false;
+                        return obj
+                    })
+                })
+
             } else {
 
                 setSaving((s) => {
@@ -308,10 +345,11 @@ export default function FinalQuoteDecision(props) {
                             {isReply ? <LoadingButton
                                 loading={saving.replyBtn}
                                 loadingPosition="start"
-                                endIcon={<SendIcon />}
+                                startIcon={<ReplyIcon />}
                                 variant="contained"
                                 onClick={onReply}
                                 size={'small'}
+                                sx={{ textTransform: 'capitalize' }}
                                 disabled={!tableData.length}
                             >
                                 Reply
