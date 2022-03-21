@@ -7,6 +7,7 @@ import theme from '../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import Header from '../../commons/components/header/Header';
+import renderCellExpand from '../../commons/components/grid-cell-expand/GridCellExpand';
 
 export default function G2bLandingPage() {
     const history = useHistory();
@@ -42,14 +43,16 @@ export default function G2bLandingPage() {
         {
             field: 'name',
             headerName: 'Name',
-            minWidth: 300,
+            minWidth: 200,
             flex: 2,
+            renderCell: renderCellExpand
         },
         {
             field: 'email',
             headerName: 'Email',
-            minWidth: 300,
+            minWidth: 200,
             flex: 2,
+            renderCell: renderCellExpand
         },
         {
             field: 'status',
@@ -62,14 +65,16 @@ export default function G2bLandingPage() {
         {
             field: 'date',
             headerName: 'Date',
-            minWidth: 300,
+            minWidth: 150,
             flex: 2,
+            renderCell: renderCellExpand
         },
         {
             field: 'message',
             headerName: 'Message',
             minWidth: 300,
             flex: 2,
+            renderCell: renderCellExpand
         },
         {
             field: 'tableAction',

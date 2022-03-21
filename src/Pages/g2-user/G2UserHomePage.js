@@ -1,12 +1,20 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo, useRef } from 'react';
 import axios from 'axios';
 import CustomTable from '../../commons/components/custom-table/CustomTable';
 import Chip from '@mui/material/Chip';
+import PropTypes from 'prop-types';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Popper from '@mui/material/Popper';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import theme from '../../theme/customTheme';
 import { ThemeProvider } from '@mui/material/styles';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import Header from '../../commons/components/header/Header';
+import renderCellExpand from '../../commons/components/grid-cell-expand/GridCellExpand';
+
+
 
 export default function G2UserHomePage() {
     const history = useHistory();
@@ -27,19 +35,21 @@ export default function G2UserHomePage() {
         {
             field: 'name',
             headerName: 'Name',
-            minWidth: 300,
+            minWidth: 200,
             flex: 2,
+            renderCell: renderCellExpand
         },
         {
             field: 'email',
             headerName: 'Email',
-            minWidth: 300,
+            minWidth: 200,
             flex: 2,
+            renderCell: renderCellExpand
         },
         {
             field: 'status',
             headerName: 'Status',
-            minWidth: 150,
+            minWidth: 120,
             flex: 2,
             renderCell: (params) => <><Chip label={params?.row?.status || 'success'} color={getColor(params?.row.status)} size="small" /></>,
             // renderCell: (params) => <><Chip label={params?.row?.status ||'pending'} color={params?.row?.status||'success'} size="small" /></>,
@@ -47,14 +57,16 @@ export default function G2UserHomePage() {
         {
             field: 'date',
             headerName: 'Date',
-            minWidth: 200,
+            minWidth: 150,
             flex: 2,
+            renderCell: renderCellExpand
         },
         {
             field: 'message',
             headerName: 'Message',
-            minWidth: 400,
+            minWidth: 300,
             flex: 2,
+            renderCell: renderCellExpand
         },
         {
             field: 'tableAction',
