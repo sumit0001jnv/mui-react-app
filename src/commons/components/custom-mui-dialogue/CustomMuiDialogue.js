@@ -3,11 +3,17 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Dialog from '@mui/material/Dialog';
+import Box from '@mui/material/Box';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import PdfViewer from '../cropper-component/PdfViewer';
+import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import IconButton from '@mui/material/IconButton';
 
 export default function CustomMuiDialogue(props) {
     const [open, setOpen] = useState(false);
@@ -72,16 +78,18 @@ export default function CustomMuiDialogue(props) {
                 aria-labelledby="scroll-dialog-title"
                 aria-describedby="scroll-dialog-description"
             >
-                <DialogTitle id="scroll-dialog-title">Attachment </DialogTitle>
+                {/* <DialogTitle id="scroll-dialog-title">Attachment </DialogTitle> */}
                 {props.url && <Grid container>
-                    <Grid container xs={12} alignItems={'center'} >
-                        <Button onClick={() => pageChange(pageNumber - 1)}>Previous</Button>
-                        <Typography variant="div" gutterBottom component="div">
-                            Page {pageNumber} of {numPages}
-                        </Typography>
-                        <Button onClick={() => pageChange(pageNumber + 1)} sx={{ mr: 'auto' }}>Next</Button>
-                        <Button onClick={() => zoom(zoomVal + 0.5)}>Zoom In</Button>
-                        <Button onClick={() => zoom(zoomVal - 0.5)}>Zoom Out</Button>
+                    <Grid container xs={12}  >
+                        <Typography variant='h6' sx={{ p: 2, mr: 'auto' }} component={'div'}>Attachment</Typography>
+                        <IconButton aria-label="upload picture" component="span" onClick={() => zoom(zoomVal + 0.5)}>
+                            <ZoomInIcon />
+                        </IconButton>
+                        <IconButton aria-label="upload picture" component="span" onClick={() => zoom(zoomVal - 0.5)}>
+                            <ZoomOutIcon />
+                        </IconButton>
+                        {/* <Button onClick={() => zoom(zoomVal + 0.5)}>Zoom In</Button> */}
+                        {/* <Button onClick={() => zoom(zoomVal - 0.5)}>Zoom Out</Button> */}
                     </Grid>
                 </Grid>}
 
@@ -90,11 +98,25 @@ export default function CustomMuiDialogue(props) {
                         id="scroll-dialog-description"
                         ref={descriptionElementRef}
                         tabIndex={-1}
+                        sx={{p:0,m:0}}
                     >
                         <PdfViewer url={props.url} pageNumber={pageNumber} zoomVal={zoomVal} onSetNumPages={onSetNumPages}></PdfViewer>
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
+                    <Box sx={{ mx: 'auto' }}></Box>
+                    {/* <Button >Previous</Button> */}
+                    <IconButton aria-label="upload picture" component="span" onClick={() => pageChange(pageNumber - 1)}>
+                        <ArrowBackIosNewIcon />
+                    </IconButton>
+                    <Typography variant="div" gutterBottom component="div">
+                        Page {pageNumber} of {numPages}
+                    </Typography>
+                    <IconButton aria-label="upload picture" component="span" onClick={() => pageChange(pageNumber + 1)}>
+                        <ArrowForwardIosIcon />
+                    </IconButton>
+                    {/* <Button onClick={() => pageChange(pageNumber + 1)} sx={{ mr: 'auto' }}>Next</Button> */}
+                    <Box sx={{ mx: 'auto' }}></Box>
                     <Button onClick={handleClose}>Cancel</Button>
                     {/* <Button color="success" onClick={handleClose}>ok</Button> */}
                 </DialogActions>

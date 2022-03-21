@@ -93,6 +93,8 @@ export default function CustomCropper() {
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
+        setTemplateId(null);
+        setIsPreviewed(false);
     };
 
     const handleChangeIndex = (index) => {
@@ -191,9 +193,6 @@ export default function CustomCropper() {
 
         return result;
     };
-    function ID() {
-        return '_' + Math.random().toString(36).substr(2, 9);
-    }
 
     const getCropData = () => {
 
@@ -253,6 +252,7 @@ export default function CustomCropper() {
 
     const onSave = () => {
         setLoadingBtn(true);
+        setTemplateId(null);
         const data = templates.map(template => {
             const { page_num, annotationName, annotationBox } = template;
             return { page_num, annotationName, annotationBox };
@@ -269,6 +269,7 @@ export default function CustomCropper() {
             data: payload
         }).then(res => {
             setLoadingBtn(false);
+            setTemplateId(() => res.data.template_id);
             dispatch(uiAction.showSnackbar({ message: res?.data?.message || 'Template saved successfully', type: 'success' }));
         }).catch(err => {
             console.log(err);
@@ -290,7 +291,7 @@ export default function CustomCropper() {
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/extract-data',
             data: { project_id: projectId, template_id: templateId }
         }).then(res => {
-            if (res.data.message === 'Failed') {
+            if (!res.data.status) {
                 dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                 return;
             }
@@ -435,73 +436,95 @@ export default function CustomCropper() {
                         </Tabs>
 
                         <TabPanel value={value} index={0}>
-                            <Grid container spacing={0} sx={{ my: 1 }}>
-                                <Grid item xs={7}>
-                                    <TextField id="outlined-basic" sx={{ display: 'flex', mx: 1, p: 0 }} label="Key" value={selectedText} onChange={handleText} variant="outlined" size="small" />
+                            {!isPreviewed ? <>
+                                <Grid container spacing={0} sx={{ my: 1 }}>
+                                    <Grid item xs={7}>
+                                        <TextField id="outlined-basic" sx={{ display: 'flex', mx: 1, p: 0 }} label="Key" value={selectedText} onChange={handleText} variant="outlined" size="small" />
+                                    </Grid>
+                                    <Grid item xs={5} sx={{ m: 0, p: 0 }}>
+                                        <Button variant='contained' sx={{ mr: 1 }} onClick={enableCrop}>Select</Button>
+                                        <Button disabled={!(selectedText)} variant='contained' onClick={getCropData}>Add</Button>
+                                    </Grid>
                                 </Grid>
-                                <Grid item xs={5} sx={{ m: 0, p: 0 }}>
-                                    <Button variant='contained' sx={{ mr: 1 }} onClick={enableCrop}>Select</Button>
-                                    <Button disabled={!(selectedText)} variant='contained' onClick={getCropData}>Add</Button>
+                                <Divider sx={{ mb: 1 }} />
+                                <DragDropContext onDragEnd={onDragEnd}>
+                                    <Droppable droppableId="droppable">
+                                        {(provided, snapshot) =>
+                                            <Grid  {...provided.droppableProps}
+                                                ref={provided.innerRef}
+                                                style={getListStyle(snapshot.isDraggingOver)} container
+                                                direction="column"
+                                            >
+                                                {templates.map((temp, index) => {
+                                                    return <Draggable key={temp.id} draggableId={temp.id} index={index}>
+                                                        {(provided, snapshot) => (
+                                                            <Grid ref={provided.innerRef}
+                                                                {...provided.draggableProps}
+                                                                {...provided.dragHandleProps}
+                                                                style={getItemStyle(
+                                                                    snapshot.isDragging,
+                                                                    provided.draggableProps.style
+                                                                )} container alignItems={'center'} spacing={0} sx={{ mb: 2, p: 1, borderBottom: '1px solid #ccc' }}>
+                                                                <Grid item xs={5}>
+                                                                    <TextField
+                                                                        disabled id="outlined-basic"
+                                                                        sx={{ display: 'flex', mx: 1, p: 0, bgcolor: "#fff" }}
+                                                                        label="Key"
+                                                                        variant="outlined"
+                                                                        size="small"
+                                                                        value={temp.key} />
+                                                                </Grid>
+                                                                <Grid container xs={7} spacing={0} sx={{ m: 0, p: 0 }} >
+                                                                    <img style={{ width: "calc(100% - 60px)", minHeight: "40px", maxHeight: "100px", marginRight: "4px", padding: "4px" }} src={temp.cropData} crossOrigin="anonymous" alt="cropped image" />
+                                                                    <IconButton color="secondary" aria-label="add an alarm" onClick={() => deleteKey(index)}>
+                                                                        <DeleteIcon />
+                                                                    </IconButton>
+                                                                </Grid>
+                                                            </Grid>)}
+                                                    </Draggable>
+                                                })}
+                                                {provided.placeholder}
+                                            </Grid>
+                                        }
+                                    </Droppable>
+                                </DragDropContext>
+                                <Grid container direction={'row'} spacing={0} sx={{ my: 1 }}>
+                                    <Grid item xs={6}>
+                                        <TextField id="outlined-basic"
+                                            sx={{ display: 'flex', mx: 1, p: 0 }}
+                                            label="Template Name" variant="outlined" size="small"
+                                            value={selectedTemplate} onChange={handleTemplateName}
+                                        />
+                                    </Grid>
+                                    <Grid item direction={'row'} sx={{ ml: 'auto', p: 0 }}>
+                                        <Button variant='contained' sx={{ mr: 1 }} color={'success'} disabled={!(selectedTemplate && templates.length)} onClick={onSave}>Save</Button>
+                                        <Button variant="contained" disabled={!templateId} startIcon={<PreviewIcon />} sx={{ mr: 1 }} onClick={() => onPreview(templateId)}>
+                                            Preview
+                                        </Button>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                            <Divider sx={{ mb: 1 }} />
-                            <DragDropContext onDragEnd={onDragEnd}>
-                                <Droppable droppableId="droppable">
-                                    {(provided, snapshot) =>
-                                        <Grid  {...provided.droppableProps}
-                                            ref={provided.innerRef}
-                                            style={getListStyle(snapshot.isDraggingOver)} container
-                                            direction="column"
-                                        >
-                                            {templates.map((temp, index) => {
-                                                return <Draggable key={temp.id} draggableId={temp.id} index={index}>
-                                                    {(provided, snapshot) => (
-                                                        <Grid ref={provided.innerRef}
-                                                            {...provided.draggableProps}
-                                                            {...provided.dragHandleProps}
-                                                            style={getItemStyle(
-                                                                snapshot.isDragging,
-                                                                provided.draggableProps.style
-                                                            )} container alignItems={'center'} spacing={0} sx={{ mb: 2, p: 1, borderBottom: '1px solid #ccc' }}>
-                                                            <Grid item xs={5}>
-                                                                <TextField
-                                                                    disabled id="outlined-basic"
-                                                                    sx={{ display: 'flex', mx: 1, p: 0, bgcolor: "#fff" }}
-                                                                    label="Key"
-                                                                    variant="outlined"
-                                                                    size="small"
-                                                                    value={temp.key} />
-                                                            </Grid>
-                                                            <Grid container xs={7} spacing={0} sx={{ m: 0, p: 0 }} >
-                                                                <img style={{ width: "calc(100% - 60px)", minHeight: "40px", maxHeight: "100px", marginRight: "4px", padding: "4px" }} src={temp.cropData} crossOrigin="anonymous" alt="cropped image" />
-                                                                <IconButton color="secondary" aria-label="add an alarm" onClick={() => deleteKey(index)}>
-                                                                    <DeleteIcon />
-                                                                </IconButton>
-                                                            </Grid>
-                                                        </Grid>)}
-                                                </Draggable>
-                                            })}
-                                            {provided.placeholder}
-                                        </Grid>
-                                    }
-                                </Droppable>
-                            </DragDropContext>
+                            </> : <>
+                                <Grid container alignItems={'center'} spacing={0} sx={{ mb: 1, p: 0 }}>
+                                    <IconButton aria-label="add an alarm" sx={{ p: 0, m: 0 }} onClick={() => setIsPreviewed(false)}>
+                                        <KeyboardBackspaceIcon />
+                                    </IconButton>
+                                    <Typography variant='span' sx={{ display: "flex", justifyContent: "flex-start", ml: 1, mr: 'auto', fontWeight: "500" }}>Quote Detail</Typography>
+                                    <Button variant='contained' size={'small'} sx={{ mr: 1 }} onClick={addRow}>Add</Button>
+                                </Grid>
+                                <Grid container
+                                    sx={{ maxHeight: 'calc(100vh - 216px)' }}
+                                    direction="column"
+                                >
+                                    <CustomActionList columns={columns} tableData={quoteTableData} onDataChange={onSetTableData}
+                                        actionBtnText='Confirm' onSave={onSaveQuote} loadingBtn={loadingBtn}></CustomActionList>
+                                </Grid></>}
 
 
 
 
-                            <Grid container spacing={0} sx={{ my: 1 }}>
-                                <Grid item sx={{ flexGrow: 1 }}>
-                                    <TextField id="outlined-basic"
-                                        sx={{ width: "100%", display: 'flex', mx: 1, p: 0 }}
-                                        label="Template Name" variant="outlined" size="small"
-                                        value={selectedTemplate} onChange={handleTemplateName}
-                                    />
-                                </Grid>
-                                <Grid item xs sx={{ m: 0, p: 0 }}>
-                                    <Button variant='contained' sx={{ mr: 1 }} color={'success'} disabled={!(selectedTemplate && templates.length)} onClick={onSave}>Save</Button>
-                                </Grid>
-                            </Grid>
+
+
+
                         </TabPanel>
                         <TabPanel value={value} index={1} sx={{ m: 1 }}>
                             {!isPreviewed ? <><Typography variant='span' sx={{ display: "flex", justifyContent: "flex-start", ml: 1, mb: 1, fontWeight: "500" }}>Existing Templates</Typography>
