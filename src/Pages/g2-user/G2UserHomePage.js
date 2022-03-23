@@ -64,7 +64,7 @@ export default function G2UserHomePage() {
         {
             field: 'message',
             headerName: 'Message',
-            minWidth: 300,
+            minWidth: 240,
             flex: 2,
             renderCell: renderCellExpand
         },

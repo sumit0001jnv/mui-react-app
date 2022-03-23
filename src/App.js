@@ -35,18 +35,18 @@ function App() {
           case 'g2':
             {
               obj.pathname = '/g2-user';
-              obj.userCategory = 'Group 2';
+              obj.userCategory = 'Broker';
               break;
             }
           case 'g2b':
             {
               obj.pathname = '/g2b-user';
-              obj.userCategory = 'Group 2B';
+              obj.userCategory = 'Senior Broker';
               break;
             }
           case 'g3': {
             obj.pathname = '/g3-user';
-            obj.userCategory = 'Group 3';
+            obj.userCategory = 'Insurer';
             break;
           }
         }

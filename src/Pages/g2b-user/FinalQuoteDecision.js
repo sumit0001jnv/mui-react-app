@@ -345,7 +345,7 @@ export default function FinalQuoteDecision(props) {
                         </DragDropContext>
                         <Divider></Divider>
                         <Grid container justifyContent={'flex-end'} sx={{ p: 2 }}>
-                            <TextField disabled size={'small'} sx={{ flexGrow: 1, mr: 2 }} value={g3User.name} label="Group 3 User" placeholder='Select Group 3 user' />
+                            <TextField disabled size={'small'} sx={{ flexGrow: 1, mr: 2 }} value={g3User.name} label="Insurer" placeholder='Select Insurer' />
                             {isReply ? <LoadingButton
                                 loading={saving.replyBtn}
                                 loadingPosition="start"

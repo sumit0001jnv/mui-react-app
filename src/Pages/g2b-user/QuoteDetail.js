@@ -320,7 +320,7 @@ export default function G2bLandingPage() {
                                 defaultValue={g3Users[0]}
                                 value={selectedG3User}
                                 onChange={(event, newInputValue) => onG2UserChange(newInputValue)}
-                                renderInput={(params) => <TextField {...params} label="Group 3 Users" placeholder='Select Group 3 user' />}
+                                renderInput={(params) => <TextField {...params} label="Insurer" placeholder='Select Insurer' />}
                             />
                             </> : ''
                             }
@@ -404,7 +404,7 @@ export default function G2bLandingPage() {
                                 onChange={(event, newInputValue) => {
                                     setSelectedG3Users(() => [...newInputValue])
                                 }}
-                                renderInput={(params) => <TextField {...params} label="Group 3 Users" placeholder='Select Group 3 user' />}
+                                renderInput={(params) => <TextField {...params} label="Insurer" placeholder='Select Insurer' />}
                             />
                                 {/* <Button variant='contained' color={'success'} onClick={sendData}>Send</Button> */}
                                 <LoadingButton
@@ -462,7 +462,7 @@ export default function G2bLandingPage() {
                                 </Grid>
                             })}
                             {!conversationArr.length ? <Grid container justifyContent={'center'} alignItems={'center'} sx={{ height: '100%' }}>
-                                {selectedG3User.id ? 'No data found' : 'Please Select G3 user'}</Grid> : ''}
+                                {selectedG3User.id ? 'No data found' : 'Please Select Insurer'}</Grid> : ''}
                         </Grid>
 
                     </Grid></> : ''}

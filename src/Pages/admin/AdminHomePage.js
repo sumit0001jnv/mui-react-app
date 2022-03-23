@@ -11,7 +11,7 @@ import { useDispatch } from 'react-redux';
 import uiAction from '../../store/actions/uiAction';
 
 export default function AdminHomePage() {
-    const userMap = { 'admin': 'Admin', g1: 'Group 1', g2: 'Group 2', g2b: 'Group 2B', g3: 'Group 3' }
+    const userMap = { 'admin': 'Admin', g1: 'Cedant', g2: 'Broker', g2b: 'Senior Broker', g3: 'Insurer' }
     const columns = [
         {
             field: 'username',
@@ -61,7 +61,7 @@ export default function AdminHomePage() {
         password: '',
         'confirm-password': '',
         email: '',
-        group: 'Group 1',
+        group: 'Cedant',
         mobile_number: '',
         showPassword: false,
         showConfirmPassword: false,

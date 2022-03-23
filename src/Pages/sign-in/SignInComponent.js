@@ -45,7 +45,6 @@ export default function SignIn() {
 
   const history = useHistory();
   const dispatch = useDispatch();
-  // const userCategories = ['Admin', 'Group 1', 'Group 2', 'Group 2B', 'Group 3'];
   const [formData, setformData] = useState({ email: '', password: '', showPassword: false });
   const [video, SetVideo] = useState('videos/home-video-3.mp4');
   useEffect(() => {
@@ -99,24 +98,20 @@ export default function SignIn() {
       switch (parsedStore.userCategory) {
         case 'admin': {
           obj.pathname = '/admin';
-          // obj.userCategory = 'Admin';
           break;
         }
         case 'g2':
           {
             obj.pathname = '/g2-user';
-            // obj.userCategory = 'Group 2';
             break;
           }
         case 'g2b':
           {
             obj.pathname = '/g2b-user';
-            // obj.userCategory = 'Group 2B';
             break;
           }
         case 'g3': {
           obj.pathname = '/g3-user';
-          // obj.userCategory = 'Group 3';
           break;
         }
         default: {

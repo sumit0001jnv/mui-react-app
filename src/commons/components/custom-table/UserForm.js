@@ -15,10 +15,10 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Visibility from '@mui/icons-material/Visibility';
 export default function UserForm(props) {
     const [actionLabel, setActionLabel] = useState(props.actionLabel);
-    const groups = ['Group 1',
-        'Group 2',
-        'Group 2B',
-        'Group 3'];
+    const groups = ['Cedant',
+        'Broker',
+        'Senior Broker',
+        'Insurer'];
     const [formData, setformData] = useState({
         ...props.formData,
         showPassword: false,

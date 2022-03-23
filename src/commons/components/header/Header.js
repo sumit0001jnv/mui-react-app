@@ -90,9 +90,6 @@ export default function Header(props) {
   const [orgName, setOrgName] = useState('Sielo App');
   const open = Boolean(anchorEl);
   const [userCategory, setUserCategory] = useState('');
-  // const userCategoryKeys = ['Group 1', 'Group 2', 'Group 2B', 'Group 3'];
-  // const userCategoryKeys = ['g1', 'g2', 'g2b', 'g3'];
-
   const abbreviateWord = (word = '') => {
     let abbrWord = ''
     word.split(" ").forEach(w => abbrWord = abbrWord + (w[0] || '').toUpperCase());

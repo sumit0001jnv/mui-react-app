@@ -41,10 +41,16 @@ export default function Setting(props) {
     { title: 'Application Homepage Video', key: 'org_video', value: '' }
     ]);
 
-    const [cedantData, setCedant] = useState({ emailSubject: '', emailGreeting: '', emailBody: '' });
+    const [cedantData, setCedant] = useState({ email_subject: '', email_greeting: '', email_body: '' });
+    const [insurerData, setInsurerData] = useState([
+        { email_subject: '', email_greeting: '', email_body: '' },
+        { email_subject: '', email_greeting: '', email_body: '' },
+        { email_subject: '', email_greeting: '', email_body: '' },
+        { email_subject: '', email_greeting: '', email_body: '' }]);
 
 
     const [image, setImage] = useState('');
+    const [userId, setUserId] = useState('');
     const [loading, setLoading] = useState(false);
     const [video, setVideo] = useState('');
 
@@ -64,6 +70,7 @@ export default function Setting(props) {
         let userData = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
         setVideo(userData.user_org_video_url || '');
         setImage(userData.user_org_logo_url || '');
+        setUserId(userData.user_id || '');
         // if (userData.user_org_logo_url && userData.user_org_video_url) {
         //     setTableData((data) => {
         //         data[1].value = userData.user_org_logo_url;
@@ -82,6 +89,12 @@ export default function Setting(props) {
     const handleCedant = (value, key) => {
         setCedant((data) => {
             return { ...data, [key]: value };
+        })
+    }
+    const handleInsurer = (value, index, key) => {
+        setInsurerData((data) => {
+            data[index][key] = value;
+            return [...data];
         })
     }
 
@@ -135,6 +148,59 @@ export default function Setting(props) {
         history.push('/admin')
     }
 
+    const handleUpdate = (index) => {
+        setLoading(true);
+        let url = '';
+        let data = {
+            user_id: userId
+        };
+        switch (index) {
+            case -1: {
+                url = 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/update-g1-user-acknowledgement-email';
+                data={...data,...cedantData}
+                break;
+            }
+            case 0: {
+                url = 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/update-g3-user-initial-quote-email'
+                break
+            }
+            case 1: {
+                url = 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/update-g3-user-negotiation-reply-email'
+                break
+            }
+            case 2: {
+                url = 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/update-g3-user-quote-accept-email'
+                break
+            }
+            case 3: {
+                url = 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/update-g3-user-quote-decline-email'
+                break
+            }
+        }
+
+
+        if (index !== -1) {
+            data = { ...data, ...insurerData[index] }
+        }
+
+
+        if (url) {
+            axios({
+                method: 'post',
+                url,
+                data
+            }).then(res => {
+                console.log(res);
+                setLoading(false);
+                dispatch(uiAction.showSnackbar({ type: 'success', message: res.data?.message || '' }));
+            }).catch(err => {
+                console.log(err);
+                setLoading(false);
+                dispatch(uiAction.showSnackbar({ type: 'error', message: 'Something went wrong.Please try after some time' }));
+            });
+        }
+    }
+
     return <> <Header></Header>
         <Grid container sx={{ p: 2, pt: 1 }}>
             <Item
@@ -163,7 +229,7 @@ export default function Setting(props) {
                             value={tabIndex}
                             onChange={handleTabChange}
                             aria-label="Vertical tabs example"
-                            sx={{ borderRight: 1, borderColor: 'divider', minWidth: '200px',py:2 }}
+                            sx={{ borderRight: 1, borderColor: 'divider', minWidth: '200px', py: 2 }}
                         >
                             <Tab label="Organization Details" {...a11yProps(0)} />
                             <Tab label="Cedant Email" {...a11yProps(1)} />
@@ -192,8 +258,8 @@ export default function Setting(props) {
                                             autoFocus
                                             size={'small'}
                                             sx={{ mr: 2, width: '100%' }}
-                                            value={cedantData.emailSubject}
-                                            onChange={(event) => handleCedant(event.target.value, 'emailSubject')}
+                                            value={cedantData.email_subject}
+                                            onChange={(event) => handleCedant(event.target.value, 'email_subject')}
                                         />
                                     </Grid>
                                 </Grid>
@@ -214,8 +280,8 @@ export default function Setting(props) {
                                             autoFocus
                                             size={'small'}
                                             sx={{ mr: 2, width: '100%' }}
-                                            value={cedantData.emailGreeting}
-                                            onChange={(event) => handleCedant(event.target.value, 'emailGreeting')}
+                                            value={cedantData.email_greeting}
+                                            onChange={(event) => handleCedant(event.target.value, 'email_greeting')}
                                         />
                                     </Grid>
                                 </Grid>
@@ -236,8 +302,8 @@ export default function Setting(props) {
                                             autoFocus
                                             size={'small'}
                                             sx={{ mr: 2, width: '100%' }}
-                                            value={cedantData.emailBody}
-                                            onChange={(event) => handleCedant(event.target.value, 'emailBody')}
+                                            value={cedantData.email_body}
+                                            onChange={(event) => handleCedant(event.target.value, 'email_body')}
                                         />
                                     </Grid>
                                 </Grid>
@@ -249,6 +315,7 @@ export default function Setting(props) {
                                         startIcon={<SaveIcon />}
                                         variant="contained"
                                         sx={{ mt: 3, mb: 2 }}
+                                        onClick={() => handleUpdate(-1)}
                                     >
                                         Update
                                     </LoadingButton>
@@ -293,8 +360,8 @@ export default function Setting(props) {
                                                     autoFocus
                                                     size={'small'}
                                                     sx={{ mr: 2, width: '100%' }}
-                                                    value={cedantData.emailSubject}
-                                                    onChange={(event) => handleCedant(event.target.value, 'emailSubject')}
+                                                    value={insurerData[tabIndex].email_subject}
+                                                    onChange={(event) => handleInsurer(event.target.value, tabIndex, 'email_subject')}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -315,8 +382,8 @@ export default function Setting(props) {
                                                     autoFocus
                                                     size={'small'}
                                                     sx={{ mr: 2, width: '100%' }}
-                                                    value={cedantData.emailGreeting}
-                                                    onChange={(event) => handleCedant(event.target.value, 'emailGreeting')}
+                                                    value={insurerData[tabIndex].email_greeting}
+                                                    onChange={(event) => handleInsurer(event.target.value, tabIndex, 'email_greeting')}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -337,8 +404,8 @@ export default function Setting(props) {
                                                     autoFocus
                                                     size={'small'}
                                                     sx={{ mr: 2, width: '100%' }}
-                                                    value={cedantData.emailBody}
-                                                    onChange={(event) => handleCedant(event.target.value, 'emailBody')}
+                                                    value={insurerData[tabIndex].email_body}
+                                                    onChange={(event) => handleInsurer(event.target.value, tabIndex, 'email_body')}
                                                 />
                                             </Grid>
                                         </Grid>
@@ -350,6 +417,7 @@ export default function Setting(props) {
                                                 startIcon={<SaveIcon />}
                                                 variant="contained"
                                                 sx={{ mt: 3, mb: 2 }}
+                                                onClick={() => handleUpdate(tabIndex)}
                                             >
                                                 Update
                                             </LoadingButton>
