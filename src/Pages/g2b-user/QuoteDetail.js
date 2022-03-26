@@ -86,9 +86,11 @@ export default function G2bLandingPage() {
         }).catch(err => {
             console.log(err);
         })
+
+        let url = isInitialQuote ? `http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-g3-user-list` : `http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-project-g3-user-list`
         axios({
             method: 'post',
-            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-g3-user-list',
+            url,
             data: { project_id }
         }).then(res => {
             if (res.data.status) {
@@ -101,7 +103,9 @@ export default function G2bLandingPage() {
                 // setSelectedG3User(x[0]);
                 if (!isInitialQuote) {
                     const user = params.get('g3User') ? JSON.parse(params.get('g3User')) : x[0];
-                    onG2UserChange(user, project_id, userData.user_id);
+                    if(user){
+                        onG2UserChange(user, project_id, userData.user_id);
+                    }
                 }
             }
             // setTableData(() => {
@@ -431,7 +435,7 @@ export default function G2bLandingPage() {
                 </Grid>
                 {!isInitialQuote ? <>
                     <Grid item xs={12} md={7}>
-                        <Grid container direction={'column'} className="test" sx={{ height: 'calc(100vh - 120px)', maxHeight: 'calc(100vh - 120px)', overflow: 'auto',flexWrap:'nowrap' }}>
+                        <Grid container direction={'column'} className="test" sx={{ height: 'calc(100vh - 120px)', maxHeight: 'calc(100vh - 120px)', overflow: 'auto', flexWrap: 'nowrap' }}>
                             {conversationArr.map((user) => {
                                 return <Grid container alignItems={'center'} >
                                     <Box sx={{ ...commonStyles, borderColor: 'primary.main' }} >

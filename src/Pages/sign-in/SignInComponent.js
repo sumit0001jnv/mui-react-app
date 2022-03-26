@@ -88,7 +88,8 @@ export default function SignIn() {
       parsedStore.userName = data.user_name;
       parsedStore.isLogin = true;
       parsedStore.userCategory = data.user_group;
-      parsedStore.user_id = data.user_id;
+      parsedStore.user_id = data.user_uuid;
+      parsedStore.email = data.user_id;
       parsedStore.user_org_name = data.user_org_name;
       parsedStore.user_org_logo_url = data.user_org_logo_url;
       parsedStore.user_org_video_url = data.user_org_video_url;
