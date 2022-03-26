@@ -94,7 +94,7 @@ export default function G2bLandingPage() {
             data: { project_id }
         }).then(res => {
             if (res.data.status) {
-                let x = res.data.users_list.map(row => { return { id: row[0], name: row[1] } });
+                let x = res.data.users_list.map(row => { return { id: row[2], name: row[1] } });
                 // let x = [{ id: '1', name: 'User1' }, { id: '2', name: 'User2' }, { id: '3', name: 'User 3' },
                 // { id: '4', name: 'User 4' }, { id: '5', name: 'User 5' }]
                 setG3Users(() => {
