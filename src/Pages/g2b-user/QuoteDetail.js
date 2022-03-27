@@ -103,7 +103,7 @@ export default function G2bLandingPage() {
                 // setSelectedG3User(x[0]);
                 if (!isInitialQuote) {
                     const user = params.get('g3User') ? JSON.parse(params.get('g3User')) : x[0];
-                    if(user){
+                    if (user) {
                         onG2UserChange(user, project_id, userData.user_id);
                     }
                 }
@@ -438,11 +438,13 @@ export default function G2bLandingPage() {
                         <Grid container direction={'column'} className="test" sx={{ height: 'calc(100vh - 120px)', maxHeight: 'calc(100vh - 120px)', overflow: 'auto', flexWrap: 'nowrap' }}>
                             {conversationArr.map((user) => {
                                 return <Grid container alignItems={'center'} >
+                                    {/* <Grid item container alignItems={'center'} direction={'row'}> */}
                                     <Box sx={{ ...commonStyles, borderColor: 'primary.main' }} >
                                         {user.name}
                                     </Box>
                                     <Avatar sx={{ bgcolor: user.type == 'u1' ? deepOrange[500] : deepPurple[500], width: 30, height: 30 }}>{abbreviateWord(user.name)}</Avatar>
-                                    <Grid item alignItems={'center'} direction='column' sx={{ flexGrow: 1 }} >
+                                    {/* </Grid> */}
+                                    <Grid item container alignItems={'center'} direction='column' xs={'auto'} sx={{ minWidth: '180px', maxWidth: '200px' }} >
                                         <div style={{
                                             lineHeight: 0
                                         }}>
@@ -455,13 +457,12 @@ export default function G2bLandingPage() {
                                             }} />
                                         </div>
                                     </Grid>
-
-                                    <Box sx={{ ...commonStyles, borderColor: 'primary.main' }} >
-                                        <Button variant='contained' sx={{ mr: 1 }} onClick={() => onMessageChange(user.subject, user.message)} > Message</Button>
-                                        <Button disabled={!user.attachment || !user.attachment.length} variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Attachments({(user.attachment && user.attachment.length) ? 1 : 0})</Button>
-                                    </Box>
-
-
+                                    <Grid item xs={5} rowGap={'20px'} sx={{ ...commonStyles, p: 0, borderColor: 'primary.main', maxWidth: '355px' }} >
+                                        <Button size="small" sx={{ mr: 1, mt: 1 }} variant='contained' onClick={() => onMessageChange(user.subject, user.message)} > Message</Button>
+                                        <Button size="small" sx={{ mr: 1, mt: 1 }} disabled={!user.attachment || !user.attachment.filter(f => f.endsWith('.pdf')).length} variant='contained' onClick={() => onAttachmentClick(user.attachment)}> PDF({(user.attachment && user.attachment.filter(f => f.endsWith('.pdf')).length) ? 1 : 0})</Button>
+                                        <Button size="small" sx={{ mr: 1, mt: 1 }} disabled={!user.attachment || !user.attachment.filter(f => f.endsWith('.docx')).length} variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Docx({(user.attachment && user.attachment.filter(f => f.endsWith('.docx')).length) ? 1 : 0})</Button>
+                                        <Button size="small" sx={{ mt: 1, mb: 1 }} disabled={!user.attachment || !user.attachment.filter(f => f.endsWith('.excel')).length} variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Excel({(user.attachment && user.attachment.filter(f => f.endsWith('.excel')).length) ? 1 : 0})</Button>
+                                    </Grid>
                                     {/* <Avatar sx={{ bgcolor: deepPurple[500] }}>OP</Avatar> */}
                                 </Grid>
                             })}

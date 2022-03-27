@@ -77,10 +77,11 @@ export default function CustomMuiDialogue(props) {
                 scroll={scroll}
                 aria-labelledby="scroll-dialog-title"
                 aria-describedby="scroll-dialog-description"
+                maxWidth={'xl'}
             >
                 {/* <DialogTitle id="scroll-dialog-title">Attachment </DialogTitle> */}
                 {props.url && <Grid container>
-                    <Grid container xs={12}  >
+                    <Grid container xs={12}>
                         <Typography variant='h6' sx={{ p: 2, mr: 'auto' }} component={'div'}>Attachment</Typography>
                         <IconButton aria-label="upload picture" component="span" onClick={() => zoom(zoomVal + 0.5)}>
                             <ZoomInIcon />
