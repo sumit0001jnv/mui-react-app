@@ -94,7 +94,7 @@ export default function AdminHomePage() {
                     password: row[3],
                     group: userMap[row[5]],
                     mobile_number: row[4],
-                    id: row[0]
+                    id: row[10]
                 }
             })
 
@@ -141,9 +141,53 @@ export default function AdminHomePage() {
                 setLoading(true);
             })
         } else if (actionLabel == 'delete') {
-            console.log("delete action")
-        }else{
-            console.log("edit action")
+            setLoading(true);
+            const user_id = data.formData.id;
+            axios({
+                method: 'post',
+                url: "http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/deactivate-user",
+                data: { user_id },
+            }).then(res => {
+                if (res.data.status) {
+                    dispatch(uiAction.showSnackbar({ message: res.data.message || 'User has been successfully deactivated!', type: 'success' }));
+                } else {
+                    dispatch(uiAction.showSnackbar({ message: res.data.message || 'Failed to deactivate User', type: 'error' }));
+                }
+                setLoading(false);
+            }).catch(err => {
+                console.log(err);
+                dispatch(uiAction.showSnackbar({ message: err.message || 'Failed to deactivate User', type: 'error' }));
+                setLoading(false);
+            })
+        } else {
+            setLoading(true);
+            const { email, id, password, username, group, mobile_number } = data.formData;
+            let groupKey = '';
+            for (const key in userMap) {
+                if (group === userMap[key]) {
+                    groupKey = key;
+                    break;
+                }
+            }
+            const user_detail = { user_id: id, user_name: username, email_id: email, password, user_group: groupKey, mobile_number }
+            // console.log(user_detail)
+            axios({
+                method: 'post',
+                url: "http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/update-user-details",
+                data: user_detail,
+            }).then(res => {
+                if (res.data.status) {
+                    dispatch(uiAction.showSnackbar({ message: res.data.message || 'User account details has been successfully updated!', type: 'success' }));
+                } else {
+                    dispatch(uiAction.showSnackbar({ message: res.data.message || 'Failed to update User', type: 'error' }));
+                }
+                setLoading(false);
+            }).catch(err => {
+                console.log(err);
+                dispatch(uiAction.showSnackbar({ message: err.message || 'Failed to update User', type: 'error' }));
+                setLoading(false);
+            })
+
         }
 
 

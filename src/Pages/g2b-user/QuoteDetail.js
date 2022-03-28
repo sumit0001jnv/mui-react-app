@@ -25,7 +25,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import SendIcon from '@mui/icons-material/Send';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 
-import { Divider } from '@mui/material';
+import Divider from '@mui/material/Divider';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
