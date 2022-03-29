@@ -72,7 +72,7 @@ export default function CustomCropper() {
     const [quoteTableData, setQuoteTableData] = useState([]);
     const [templateId, setTemplateId] = useState('');
     const [loadingBtn, setLoadingBtn] = useState(false);
-    const [loading, setLoading] = useState(false);
+    // const [loading, setLoading] = useState(false);
 
     const columns = [
         {
@@ -98,9 +98,6 @@ export default function CustomCropper() {
         setIsPreviewed(false);
     };
 
-    const handleChangeIndex = (index) => {
-        setValue(index);
-    };
     const onPageChange = (page) => {
         if (projectId) {
             axios({
