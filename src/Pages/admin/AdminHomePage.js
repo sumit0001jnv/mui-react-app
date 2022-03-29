@@ -120,7 +120,15 @@ export default function AdminHomePage() {
             bodyFormData.append('username', formData.username);
             bodyFormData.append('password', formData.password);
             bodyFormData.append('email', formData.email);
-            bodyFormData.append('user_group', formData.group);
+            let groupKey = '';
+            for (const key in userMap) {
+                if (formData.group === userMap[key]) {
+                    groupKey = key;
+                    break;
+                }
+            }
+
+            bodyFormData.append('user_group', groupKey);
             bodyFormData.append('mobile_number', formData.mobile_number);
             axios({
                 method: 'post',

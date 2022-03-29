@@ -60,6 +60,7 @@ export default function CustomCropper() {
     const imageRef = useRef(null);
     const [cropper, setCropper] = useState();
     let [url, setUrl] = useState('');
+    let [user_id, setUserId] = useState('');
     const [templates, setTemplates] = useState([]);
     const [pageNo, setPageNo] = useState(1);
     const [projectId, setProjectId] = useState('');
@@ -123,6 +124,9 @@ export default function CustomCropper() {
         const search = location.search; // could be '?foo=bar'
         const params = new URLSearchParams(search);
         const project_id = params.get('project_id'); // bar
+        let userData = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
+        const user_id = userData.user_id;
+        setUserId(user_id);
         setProjectId(project_id);
 
         axios({
@@ -145,7 +149,7 @@ export default function CustomCropper() {
         axios({
             method: 'post',
             url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-user-templates',
-            data: { user_id: 'user4@gmail.com' }
+            data: { user_id }
         }).then(res => {
             if (res.data.message === 'Failed') {
                 dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
@@ -260,6 +264,7 @@ export default function CustomCropper() {
         let payload = {
             project_id: projectId,
             template_name: selectedTemplate,
+            user_id,
             data
         }
 

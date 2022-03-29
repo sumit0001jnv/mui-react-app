@@ -413,8 +413,8 @@ export default function G2bLandingPage() {
                                 {/* <Button variant='contained' color={'success'} onClick={sendData}>Send</Button> */}
                                 <LoadingButton
                                     loading={saving}
-                                    loadingPosition="start"
                                     endIcon={<SendIcon />}
+                                    loadingPosition="end"
                                     variant="contained"
                                     onClick={sendData}
                                     disabled={!selectedG3Users.length}

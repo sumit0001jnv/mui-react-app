@@ -117,7 +117,7 @@ export default function CustomActionList(props) {
                                             )} container justifyContent={'center'}>
                                             {columns.map((col, index) => {
                                                 return <>
-                                                    <Grid item xs={col.flex} key={col.headerName + index} sx={{ p: 2, borderBottom: '1px solid #ccc' }}>
+                                                    <Grid item xs={col.flex} key={col.headerName + index} sx={{ px:(index===2?0: 2),py:2, borderBottom: '1px solid #ccc' }}>
                                                         {index == 2 ? <IconButton color="error" aria-label="add an alarm" onClick={() => removeRow(i)}>
                                                             <DeleteIcon />
                                                         </IconButton> : <TextField id="outlined-size-normal" size={'small'} value={row[col.field]} onChange={(event) => handleText(event, i, col.field)} sx={{ width: '100%', color: "#ccc" }} />}
@@ -137,8 +137,8 @@ export default function CustomActionList(props) {
             <LoadingButton
                 variant='contained'
                 loading={props.loadingBtn}
-                loadingPosition="start"
                 startIcon={<SaveIcon />}
+                loadingPosition="start"
                 color={'success'}
                 onClick={sendData}
                 sx={{ mr: 2 }}>{props.actionBtnText || "Send"}</LoadingButton>

@@ -311,8 +311,8 @@ export default function Setting(props) {
                                     <LoadingButton
                                         type="submit"
                                         loading={loading}
-                                        loadingPosition="start"
                                         startIcon={<SaveIcon />}
+                                        loadingPosition="start"
                                         variant="contained"
                                         sx={{ mt: 3, mb: 2 }}
                                         onClick={() => handleUpdate(-1)}
@@ -413,8 +413,8 @@ export default function Setting(props) {
                                             <LoadingButton
                                                 type="submit"
                                                 loading={loading}
-                                                loadingPosition="start"
                                                 startIcon={<SaveIcon />}
+                                                loadingPosition="start"
                                                 variant="contained"
                                                 sx={{ mt: 3, mb: 2 }}
                                                 onClick={() => handleUpdate(tabIndex)}
@@ -543,8 +543,8 @@ export default function Setting(props) {
                             <LoadingButton
                                 type="submit"
                                 loading={loading}
-                                loadingPosition="start"
                                 startIcon={<SaveIcon />}
+                                loadingPosition="start"
                                 variant="contained"
                                 sx={{ mt: 3, mb: 2 }}
                                 onClick={handleSubmit}

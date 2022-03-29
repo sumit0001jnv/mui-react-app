@@ -348,8 +348,8 @@ export default function FinalQuoteDecision(props) {
                             <TextField disabled size={'small'} sx={{ flexGrow: 1, mr: 2 }} value={g3User.name} label="Insurer" placeholder='Select Insurer' />
                             {isReply ? <LoadingButton
                                 loading={saving.replyBtn}
-                                loadingPosition="start"
                                 startIcon={<ReplyIcon />}
+                                loadingPosition="start"
                                 variant="contained"
                                 onClick={onReply}
                                 size={'small'}
@@ -360,8 +360,8 @@ export default function FinalQuoteDecision(props) {
                             </LoadingButton> : <>
                                 <LoadingButton
                                     loading={saving.declineBtn}
-                                    loadingPosition="start"
                                     startIcon={<ThumbDownIcon />}
+                                    loadingPosition="start"
                                     variant="contained"
                                     onClick={() => handleAccept(false)}
                                     size={'small'}
@@ -373,8 +373,8 @@ export default function FinalQuoteDecision(props) {
                                 </LoadingButton>
                                 <LoadingButton
                                     loading={saving.acceptBtn}
-                                    loadingPosition="start"
                                     startIcon={<ThumbUpIcon />}
+                                    loadingPosition="start"
                                     variant="contained"
                                     onClick={() => handleAccept(true)}
                                     size={'small'}
