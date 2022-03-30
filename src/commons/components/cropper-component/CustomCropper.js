@@ -98,6 +98,46 @@ export default function CustomCropper() {
         setIsPreviewed(false);
     };
 
+    function getBase64Image(url) {
+        const image = document.createElement('img');
+        document.body.appendChild(image);
+        // image.setAttribute('style', 'display:none');
+        image.setAttribute('alt', 'script div');
+        image.setAttribute('width', 500);
+        image.setAttribute('height', 600);
+        image.setAttribute("src", url);
+
+        var imgCanvas = document.createElement("canvas"),
+            imgContext = imgCanvas.getContext("2d");
+
+        // Make sure canvas is as big as the picture
+        imgCanvas.width = image.width;
+        imgCanvas.height = image.height;
+
+        // Draw image into canvas element
+        imgContext.drawImage(image, 0, 0, image.width, image.height);
+        // Save image as a data URL
+        // const imgInfom = imgCanvas.toDataURL("image/png");
+        // localStorage.setItem("imgInfo", imgInfom);
+        document.body.removeChild(image);
+        // const dataURL = imgInfom.toDataURL("image/png");
+        return imgCanvas.toDataURL("image/png");
+
+
+    }
+    const getBase64FromUrl = async (url) => {
+        const data = await fetch(url);
+        const blob = await data.blob();
+        return new Promise((resolve) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(blob);
+            reader.onloadend = () => {
+                const base64data = reader.result;
+                resolve(base64data);
+            }
+        });
+    }
+
     const onPageChange = (page) => {
         if (projectId) {
             axios({
@@ -110,6 +150,9 @@ export default function CustomCropper() {
                     return;
                 }
                 setUrl(res.data.file_url);
+                // getBase64FromUrl(res.data.file_url).then(res2 => {
+                //     setUrl(getBase64Image(res2));
+                // })
                 setPageNo(() => res.data.page_num);
             }).catch(err => {
                 console.log(err);
@@ -135,7 +178,10 @@ export default function CustomCropper() {
                 dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                 return;
             }
-            setUrl(res.data.file_url);
+            // setUrl(res.data.file_url);
+            // getBase64FromUrl(res.data.file_url).then(res2 => {
+            //     setUrl(getBase64Image(res2));
+            // })
             setPageNo(() => res.data.page_num);
 
         }).catch(err => {

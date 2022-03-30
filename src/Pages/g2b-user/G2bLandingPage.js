@@ -18,6 +18,7 @@ export default function G2bLandingPage() {
         "3": "Accepted",
         "4": "Declined"
     }
+    const { user_id } = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
     const getColor = (status) => {
         switch (status) {
             case 'Accepted':
@@ -50,21 +51,28 @@ export default function G2bLandingPage() {
         {
             field: 'email',
             headerName: 'Email',
-            minWidth: 200,
+            minWidth: 180,
             flex: 2,
             renderCell: renderCellExpand
         },
         {
             field: 'status',
             headerName: 'Status',
-            minWidth: 150,
-            flex: 2,
+            minWidth: 140,
+            flex: 1,
             renderCell: (params) => <><Chip label={params?.row?.status || 'Pending'} color={getColor(params?.row.status)} size="small" /></>,
             // renderCell: (params) => <><Chip label={params?.row?.status ||'pending'} color={params?.row?.status||'success'} size="small" /></>,
         },
         {
             field: 'date',
             headerName: 'Date',
+            minWidth: 140,
+            flex: 1,
+            renderCell: renderCellExpand
+        },
+        {
+            field: 'broker_name',
+            headerName: 'Senior Broker',
             minWidth: 150,
             flex: 2,
             renderCell: renderCellExpand
@@ -82,7 +90,9 @@ export default function G2bLandingPage() {
             type: 'tableAction',
             minWidth: 110,
             renderCell: (params) => <>
-                <Chip variant="outlined" onClick={() => onViewClick(params.row)} color="warning" size="small" label='View' icon={<VisibilityIcon color={'red'} />} />
+                {(params?.row?.broker_id === user_id) &&
+                    <Chip variant="outlined" onClick={() => onViewClick(params.row)} color="warning" size="small" label='View' icon={<VisibilityIcon color={'red'} />} />
+                }
             </>,
             flex: 2,
         }
@@ -126,6 +136,8 @@ export default function G2bLandingPage() {
                     message: row[3],
                     subject: row[3],
                     body: row[3],
+                    broker_id: row[6],
+                    broker_name: row[7],
                     date: row[4],
                     id: row[0]
                 }

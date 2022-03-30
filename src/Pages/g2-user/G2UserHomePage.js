@@ -31,6 +31,7 @@ export default function G2UserHomePage() {
 
         }
     }
+    const { user_id } = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
     const columns = [
         {
             field: 'name',
@@ -42,7 +43,7 @@ export default function G2UserHomePage() {
         {
             field: 'email',
             headerName: 'Email',
-            minWidth: 200,
+            minWidth: 150,
             flex: 2,
             renderCell: renderCellExpand
         },
@@ -50,13 +51,19 @@ export default function G2UserHomePage() {
             field: 'status',
             headerName: 'Status',
             minWidth: 120,
-            flex: 2,
-            renderCell: (params) => <><Chip label={params?.row?.status || 'success'} color={getColor(params?.row.status)} size="small" /></>,
-            // renderCell: (params) => <><Chip label={params?.row?.status ||'pending'} color={params?.row?.status||'success'} size="small" /></>,
+            flex: 1,
+            renderCell: (params) => { return <Chip label={params?.row?.status || 'success'} color={getColor(params?.row.status)} size="small" /> },
         },
         {
             field: 'date',
             headerName: 'Date',
+            minWidth: 150,
+            flex: 1,
+            renderCell: renderCellExpand
+        },
+        {
+            field: 'broker_name',
+            headerName: 'Broker',
             minWidth: 150,
             flex: 2,
             renderCell: renderCellExpand
@@ -64,7 +71,7 @@ export default function G2UserHomePage() {
         {
             field: 'message',
             headerName: 'Message',
-            minWidth: 240,
+            minWidth: 230,
             flex: 2,
             renderCell: renderCellExpand
         },
@@ -74,8 +81,9 @@ export default function G2UserHomePage() {
             type: 'tableAction',
             minWidth: 110,
             renderCell: (params) => <>
-                <Chip variant="outlined" onClick={() => onViewClick(params.row)} color="warning" size="small" label='View' icon={<VisibilityIcon color={'red'} />} />
-            </>,
+                {(params?.row?.broker_id === user_id) &&
+                    <Chip variant="outlined" onClick={() => onViewClick(params.row)} color="warning" size="small" label='View' icon={<VisibilityIcon color={'red'} />} />
+                }</>,
             flex: 2,
         }
     ];
@@ -117,7 +125,9 @@ export default function G2UserHomePage() {
                     status: row[5] === "0" ? "error" : row[5] == "1" ? "pending" : "completed",
                     message: row[3],
                     date: row[4],
-                    body: row[6],
+                    // body: row[6],
+                    broker_id: row[6],
+                    broker_name: row[7],
                     id: row[0]
                 }
             })
