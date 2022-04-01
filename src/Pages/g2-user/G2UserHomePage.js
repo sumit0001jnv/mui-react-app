@@ -81,9 +81,8 @@ export default function G2UserHomePage() {
             type: 'tableAction',
             minWidth: 110,
             renderCell: (params) => <>
-                {(params?.row?.broker_id === user_id) &&
-                    <Chip variant="outlined" onClick={() => onViewClick(params.row)} color="warning" size="small" label='View' icon={<VisibilityIcon color={'red'} />} />
-                }</>,
+                <Chip variant="outlined" disabled={params?.row?.broker_id !== user_id} onClick={() => onViewClick(params.row)} color="warning" size="small" label='View' icon={<VisibilityIcon color={'red'} />} />
+            </>,
             flex: 2,
         }
     ];

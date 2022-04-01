@@ -72,6 +72,7 @@ export default function CustomCropper() {
     const [quoteTableData, setQuoteTableData] = useState([]);
     const [templateId, setTemplateId] = useState('');
     const [loadingBtn, setLoadingBtn] = useState(false);
+    const [rectangles, setRectangles] = useState([]);
     // const [loading, setLoading] = useState(false);
 
     const columns = [
@@ -98,45 +99,43 @@ export default function CustomCropper() {
         setIsPreviewed(false);
     };
 
-    function getBase64Image(url) {
-        const image = document.createElement('img');
-        document.body.appendChild(image);
-        // image.setAttribute('style', 'display:none');
-        image.setAttribute('alt', 'script div');
-        image.setAttribute('width', 500);
-        image.setAttribute('height', 600);
-        image.setAttribute("src", url);
-
-        var imgCanvas = document.createElement("canvas"),
-            imgContext = imgCanvas.getContext("2d");
-
-        // Make sure canvas is as big as the picture
-        imgCanvas.width = image.width;
-        imgCanvas.height = image.height;
-
-        // Draw image into canvas element
-        imgContext.drawImage(image, 0, 0, image.width, image.height);
-        // Save image as a data URL
-        // const imgInfom = imgCanvas.toDataURL("image/png");
-        // localStorage.setItem("imgInfo", imgInfom);
-        document.body.removeChild(image);
-        // const dataURL = imgInfom.toDataURL("image/png");
-        return imgCanvas.toDataURL("image/png");
-
+    const getCanvasFromUrl = async (url, page = 1) => {
+        return new Promise((resolve, reject) => {
+            var canvas = document.createElement("CANVAS");
+            var ctx = canvas.getContext("2d");
+            var myImg = new Image();
+            myImg.onload = function () {
+                canvas.width = myImg.width;
+                canvas.height = myImg.height;
+                ctx.drawImage(myImg, 0, 0, myImg.width, myImg.height);
+                var context = canvas.getContext('2d');
+                context.beginPath();
+                // context.setLineDash([5, 15]);
+                for (let template of templates) {
+                    if (template.page_num === page) {
+                        const pos = template.annotationBox.split(",");
+                        context.rect(pos[0], pos[1], pos[2], pos[3]);
+                    }
+                }
+                // context.rect(571.27, 506.82, 151.02, 27);
+                // context.rect(571.27, 806.82, 151.02, 27);
+                context.lineWidth = 2;
+                context.strokeStyle = 'red';
+                context.stroke();
+                resolve(canvas.toDataURL())
+            };
+            myImg.src = url;
+            // myImg.src = 'https://images.unsplash.com/photo-1572800578930-fd1013b506c1?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=750&q=80';
+            myImg.crossOrigin = "anonymous"
+        })
 
     }
-    const getBase64FromUrl = async (url) => {
-        const data = await fetch(url);
-        const blob = await data.blob();
-        return new Promise((resolve) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(blob);
-            reader.onloadend = () => {
-                const base64data = reader.result;
-                resolve(base64data);
-            }
-        });
-    }
+
+    useEffect(() => {
+        getCanvasFromUrl(url, pageNo).then(res2 => {
+            setUrl(res2);
+        })
+    }, [templates])
 
     const onPageChange = (page) => {
         if (projectId) {
@@ -149,11 +148,11 @@ export default function CustomCropper() {
                     dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                     return;
                 }
-                setUrl(res.data.file_url);
-                // getBase64FromUrl(res.data.file_url).then(res2 => {
-                //     setUrl(getBase64Image(res2));
-                // })
+                // setUrl(res.data.file_url);
                 setPageNo(() => res.data.page_num);
+                getCanvasFromUrl(res.data.file_url, res.data.page_num).then(res2 => {
+                    setUrl(res2);
+                })
             }).catch(err => {
                 console.log(err);
                 dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
@@ -179,9 +178,9 @@ export default function CustomCropper() {
                 return;
             }
             // setUrl(res.data.file_url);
-            // getBase64FromUrl(res.data.file_url).then(res2 => {
-            //     setUrl(getBase64Image(res2));
-            // })
+            getCanvasFromUrl(res.data.file_url, res.data.page_num).then(res2 => {
+                setUrl(res2);
+            })
             setPageNo(() => res.data.page_num);
 
         }).catch(err => {
@@ -247,6 +246,7 @@ export default function CustomCropper() {
             const { x, y, width, height } = cropper.getData();
             // const { left2, top2, width2, height2 } = cropper.getCropBoxData();
             var rounded = (num) => Math.round((num + Number.EPSILON) * 100) / 100;
+
             let obj = { id: ID(), cropData: cropper.getCroppedCanvas().toDataURL(), annotationBox: `${rounded(x)},${rounded(y)},${rounded(width)},${rounded(height)}`, annotationName: selectedText, page_num: pageNo, key: selectedText || '' }
             setTemplates([obj, ...templates]);
             setSelectedText('');
