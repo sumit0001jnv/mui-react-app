@@ -87,45 +87,46 @@ export default function CustomMuiDialogue(props) {
                 {props.url && <Grid container>
                     <Grid container xs={12}>
                         <Typography variant='h6' sx={{ p: 2, mr: 'auto' }} component={'div'}>Attachment</Typography>
-                        <IconButton color={'primary'} aria-label="upload picture" component="span" onClick={() => zoom(zoomVal + 0.5)}>
-                            <ZoomInIcon />
+
+                        <IconButton aria-label="upload picture" component="span" onClick={handleClose}>
+                            <CloseIcon sx={{ fontSize: '34px' }} />
                         </IconButton>
-                        <IconButton color={'primary'} sx={{ mr: 'auto' }} aria-label="upload picture" component="span" onClick={() => zoom(zoomVal - 0.5)}>
-                            <ZoomOutIcon />
-                        </IconButton>
-                        <IconButton  aria-label="upload picture" component="span" onClick={handleClose}>
-                        <CloseIcon sx={{fontSize:'34px'}} />
-                    </IconButton>
-                    {/* <Button onClick={() => zoom(zoomVal + 0.5)}>Zoom In</Button> */}
-                    {/* <Button onClick={() => zoom(zoomVal - 0.5)}>Zoom Out</Button> */}
-                </Grid>
+                        {/* <Button onClick={() => zoom(zoomVal + 0.5)}>Zoom In</Button> */}
+                        {/* <Button onClick={() => zoom(zoomVal - 0.5)}>Zoom Out</Button> */}
+                    </Grid>
                 </Grid>}
 
-            <DialogContent dividers={scroll === 'paper'}>
-                <DialogContentText
-                    id="scroll-dialog-description"
-                    ref={descriptionElementRef}
-                    tabIndex={-1}
-                    sx={{ p: 0, m: 0 }}
-                >
-                    <PdfViewer url={props.url} pageNumber={pageNumber} zoomVal={zoomVal} onSetNumPages={onSetNumPages}></PdfViewer>
-                </DialogContentText>
-            </DialogContent>
-            <DialogActions>
-                <Box sx={{ ml: 'auto' }}></Box>
-                <IconButton aria-label="upload picture" component="span" onClick={() => pageChange(pageNumber - 1)}>
-                    <ArrowBackIosNewIcon />
-                </IconButton>
-                <Typography variant="div" gutterBottom component="div">
-                    Page {pageNumber} of {numPages}
-                </Typography>
-                <IconButton aria-label="upload picture" component="span" onClick={() => pageChange(pageNumber + 1)}>
-                    <ArrowForwardIosIcon />
-                </IconButton>
-                <Box sx={{ mx: 'auto' }}></Box>
-                {/* <Button onClick={handleClose}>Cancel</Button> */}
-            </DialogActions>
-        </Dialog>
+                <DialogContent dividers={scroll === 'paper'}>
+                    <DialogContentText
+                        id="scroll-dialog-description"
+                        ref={descriptionElementRef}
+                        tabIndex={-1}
+                        sx={{ p: 0, m: 0 }}
+                    >
+                        <PdfViewer url={props.url} pageNumber={pageNumber} zoomVal={zoomVal} onSetNumPages={onSetNumPages}></PdfViewer>
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    {/* <Box sx={{ ml: 'auto' }}></Box> */}
+                    <IconButton aria-label="upload picture" component="span" onClick={() => pageChange(pageNumber - 1)}>
+                        <ArrowBackIosNewIcon />
+                    </IconButton>
+                    <Typography variant="div" gutterBottom component="div">
+                        Page {pageNumber} of {numPages}
+                    </Typography>
+                    <IconButton aria-label="upload picture" component="span" onClick={() => pageChange(pageNumber + 1)}>
+                        <ArrowForwardIosIcon />
+                    </IconButton>
+                    <Box sx={{ mr: 'auto' }}></Box>
+                    <Button color={'primary'} variant="outlined" endIcon={<ZoomInIcon />} aria-label="upload picture" component="span" onClick={() => zoom(zoomVal + 0.5)}>
+                        Zoom In
+                    </Button>
+                    <Button color={'primary'} variant="outlined" endIcon={<ZoomOutIcon />} sx={{ }} aria-label="upload picture" component="span" onClick={() => zoom(zoomVal - 0.5)}>
+                        Zoom Out
+                    </Button>
+                    {/* <Button onClick={handleClose}>Cancel</Button> */}
+                </DialogActions>
+            </Dialog>
         </div >
     );
 }

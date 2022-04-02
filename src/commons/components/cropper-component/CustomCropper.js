@@ -60,6 +60,7 @@ export default function CustomCropper() {
     const imageRef = useRef(null);
     const [cropper, setCropper] = useState();
     let [url, setUrl] = useState('');
+    let [boxUrl, setBoxUrl] = useState('');
     let [user_id, setUserId] = useState('');
     const [templates, setTemplates] = useState([]);
     const [pageNo, setPageNo] = useState(1);
@@ -111,12 +112,22 @@ export default function CustomCropper() {
                 var context = canvas.getContext('2d');
                 context.beginPath();
                 // context.setLineDash([5, 15]);
-                for (let template of templates) {
-                    if (template.page_num === page) {
-                        const pos = template.annotationBox.split(",");
-                        context.rect(pos[0], pos[1], pos[2], pos[3]);
+                if (isPreviewed) {
+                    for (let template of quoteTableData) {
+                        if (Number(template.page_num) === page) {
+                            const pos = template.annotationBox;
+                            context.rect(pos[0], pos[1], pos[2], pos[3]);
+                        }
+                    }
+                } else {
+                    for (let template of templates) {
+                        if (template.page_num === page) {
+                            const pos = template.annotationBox.split(",");
+                            context.rect(pos[0], pos[1], pos[2], pos[3]);
+                        }
                     }
                 }
+
                 // context.rect(571.27, 506.82, 151.02, 27);
                 // context.rect(571.27, 806.82, 151.02, 27);
                 context.lineWidth = 2;
@@ -133,9 +144,9 @@ export default function CustomCropper() {
 
     useEffect(() => {
         getCanvasFromUrl(url, pageNo).then(res2 => {
-            setUrl(res2);
+            setBoxUrl(res2);
         })
-    }, [templates])
+    }, [templates, isPreviewed, quoteTableData])
 
     const onPageChange = (page) => {
         if (projectId) {
@@ -148,10 +159,10 @@ export default function CustomCropper() {
                     dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                     return;
                 }
-                // setUrl(res.data.file_url);
+                setUrl(res.data.file_url);
                 setPageNo(() => res.data.page_num);
                 getCanvasFromUrl(res.data.file_url, res.data.page_num).then(res2 => {
-                    setUrl(res2);
+                    setBoxUrl(res2);
                 })
             }).catch(err => {
                 console.log(err);
@@ -177,9 +188,9 @@ export default function CustomCropper() {
                 dispatch(uiAction.showSnackbar({ message: res.data.message, type: 'error' }));
                 return;
             }
-            // setUrl(res.data.file_url);
+            setUrl(res.data.file_url);
             getCanvasFromUrl(res.data.file_url, res.data.page_num).then(res2 => {
-                setUrl(res2);
+                setBoxUrl(res2);
             })
             setPageNo(() => res.data.page_num);
 
@@ -347,6 +358,8 @@ export default function CustomCropper() {
                 return {
                     attribute: row.name,
                     value: row.text,
+                    annotationBox: row.loc,
+                    page_num: row.page_num,
                     id: ID()
                 }
             })])
@@ -386,7 +399,7 @@ export default function CustomCropper() {
     }
 
     const addRow = () => {
-        setQuoteTableData((data) => [{ attribute: '', value: '' }, ...data]);
+        setQuoteTableData((data) => [{ attribute: '', value: '', annotationBox: '', page_num: '' }, ...data]);
     }
 
 
@@ -434,7 +447,7 @@ export default function CustomCropper() {
                             // initialAspectRatio={16 / 9}
                             preview=".img-preview"
                             guides={true}
-                            src={url}
+                            src={boxUrl}
                             // src={'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/static/pdfimg/938c575b-9fd1-4f8c-ba3f-e1738a9089b8.png'}
                             ref={imageRef}
                             dragMode={'move'}
