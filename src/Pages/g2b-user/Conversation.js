@@ -306,7 +306,7 @@ export default function Conversation(props) {
                                     {chats.map(user => <EmailCard user={user} />)}
                                 </Grid>
                                 <Item>
-                                    <Grid container justifyContent={'center'} sx={{ p: 2 }}>
+                                    <Grid container justifyContent={'flex-end'} sx={{ p: 2 }}>
                                         {selectedG3User.id && chats.length ?
                                             <>
                                                 <Button variant='contained' color={'primary'} size={'small'} sx={{ mr: 2 }} onClick={() => handleAcceptDeclineReply(true)}>Reply</Button>
