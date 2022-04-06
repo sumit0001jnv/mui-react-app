@@ -24,6 +24,8 @@ import LoadingButton from '@mui/lab/LoadingButton';
 // import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import NonInitialQuoteDetail from './NonInitialQuoteDetail';
+import Conversation from './Conversation';
 
 import Divider from '@mui/material/Divider';
 
@@ -304,7 +306,7 @@ export default function G2bLandingPage() {
 
     return <>
         <Header hideNotification></Header>
-        <Item sx={{ m: 2, px: 2, }}>
+        {isInitialQuote ? <><Item sx={{ m: 2, px: 2, }}>
             <Grid container spacing={0} justifyContent={'center'} sx={{ height: 'calc(100vh - 116px)' }}>
                 <Grid item container xs={12} md={isInitialQuote ? 12 : 5} justifyContent={'center'}>
                     <Grid container spacing={0} direction="column" sx={{ width: '800px', maxWidth: '100%', border: '1px solid #ccc' }}>
@@ -314,20 +316,22 @@ export default function G2bLandingPage() {
                             </IconButton>
                             <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Quote Requested</Typography>
 
-                            {!isInitialQuote ? <><Autocomplete
-                                sx={{ mx: 2, width: 100, flexGrow: 1, height: '40px', maxHeight: '40px' }}
-                                size={'small'}
-                                disablePortal
-                                options={g3Users}
-                                getOptionLabel={(option) => option.name}
-                                disableClearable
-                                defaultValue={g3Users[0]}
-                                value={selectedG3User}
-                                onChange={(event, newInputValue) => onG2UserChange(newInputValue)}
-                                renderInput={(params) => <TextField {...params} label="Insurer" placeholder='Select Insurer' />}
-                            />
-                            </> : ''
-                            }
+                            {/* {!isInitialQuote ?
+                                <>
+                                    <Autocomplete
+                                        sx={{ mx: 2, width: 100, flexGrow: 1, height: '40px', maxHeight: '40px' }}
+                                        size={'small'}
+                                        disablePortal
+                                        options={g3Users}
+                                        getOptionLabel={(option) => option.name}
+                                        disableClearable
+                                        defaultValue={g3Users[0]}
+                                        value={selectedG3User}
+                                        onChange={(event, newInputValue) => onG2UserChange(newInputValue)}
+                                        renderInput={(params) => <TextField {...params} label="Insurer" placeholder='Select Insurer' />}
+                                    />
+                                </> : ''
+                            } */}
                         </Grid>
                         {isInitialQuote ? <>
                             <Grid container justifyContent={'center'}>
@@ -379,7 +383,9 @@ export default function G2bLandingPage() {
                                 </Droppable>
                             </DragDropContext>
 
-                        </> : <> <Grid container spacing={0} direction="column" sx={{ maxHeight: 'calc(100vh - 260px)', height: 'calc(100vh - 260px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
+                        </> :
+                            <>
+                                {/* <Grid container spacing={0} direction="column" sx={{ maxHeight: 'calc(100vh - 260px)', height: 'calc(100vh - 260px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
                             {selectedG3User.id && conversationArr.length && messageObj.show ?
                                 <>
                                     <Divider></Divider>
@@ -392,48 +398,53 @@ export default function G2bLandingPage() {
                                     </Typography>
 
                                 </> : ''}
-                        </Grid></>}
+                        </Grid> */}
+                            </>
+                        }
                         <Divider></Divider>
                         <Grid container justifyContent={'flex-end'} sx={{ p: 2 }}>
-                            {isInitialQuote ? <><Autocomplete
-                                sx={{ mr: 2, width: 200, flexGrow: 1, height: '40px', maxHeight: '40px' }}
-                                size={'small'}
-                                disablePortal
-                                multiple
-                                id="multiple-limit-tags"
-                                limitTags={2}
-                                options={g3Users}
-                                getOptionLabel={(option) => option.name}
-                                disableClearable
-                                onChange={(event, newInputValue) => {
-                                    setSelectedG3Users(() => [...newInputValue])
-                                }}
-                                renderInput={(params) => <TextField {...params} label="Insurer" placeholder='Select Insurer' />}
-                            />
-                                {/* <Button variant='contained' color={'success'} onClick={sendData}>Send</Button> */}
-                                <LoadingButton
-                                    loading={saving}
-                                    endIcon={<SendIcon />}
-                                    loadingPosition="end"
-                                    variant="contained"
-                                    onClick={sendData}
-                                    disabled={!selectedG3Users.length}
-                                >
-                                    Send
-                                </LoadingButton>
-                            </> :
+                            {isInitialQuote ?
                                 <>
-                                    {selectedG3User.id && conversationArr.length ?
+                                    <Autocomplete
+                                        sx={{ mr: 2, width: 200, flexGrow: 1, height: '40px', maxHeight: '40px' }}
+                                        size={'small'}
+                                        disablePortal
+                                        multiple
+                                        id="multiple-limit-tags"
+                                        limitTags={2}
+                                        options={g3Users}
+                                        getOptionLabel={(option) => option.name}
+                                        disableClearable
+                                        onChange={(event, newInputValue) => {
+                                            setSelectedG3Users(() => [...newInputValue])
+                                        }}
+                                        renderInput={(params) => <TextField {...params} label="Insurer" placeholder='Select Insurer' />}
+                                    />
+                                    {/* <Button variant='contained' color={'success'} onClick={sendData}>Send</Button> */}
+                                    <LoadingButton
+                                        loading={saving}
+                                        endIcon={<SendIcon />}
+                                        loadingPosition="end"
+                                        variant="contained"
+                                        onClick={sendData}
+                                        disabled={!selectedG3Users.length}
+                                    >
+                                        Send
+                                    </LoadingButton>
+                                </> :
+                                <>
+                                    {/* {selectedG3User.id && conversationArr.length ?
                                         <>
                                             <Button variant='contained' color={'primary'} sx={{ mr: 2 }} onClick={() => handleAcceptDeclineReply(true)}>Reply</Button>
-                                            <Button variant='contained' color={'primary'} onClick={() => handleAcceptDeclineReply(false)}>Accept/Decline</Button></> : ''}
+                                            <Button variant='contained' color={'primary'} onClick={() => handleAcceptDeclineReply(false)}>Accept/Decline</Button>
+                                        </> : ''} */}
                                 </>}
 
                         </Grid>
 
                     </Grid>
                 </Grid>
-                {!isInitialQuote ? <>
+                {/* {!isInitialQuote ? <>
                     <Grid item xs={12} md={7}>
                         <Grid container direction={'column'} className="test" sx={{ height: 'calc(100vh - 120px)', maxHeight: 'calc(100vh - 120px)', overflow: 'auto', flexWrap: 'nowrap' }}>
                             {conversationArr.map((user) => {
@@ -463,16 +474,17 @@ export default function G2bLandingPage() {
                                         <Button size="small" sx={{ mr: 1, my: 1 }} disabled={!user.attachment || !user.attachment.filter(f => f.endsWith('.docx')).length} variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Docx({(user.attachment && user.attachment.filter(f => f.endsWith('.docx')).length) ? 1 : 0})</Button>
                                         <Button size="small" sx={{ my: 1 }} disabled={!user.attachment || !user.attachment.filter(f => f.endsWith('.excel')).length} variant='contained' onClick={() => onAttachmentClick(user.attachment)}> Excel({(user.attachment && user.attachment.filter(f => f.endsWith('.excel')).length) ? 1 : 0})</Button>
                                     </Grid>
-                                    {/* <Avatar sx={{ bgcolor: deepPurple[500] }}>OP</Avatar> */}
                                 </Grid>
                             })}
                             {!conversationArr.length ? <Grid container justifyContent={'center'} alignItems={'center'} sx={{ height: '100%' }}>
                                 {selectedG3User.id ? 'No data found' : 'Please Select Insurer'}</Grid> : ''}
                         </Grid>
 
-                    </Grid></> : ''}
+                    </Grid></> : ''} */}
             </Grid>
-        </Item>
+        </Item></> :
+            <Conversation></Conversation>
+        }
         <CustomMuiDialogue url={attachment.url} show={attachment.show} onSetOpenDialogue={onSetOpenDialogue}></CustomMuiDialogue>
     </>;
 }
