@@ -3,9 +3,7 @@ import axios from 'axios';
 import Header from '../../commons/components/header/Header';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
-import Box from '@mui/material/Box';
 import { styled } from '@mui/material/styles';
-import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
@@ -15,8 +13,6 @@ import uiAction from '../../store/actions/uiAction';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import Typography from '@mui/material/Typography';
-import { deepOrange, deepPurple } from '@mui/material/colors';
-import Avatar from '@mui/material/Avatar';
 import Autocomplete from '@mui/material/Autocomplete';
 import AddIcon from '@mui/icons-material/Add';
 import CustomMuiDialogue from '../../commons/components/custom-mui-dialogue/CustomMuiDialogue';
@@ -24,8 +20,9 @@ import LoadingButton from '@mui/lab/LoadingButton';
 // import SaveIcon from '@mui/icons-material/Save';
 import SendIcon from '@mui/icons-material/Send';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
-import NonInitialQuoteDetail from './NonInitialQuoteDetail';
+// import NonInitialQuoteDetail from './NonInitialQuoteDetail';
 import Conversation from './Conversation';
+import Chip from '@mui/material/Chip';
 
 import Divider from '@mui/material/Divider';
 
@@ -46,6 +43,7 @@ export default function G2bLandingPage() {
     const [selectedG3Users, setSelectedG3Users] = useState([]);
     const [selectedG3User, setSelectedG3User] = useState({ name: '', id: '' });
     const [loggedInUser, setLoggedInUser] = useState('');
+    const [projectStatus, setProjectStatus] = useState('');
     const [projectId, setProjectId] = useState('');
     const [conversationArr, setConversationArr] = useState([]);
     const [saving, setSaving] = useState(false);
@@ -60,8 +58,9 @@ export default function G2bLandingPage() {
     useEffect(() => {
         const search = location.search; // could be '?foo=bar'
         const params = new URLSearchParams(search);
-        const project_id = params.get('project_id'); // bar
-        const isInitialQuote = params.get('isInitialQuote') === 'true'; // bar
+        const project_id = params.get('project_id');
+        const isInitialQuote = params.get('isInitialQuote') === 'true';
+        setProjectStatus(params.get('status') || '');
         let userData = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
         setLoggedInUser(userData.user_id || '');
 
@@ -304,6 +303,22 @@ export default function G2bLandingPage() {
         overflowY: 'auto'
     });
 
+    const getColor = (status) => {
+        switch (status) {
+            case 'Accepted':
+                return 'success';
+            case 'Pending':
+                return 'warning';
+            case 'Declined':
+                return 'error';
+            case 'Quote Requested':
+                return 'primary';
+            default:
+                return 'error';
+
+        }
+    }
+
     return <>
         <Header hideNotification></Header>
         {isInitialQuote ? <><Item sx={{ m: 2, px: 2, }}>
@@ -314,24 +329,8 @@ export default function G2bLandingPage() {
                             <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
                                 <KeyboardBackspaceIcon />
                             </IconButton>
-                            <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Quote Requested</Typography>
-
-                            {/* {!isInitialQuote ?
-                                <>
-                                    <Autocomplete
-                                        sx={{ mx: 2, width: 100, flexGrow: 1, height: '40px', maxHeight: '40px' }}
-                                        size={'small'}
-                                        disablePortal
-                                        options={g3Users}
-                                        getOptionLabel={(option) => option.name}
-                                        disableClearable
-                                        defaultValue={g3Users[0]}
-                                        value={selectedG3User}
-                                        onChange={(event, newInputValue) => onG2UserChange(newInputValue)}
-                                        renderInput={(params) => <TextField {...params} label="Insurer" placeholder='Select Insurer' />}
-                                    />
-                                </> : ''
-                            } */}
+                            <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Requested Quote</Typography>
+                            <Chip label={projectStatus || 'Pending'} color={getColor(projectStatus)} size="small" sx={{ width: '120px' }} />
                         </Grid>
                         {isInitialQuote ? <>
                             <Grid container justifyContent={'center'}>

@@ -1,8 +1,6 @@
 import { useState, Fragment, useEffect } from 'react';
 import axios from 'axios';
 import PropTypes from 'prop-types';
-import AppBar from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import CssBaseline from '@mui/material/CssBaseline';
 import useScrollTrigger from '@mui/material/useScrollTrigger';
@@ -25,6 +23,7 @@ import { useDispatch } from 'react-redux';
 import uiAction from '../../store/actions/uiAction';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -68,6 +67,7 @@ export default function Conversation(props) {
     const [loggedInUser, setLoggedInUser] = useState('');
     const [projectId, setProjectId] = useState('');
     const [selectedG3User, setSelectedG3User] = useState({ name: '', id: '' });
+    const [projectStatus, setProjectStatus] = useState('');
     // const [chatUsers, setChatUsers] = useState([{
     //     id: generateID(), name: 'Jenifer Fritz', descrpition: 'I am a developer', time: '3:15 PM'
     // },
@@ -122,6 +122,7 @@ export default function Conversation(props) {
         const params = new URLSearchParams(search);
         const project_id = params.get('project_id'); // bar
         const isInitialQuote = params.get('isInitialQuote') === 'true'; // bar
+        setProjectStatus(params.get('status') || '');
         let userData = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
         setLoggedInUser(userData.user_id || '');
 
@@ -235,6 +236,21 @@ export default function Conversation(props) {
         setSearchUsers(() => chatUsers.filter(user => user.name.toLowerCase().includes(searchUser.toLowerCase())));
 
     }
+    const getColor = (status) => {
+        switch (status) {
+            case 'Accepted':
+                return 'success';
+            case 'Pending':
+                return 'warning';
+            case 'Declined':
+                return 'error';
+            case 'Quote Requested':
+                return 'primary';
+            default:
+                return 'error';
+
+        }
+    }
     return (
         <Fragment>
             <CssBaseline />
@@ -250,8 +266,8 @@ export default function Conversation(props) {
                                     <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
                                         <KeyboardBackspaceIcon />
                                     </IconButton>
-                                    <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Quote Requested</Typography>
-
+                                    <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Requested Quote</Typography>
+                                    <Chip label={projectStatus || 'Pending'} color={getColor(projectStatus)} size="small" sx={{ width: '120px' }} />
                                 </Box>
                                 <Divider></Divider>
                                 <Box
@@ -307,11 +323,8 @@ export default function Conversation(props) {
                                 </Grid>
                                 <Item>
                                     <Grid container justifyContent={'flex-end'} sx={{ p: 2 }}>
-                                        {selectedG3User.id && chats.length ?
-                                            <>
-                                                <Button variant='contained' color={'primary'} size={'small'} sx={{ mr: 2 }} onClick={() => handleAcceptDeclineReply(true)}>Reply</Button>
-                                                <Button variant='contained' color={'primary'} size={'small'} onClick={() => handleAcceptDeclineReply(false)}>Accept/Decline</Button>
-                                            </> : ''}
+                                        <Button disabled={!(selectedG3User.id && chats.length)} variant='contained' color={'primary'} size={'small'} sx={{ mr: 2 }} onClick={() => handleAcceptDeclineReply(true)}>Reply</Button>
+                                        <Button disabled={!(selectedG3User.id && chats.length)} variant='contained' color={'primary'} size={'small'} onClick={() => handleAcceptDeclineReply(false)}>Accept/Decline</Button>
                                     </Grid>
                                 </Item>
                             </Grid>

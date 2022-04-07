@@ -60,7 +60,7 @@ export default function G2bLandingPage() {
             headerName: 'Status',
             minWidth: 140,
             flex: 1,
-            renderCell: (params) => <><Chip label={params?.row?.status || 'Pending'} color={getColor(params?.row.status)} size="small" /></>,
+            renderCell: (params) => <><Chip label={params?.row?.status || 'Pending'} color={getColor(params?.row.status)} size="small" sx={{ width: '120px' }} /></>,
             // renderCell: (params) => <><Chip label={params?.row?.status ||'pending'} color={params?.row?.status||'success'} size="small" /></>,
         },
         {
@@ -184,9 +184,11 @@ export default function G2bLandingPage() {
         history.push({
             pathname: '/quote-detail',
             // state: { project_id: row.id },
-            search: `?project_id=${row.id}&isInitialQuote=${row.status == 'Pending'}`,
+            search: `?project_id=${row.id}&isInitialQuote=${row.status == 'Pending'}&status=${row.status}`,
         }
         )
+        // const url=`/quote-detail?project_id=${row.id}&isInitialQuote=${row.status == 'Pending'}&status=${row.status}`;
+        // window.open(url);
     }
 
     const onRefresh = () => {

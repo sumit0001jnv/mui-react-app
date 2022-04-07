@@ -50,9 +50,9 @@ export default function G2UserHomePage() {
         {
             field: 'status',
             headerName: 'Status',
-            minWidth: 120,
+            minWidth: 140,
             flex: 1,
-            renderCell: (params) => { return <Chip label={params?.row?.status || 'success'} color={getColor(params?.row.status)} size="small" /> },
+            renderCell: (params) => { return <Chip label={params?.row?.status || 'success'} color={getColor(params?.row.status)} size="small" sx={{ minWidth: '110px' }} /> },
         },
         {
             field: 'date',
