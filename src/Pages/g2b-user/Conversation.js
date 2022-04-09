@@ -61,7 +61,6 @@ export default function Conversation(props) {
     const location = useLocation();
     const history = useHistory();
     const dispatch = useDispatch();
-    const [tableData, setTableData] = useState([]);
     const [chatUsers, setChatUsers] = useState([]);
     const [searchUsers, setSearchUsers] = useState(null);
     const [loggedInUser, setLoggedInUser] = useState('');
@@ -104,7 +103,7 @@ export default function Conversation(props) {
             if (res.data.status) {
                 setChats(() =>
                     (res.data.message_data || []).map(row => {
-                        return { name: row[8], time: row[7], type: row[3] == g2b_user_id ? 'u1' : 'u2', message: row[5], subject: row[4], attachments: { pdf: (row[6] || []).filter(f => f.endsWith('.pdf')), excel: (row[6] || []).filter(f => f.endsWith('.excel')), docx: (row[6] || []).filter(f => f.endsWith('.docx')) } }
+                        return { name: row[9], time: row[7], type: row[3] == g2b_user_id ? 'u1' : 'u2', message: row[5], subject: row[4], attachments: { pdf: (row[6] || []).filter(f => f.endsWith('.pdf')), excel: (row[6] || []).filter(f => f.endsWith('.excel')), docx: (row[6] || []).filter(f => f.endsWith('.docx')) } }
                     })
                 )
             } else {
@@ -129,26 +128,6 @@ export default function Conversation(props) {
 
         setProjectId(() => project_id);
 
-        axios({
-            method: 'post',
-            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/extract-data',
-            data: { project_id }
-        }).then(res => {
-            setTableData(() => {
-                // return getItems(10);
-                return (res.data.data || []).map(row => {
-                    return {
-                        attribute: row.name,
-                        value: row.text,
-                        id: generateID()
-                    }
-                })
-            })
-
-        }).catch(err => {
-            console.log(err);
-        })
-
         let url = isInitialQuote ? `http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-g3-user-list` : `http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-project-g3-user-list`
         axios({
             method: 'post',
@@ -171,14 +150,6 @@ export default function Conversation(props) {
                     }
                 }
             }
-            // setTableData(() => {
-            //     return res.data.data.map(row => {
-            //         return {
-            //             attribute: row.name,
-            //             value: row.text
-            //         }
-            //     })
-            // })
 
         }).catch(err => {
             console.log(err);

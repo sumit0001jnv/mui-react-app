@@ -98,7 +98,7 @@ export default function EmailCard(props) {
                                 </Typography>
                                 <Grid container sx={{ p: 0, pt: 1, borderColor: 'primary.main' }} >
                                     <Badge badgeContent={props.user.attachments.pdf.length} color="error" onClick={(e) => onAttachmentClick(e, props.user.attachments.pdf.length, props.user.attachments.pdf[0])}
-                                        sx={{ opacity: props.user.attachments.pdf.length ? '' : '0.4' }}>
+                                        sx={{...disableProp(!props.user.attachments.pdf.length)}}>
                                         <Avatar src={'/images/pdf-icon.svg'} variant="rounded">
                                         </Avatar>
                                     </Badge>
@@ -119,7 +119,7 @@ export default function EmailCard(props) {
                     <AccordionDetails>
                         <Grid direction={'column'}>
                             <Divider></Divider>
-                            <Typography bottomGutter variant="body2" component="div" sx={{ textAlign: 'initial', p: 2, pb: 0, fontSize: '0.725rem', fontWeight: 300, color: "#000" }}>
+                            <Typography bottomGutter variant="body2" component="div" sx={{ textAlign: 'initial', p: 2, pb: 0, fontSize: '0.725rem', fontWeight: 400, color: "#000" }}>
                                 {props.user.subject}
                             </Typography>
                             <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'initial', p: 2, fontSize: '0.725rem', fontWeight: 300, color: "#000" }}>

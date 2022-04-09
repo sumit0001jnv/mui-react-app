@@ -66,6 +66,7 @@ export default function CustomCropper() {
     let [user_id, setUserId] = useState('');
     const [templates, setTemplates] = useState([]);
     const [pageNo, setPageNo] = useState(1);
+    const [fileName, setFileName] = useState('');
     const [projectId, setProjectId] = useState('');
     const [selectedText, setSelectedText] = useState('');
     const [selectedTemplate, setSelectedTemplate] = useState('');
@@ -166,8 +167,10 @@ export default function CustomCropper() {
                 getCanvasFromUrl(res.data.file_url, res.data.page_num).then(res2 => {
                     setBoxUrl(res2);
                 })
+                setFileName(() => res.data.file_name);
             }).catch(err => {
                 console.log(err);
+                setFileName(() => '');
                 dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
             })
         }
@@ -195,9 +198,11 @@ export default function CustomCropper() {
                 setBoxUrl(res2);
             })
             setPageNo(() => res.data.page_num);
+            setFileName(() => res.data.file_name);
 
         }).catch(err => {
             console.log(err);
+            setFileName(() => '');
             dispatch(uiAction.showSnackbar({ message: 'Something went wrong.Please try after some time', type: 'error' }));
         })
 
@@ -451,19 +456,29 @@ export default function CustomCropper() {
                                 <KeyboardBackspaceIcon />
                             </IconButton>
                             <Typography variant='h6' sx={{ ml: 1, mr: 'auto' }}>Create Template</Typography>
-                            <Button color={'primary'} size="small" variant="outlined" endIcon={<ZoomInIcon />} sx={{mr: 1}} aria-label="upload picture" component="span" onClick={() => zoom()}>
+                            <Button color={'primary'} size="small" variant="outlined" endIcon={<ZoomInIcon />} sx={{ mr: 1 }} aria-label="upload picture" component="span" onClick={() => zoom()}>
                                 Zoom In
                             </Button>
-                            <Button color={'primary'} size="small" variant="outlined" endIcon={<ZoomOutIcon />} sx={{mr: 1}} aria-label="upload picture" component="span" onClick={() => zoom(false)}>
+                            <Button color={'primary'} size="small" variant="outlined" endIcon={<ZoomOutIcon />} sx={{ mr: 1 }} aria-label="upload picture" component="span" onClick={() => zoom(false)}>
                                 Zoom Out
                             </Button>
-                            <Button variant="outlined" size="small" sx={{  }} onClick={clearCrop} >Clear crop box</Button>
+                            <Button variant="outlined" size="small" sx={{}} onClick={clearCrop} >Clear crop box</Button>
 
                         </Grid>
+                        <Typography variant="div" title={fileName} gutterBottom component="div" sx={{
+                            pt: 0, mr: 'auto',
+                            lineHeight: 2,
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            textOverflow: 'ellipsis',
+
+                        }}>
+                            Attachement: <i>{fileName}</i>
+                        </Typography>
                         <Divider />
 
                         <Cropper
-                            style={{ height: 'calc(100vh - 200px)', width: '100%' }}
+                            style={{ height: 'calc(100vh - 232px)', width: '100%' }}
                             // initialAspectRatio={16 / 9}
                             preview=".img-preview"
                             guides={true}
@@ -481,11 +496,7 @@ export default function CustomCropper() {
                         />
                         <Box conatiner sx={{ width: "100%", display: 'flex', justifyContent: "center" }}>
                             <Button size="small" onClick={handleBack}>
-                                {theme.direction === 'rtl' ? (
-                                    <KeyboardArrowRight />
-                                ) : (
-                                    <KeyboardArrowLeft />
-                                )}
+                                <KeyboardArrowLeft />
                                 Back
                             </Button>
                             <div style={{ fontWeight: 600, lineHeight: 2, padding: '8px' }}>Page No: {pageNo}</div>
