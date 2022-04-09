@@ -329,7 +329,7 @@ export default function G2bLandingPage() {
                             <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
                                 <KeyboardBackspaceIcon />
                             </IconButton>
-                            <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Requested Quote</Typography>
+                            <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Insurer Response</Typography>
                             <Chip label={projectStatus || 'Pending'} color={getColor(projectStatus)} size="small" sx={{ width: '120px' }} />
                         </Grid>
                         {isInitialQuote ? <>

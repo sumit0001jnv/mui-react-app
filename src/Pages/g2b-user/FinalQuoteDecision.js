@@ -293,7 +293,7 @@ export default function FinalQuoteDecision(props) {
                             <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
                                 <KeyboardBackspaceIcon />
                             </IconButton>
-                            <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Requested Quote</Typography>
+                            <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Insurer Response</Typography>
                         </Grid>
                         <Grid container justifyContent={'center'}>
                             {columns.map((col) => {

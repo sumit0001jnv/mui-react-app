@@ -266,7 +266,7 @@ export default function Conversation(props) {
                                     <IconButton aria-label="add an alarm" onClick={() => navigateBack()}>
                                         <KeyboardBackspaceIcon />
                                     </IconButton>
-                                    <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Requested Quote</Typography>
+                                    <Typography variant='h6' sx={{ ml: 0, mr: 'auto' }}>Insurer Response</Typography>
                                     <Chip label={projectStatus || 'Pending'} color={getColor(projectStatus)} size="small" sx={{ width: '120px' }} />
                                 </Box>
                                 <Divider></Divider>
@@ -294,18 +294,26 @@ export default function Conversation(props) {
                                                 {/* <Avatar sx={{ bgcolor: deepOrange[500] }}>N</Avatar> */}
                                                 <Avatar {...stringAvatar(user.name)} />
                                                 <Stack item direction="column" sx={{ width: '100%', maxWidth: 'calc(100% - 57px)' }} alignItems={'center'}>
-                                                    <Grid container sx={{}} direction={'row'}>
+                                                    <Grid container direction={'row'}>
                                                         <Typography variant="subtitle2" component="div" sx={{ flexGrow: 1, mr: 'auto', textAlign: 'initial' }}>
                                                             {user.name}
                                                         </Typography>
-                                                        <Typography variant="caption" display="block" sx={{ maxWidth: '60px' }} >
+                                                        {/* <Typography variant="caption" display="block" sx={{ maxWidth: '60px' }} >
                                                             {user.time}
-                                                        </Typography>
+                                                        </Typography> */}
                                                     </Grid>
-                                                    <Typography variant="body2" component="div" sx={{ mr: 'auto', mt: 0, ...multiLineEllipsis }}>
-                                                        {user.descrpition}
-                                                    </Typography>
+                                                    <Grid container direction={'row'}>
+                                                        <div sx={{ mt: 0, textAlign: 'initial', ...multiLineEllipsis }}>
+                                                            {user.descrpition}
+                                                        </div>
+                                                    </Grid>
                                                 </Stack>
+                                                <img
+                                                    src={`/images/test.logo.svg`}
+                                                    width={40}
+                                                    alt={'org demo'}
+                                                    loading="lazy"
+                                                />
                                             </Stack>
                                             <Divider></Divider>
                                         </>
@@ -319,7 +327,7 @@ export default function Conversation(props) {
                         <Item>
                             <Grid contaniner direction={'column'}>
                                 <Grid direction={'column'} sx={{ maxHeight: 'calc(100vh - 164px)', height: 'calc(100vh - 164px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
-                                    {chats.map(user => <EmailCard user={user} />)}
+                                    {chats.map((user,index) => <EmailCard user={user} expanded={index===0} />)}
                                 </Grid>
                                 <Item>
                                     <Grid container justifyContent={'flex-end'} sx={{ p: 2 }}>

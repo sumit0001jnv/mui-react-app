@@ -87,7 +87,9 @@ export default function CustomMuiDialogue(props) {
                 {props.url && <Grid container>
                     <Grid container xs={12}>
                         <Typography variant='h6' sx={{ p: 2, mr: 'auto' }} component={'div'}>Attachment</Typography>
-
+                        <Typography variant="div" gutterBottom component="div" sx={{ pt: 2, mr: 'auto', lineHeight: 2 }}>
+                            {props.url.split("/")[props.url.split("/").length - 1]}
+                        </Typography>
                         <IconButton aria-label="upload picture" component="span" onClick={handleClose}>
                             <CloseIcon sx={{ fontSize: '34px' }} />
                         </IconButton>
@@ -121,7 +123,7 @@ export default function CustomMuiDialogue(props) {
                     <Button color={'primary'} variant="outlined" endIcon={<ZoomInIcon />} aria-label="upload picture" component="span" onClick={() => zoom(zoomVal + 0.5)}>
                         Zoom In
                     </Button>
-                    <Button color={'primary'} variant="outlined" endIcon={<ZoomOutIcon />} sx={{ }} aria-label="upload picture" component="span" onClick={() => zoom(zoomVal - 0.5)}>
+                    <Button color={'primary'} variant="outlined" endIcon={<ZoomOutIcon />} sx={{}} aria-label="upload picture" component="span" onClick={() => zoom(zoomVal - 0.5)}>
                         Zoom Out
                     </Button>
                     {/* <Button onClick={handleClose}>Cancel</Button> */}

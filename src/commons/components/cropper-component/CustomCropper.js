@@ -25,6 +25,8 @@ import Tab from '@mui/material/Tab';
 import PreviewIcon from '@mui/icons-material/Preview';
 import CustomActionList from '../CustomActionList';
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -73,7 +75,7 @@ export default function CustomCropper() {
     const [quoteTableData, setQuoteTableData] = useState([]);
     const [templateId, setTemplateId] = useState('');
     const [loadingBtn, setLoadingBtn] = useState(false);
-    const [rectangles, setRectangles] = useState([]);
+    const [zoomVal, setZoomVal] = useState(1);
     // const [loading, setLoading] = useState(false);
 
     const columns = [
@@ -426,6 +428,17 @@ export default function CustomCropper() {
         overflowY: 'auto'
     });
 
+    function zoom(isZoomable = true) {
+        // if (value < 0.1) value = 0.1;
+        // if (value > 4.5) value = 4.5;
+        // setZoomVal(value)
+        if (isZoomable) {
+            cropper.zoom(0.1);
+        } else {
+            cropper.zoom(-0.1);
+
+        }
+    }
 
 
     return (
@@ -438,7 +451,14 @@ export default function CustomCropper() {
                                 <KeyboardBackspaceIcon />
                             </IconButton>
                             <Typography variant='h6' sx={{ ml: 1, mr: 'auto' }}>Create Template</Typography>
-                            <Button variant="outlined" size="small" sx={{ mb: 1, mr: 1 }} onClick={clearCrop} >Clear crop box</Button>
+                            <Button color={'primary'} size="small" variant="outlined" endIcon={<ZoomInIcon />} sx={{mr: 1}} aria-label="upload picture" component="span" onClick={() => zoom()}>
+                                Zoom In
+                            </Button>
+                            <Button color={'primary'} size="small" variant="outlined" endIcon={<ZoomOutIcon />} sx={{mr: 1}} aria-label="upload picture" component="span" onClick={() => zoom(false)}>
+                                Zoom Out
+                            </Button>
+                            <Button variant="outlined" size="small" sx={{  }} onClick={clearCrop} >Clear crop box</Button>
+
                         </Grid>
                         <Divider />
 
