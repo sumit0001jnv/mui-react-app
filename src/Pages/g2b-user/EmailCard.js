@@ -13,6 +13,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import CustomMuiDialogue from '../../commons/components/custom-mui-dialogue/CustomMuiDialogue';
+import { stringAvatar } from '../../utility/helper'
 
 export default function EmailCard(props) {
     const [attachment, setAttachment] = useState({
@@ -37,16 +38,6 @@ export default function EmailCard(props) {
         /* eslint-enable no-bitwise */
 
         return color;
-    }
-
-    function stringAvatar(name) {
-        const arr = name.split(' ');
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-            },
-            children: `${arr[0][0]}${arr[1] ? arr[1][0] : ''}`,
-        };
     }
 
     function onAttachmentClick(e, isClickable = true, attachment) {
@@ -98,7 +89,7 @@ export default function EmailCard(props) {
                                 </Typography>
                                 <Grid container sx={{ p: 0, pt: 1, borderColor: 'primary.main' }} >
                                     <Badge badgeContent={props.user.attachments.pdf.length} color="error" onClick={(e) => onAttachmentClick(e, props.user.attachments.pdf.length, props.user.attachments.pdf[0])}
-                                        sx={{...disableProp(!props.user.attachments.pdf.length)}}>
+                                        sx={{ ...disableProp(!props.user.attachments.pdf.length) }}>
                                         <Avatar src={'/images/pdf-icon.svg'} variant="rounded">
                                         </Avatar>
                                     </Badge>

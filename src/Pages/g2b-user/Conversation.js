@@ -12,7 +12,6 @@ import Grid from '@mui/material/Grid';
 import Avatar from '@mui/material/Avatar';
 import Stack from '@mui/material/Stack';
 import Divider from '@mui/material/Divider';
-import { generateID } from '../../utility/helper';
 import SearchIcon from '@mui/icons-material/Search';
 import IconButton from '@mui/material/IconButton';
 import InputBase from '@mui/material/InputBase';
@@ -24,6 +23,7 @@ import uiAction from '../../store/actions/uiAction';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
+import { multiLineEllipsis, stringAvatar } from '../../utility/helper'
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -156,44 +156,9 @@ export default function Conversation(props) {
         })
 
     }, []);
-    function stringToColor(string) {
-        let hash = 0;
-        let i;
-
-        /* eslint-disable no-bitwise */
-        for (i = 0; i < string.length; i += 1) {
-            hash = string.charCodeAt(i) + ((hash << 5) - hash);
-        }
-
-        let color = '#';
-
-        for (i = 0; i < 3; i += 1) {
-            const value = (hash >> (i * 8)) & 0xff;
-            color += `00${value.toString(16)}`.substr(-2);
-        }
-        /* eslint-enable no-bitwise */
-
-        return color;
-    }
-
-    function stringAvatar(name) {
-        const arr = name.split(' ');
-        return {
-            sx: {
-                bgcolor: stringToColor(name),
-            },
-            children: `${arr[0][0]}${arr[1] ? arr[1][0] : ''}`,
-        };
-    }
+    
 
 
-    const multiLineEllipsis = {
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        maxWidth: 'calc(100% - 50px)',
-        textAlign: 'initial'
-    }
     const navigateBack = () => {
         history.push('/g2b-user')
     }
@@ -298,7 +263,7 @@ export default function Conversation(props) {
                         <Item>
                             <Grid contaniner direction={'column'}>
                                 <Grid direction={'column'} sx={{ maxHeight: 'calc(100vh - 164px)', height: 'calc(100vh - 164px)', flexWrap: 'nowrap', overflowY: 'auto' }}>
-                                    {chats.map((user,index) => <EmailCard user={user} expanded={index===0} />)}
+                                    {chats.map((user, index) => <EmailCard user={user} expanded={index === 0} />)}
                                 </Grid>
                                 <Item>
                                     <Grid container justifyContent={'flex-end'} sx={{ p: 2 }}>

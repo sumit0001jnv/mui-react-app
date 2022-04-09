@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 import Header from '../../commons/components/header/Header';
+import Stack from '@mui/material/Stack';
+import Avatar from '@mui/material/Avatar';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
@@ -25,6 +27,7 @@ import Conversation from './Conversation';
 import Chip from '@mui/material/Chip';
 
 import Divider from '@mui/material/Divider';
+import { multiLineEllipsis, stringAvatar, generateID } from '../../utility/helper'
 
 const Item = styled(Paper)(({ theme }) => ({
     ...theme.typography.body2,
@@ -79,7 +82,7 @@ export default function G2bLandingPage() {
                     return {
                         attribute: row.name,
                         value: row.text,
-                        id: ID()
+                        id: generateID()
                     }
                 })
             })
@@ -95,7 +98,7 @@ export default function G2bLandingPage() {
             data: { project_id }
         }).then(res => {
             if (res.data.status) {
-                let x = res.data.users_list.map(row => { return { id: row[2], name: row[1] } });
+                let x = res.data.users_list.map(row => { return { id: row[2], name: row[1], descrpition: row[0] } });
                 // let x = [{ id: '1', name: 'User1' }, { id: '2', name: 'User2' }, { id: '3', name: 'User 3' },
                 // { id: '4', name: 'User 4' }, { id: '5', name: 'User 5' }]
                 setG3Users(() => {
@@ -125,7 +128,7 @@ export default function G2bLandingPage() {
     }, []);
     const addRow = () => {
         setTableData((data) => {
-            return [{ attribute: '', value: '', id: ID() }, ...data];
+            return [{ attribute: '', value: '', id: generateID() }, ...data];
         })
     }
 
@@ -161,10 +164,6 @@ export default function G2bLandingPage() {
             data[rowIndex][field] = event.target.value;
             return [...data];
         })
-    }
-
-    function ID() {
-        return '_' + Math.random().toString(36).substr(2, 9);
     }
 
     const sendData = () => {
@@ -343,16 +342,16 @@ export default function G2bLandingPage() {
                                 })}
                             </Grid>
                             <DragDropContext onDragEnd={onDragEnd}>
-                                <Droppable droppableId="droppable">
+                                <Droppable droppableId="droppable" key={generateID()}>
                                     {(provided, snapshot) =>
                                         <Grid  {...provided.droppableProps}
                                             ref={provided.innerRef}
+                                            key={generateID()}
                                             style={getListStyle(snapshot.isDraggingOver)} container spacing={0} direction="column">
                                             {tableData.map((row, i) => {
                                                 return <>
-                                                    <Draggable key={row.id} draggableId={row.id} index={i}>
+                                                    <Draggable key={row.id + i} draggableId={row.id} index={i}>
                                                         {(provided, snapshot) => (
-
                                                             <Grid
                                                                 ref={provided.innerRef}
                                                                 {...provided.draggableProps}
@@ -361,10 +360,11 @@ export default function G2bLandingPage() {
                                                                     snapshot.isDragging,
                                                                     provided.draggableProps.style
                                                                 )}
+                                                                key={row.id + '_child' + i}
                                                                 container justifyContent={'center'}>
                                                                 {columns.map((col, index) => {
                                                                     return <>
-                                                                        <Grid item xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc' }}>
+                                                                        <Grid item key={'_key' + index} xs={col.flex} sx={{ p: 2, borderBottom: '1px solid #ccc' }}>
                                                                             {index == 2 ? <IconButton color="error" aria-label="add an alarm" onClick={() => removeRow(i)}>
                                                                                 <DeleteIcon />
                                                                             </IconButton> : <TextField id="outlined-size-normal" size={'small'} value={row[col.field]} onChange={(event) => handleText(event, i, col.field)} sx={{ width: '100%', color: "#ccc" }} />}
@@ -404,6 +404,7 @@ export default function G2bLandingPage() {
                         <Grid container justifyContent={'flex-end'} sx={{ p: 2 }}>
                             {isInitialQuote ?
                                 <>
+                                    {/* */}
                                     <Autocomplete
                                         sx={{ mr: 2, width: 200, flexGrow: 1, height: '40px', maxHeight: '40px' }}
                                         size={'small'}
@@ -412,6 +413,32 @@ export default function G2bLandingPage() {
                                         id="multiple-limit-tags"
                                         limitTags={2}
                                         options={g3Users}
+                                        renderOption={(props, params) =>
+
+                                            <>
+                                                <Stack direction="row" spacing={2} sx={{ p: 2, cursor: 'pointer', bgcolor: params.id === selectedG3User.id ? '#f3e5f5' : '' }} key={params.id}  {...props}>
+                                                    <Avatar {...stringAvatar(params.name)} />
+                                                    <Stack item direction="column" sx={{ width: '100%', maxWidth: 'calc(100% - 57px)' }} alignItems={'center'}>
+                                                        <Grid container direction={'row'}>
+                                                            <Typography variant="subtitle2" component="div" sx={{ flexGrow: 1, mr: 'auto', textAlign: 'initial' }}>
+                                                                {params.name}
+                                                            </Typography>
+                                                        </Grid>
+                                                        <Grid container direction={'row'}>
+                                                            <div sx={{ mt: 0, textAlign: 'initial', ...multiLineEllipsis }}>
+                                                                {params.descrpition}
+                                                            </div>
+                                                        </Grid>
+                                                    </Stack>
+                                                    <img
+                                                        src={`/images/test.logo.svg`}
+                                                        width={40}
+                                                        alt={'org demo'}
+                                                        loading="lazy"
+                                                    />
+                                                </Stack>
+                                            </>
+                                        }
                                         getOptionLabel={(option) => option.name}
                                         disableClearable
                                         onChange={(event, newInputValue) => {
