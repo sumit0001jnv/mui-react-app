@@ -20,6 +20,17 @@ function stringAvatar(name) {
     };
 }
 
+function getUser(type) {
+    const groupsObj = {
+        g1: 'Cedant',
+        g2: 'Broker',
+        g2b: 'Senior Broker',
+        g3: 'Insurer',
+        admin: 'Admin'
+    };
+    return groupsObj[type] || type;
+}
+
 function stringToColor(string = '') {
     let hash = 0;
     let i;
@@ -40,4 +51,4 @@ function stringToColor(string = '') {
     return color;
 }
 
-export { generateID, multiLineEllipsis, stringAvatar, stringToColor };
+export { generateID, multiLineEllipsis, stringAvatar, stringToColor, getUser };
