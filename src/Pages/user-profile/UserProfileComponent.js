@@ -33,20 +33,28 @@ export default function UserProfileComponent(props) {
 
     useEffect(() => {
         let userData = JSON.parse(localStorage.getItem('pdf_parser_app') || '{}');
-        setUser(userData || defaultUser);
-
         setLoading(true);
+        axios({
+            method: 'post',
+            url: 'http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-user-info',
+            data: { user_id: userData.user_id },
+        }).then(res => {
+            console.log(res);
+            const [email, ,mobileNo, userCategory] = res.data.user_info;
 
-        // axios('http://ec2-3-71-77-204.eu-central-1.compute.amazonaws.com/api/get-user-info',{
-        //     data: { user_id: userData.user_id },
-        // }).then(res => {
-        //     console.log(res);
-        //     setLoading(false);
-        // }).catch(err => {
-        //     console.log(err);
-        //     setLoading(false);
-        //     dispatch(uiAction.showSnackbar({ type: 'error', message: 'Something went wrong.Please try after some time' }));
-        // });
+            setUser(() => {
+                return {
+                    ...(userData || defaultUser),
+                    email, userCategory,
+                    mobileNo
+                }
+            })
+            setLoading(false);
+        }).catch(err => {
+            console.log(err);
+            setLoading(false);
+            dispatch(uiAction.showSnackbar({ type: 'error', message: 'Something went wrong.Please try after some time' }));
+        });
     }, [])
 
     const navigateBack = () => {
@@ -164,7 +172,7 @@ export default function UserProfileComponent(props) {
                                 autoFocus
                                 size={'small'}
                                 sx={{ mr: 2, width: '80%' }}
-                                value={12345}
+                                value={user.mobileNo}
                             />
                         </Grid>
                     </Grid>
